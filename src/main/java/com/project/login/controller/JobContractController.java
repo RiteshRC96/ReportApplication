@@ -71,7 +71,11 @@ public class JobContractController {
             @RequestParam int beams,
             @RequestParam String production_schedule,
             @RequestParam int no_of_machines,
-            @RequestParam(required = false) String remark
+            @RequestParam(required = false) String remark,
+            @RequestParam(required = false) String cut_length,
+            @RequestParam(required = false) String minimum_delivery,
+            @RequestParam(required = false) String[] rolling_folding
+
     ){
 
         Authentication authentication =
@@ -103,6 +107,15 @@ public class JobContractController {
         bill.setNoOfMachines(no_of_machines);
         bill.setRemark(remark);
         bill.setBeams(beams);
+        String rollingFoldingValue = null;
+        if (rolling_folding != null) {
+            rollingFoldingValue = String.join(",", rolling_folding);
+        }
+
+        bill.setCutLength(cut_length);
+        bill.setMinimumDelivery(minimum_delivery);
+        bill.setRollingFolding(rollingFoldingValue);
+
 
         // ✅ contract_no generated per user (MAX + 1)
         jobContractService.saveJobContract(bill, user);

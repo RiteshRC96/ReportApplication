@@ -1,4 +1,4 @@
-<!-- cut length & delivery fields -->
+<!-- cut length ,delivery fields, rolling/folding -->
 
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
@@ -182,6 +182,30 @@
             <label>Remark</label>
             <input class="form-control" name="remark">
         </div>
+        <div class="section-box">
+    <label>Cut Length</label>
+    <input class="form-control mb-2" name="cut_length">
+
+    <label>Minimum Delivery</label>
+    <input class="form-control mb-2" name="minimum_delivery">
+
+    <label>Rolling / Folding</label>
+    <div class="form-check">
+        <input class="form-check-input" type="checkbox"
+               name="rolling_folding" value="ROLLING" id="rolling">
+        <label class="form-check-label" for="rolling">
+            Rolling
+        </label>
+    </div>
+    <div class="form-check">
+        <input class="form-check-input" type="checkbox"
+               name="rolling_folding" value="FOLDING" id="folding">
+        <label class="form-check-label" for="folding">
+            Folding
+        </label>
+    </div>
+</div>
+        
 
         <button type="submit" id="submitBtn" class="btn btn-submit w-100 mt-3">
             SUBMIT

@@ -56,6 +56,15 @@ public class gen_bill {
     private Integer noOfMachines;
 
     private String remark;
+    @Column(name = "cut_length")
+    private String cutLength;
+
+    @Column(name = "minimum_delivery")
+    private String minimumDelivery;
+
+    @Column(name = "rolling_folding")
+    private String rollingFolding;
+
 
     @Column(name = "created_at", updatable = false)
     private LocalDateTime createdAt;
@@ -210,4 +219,28 @@ public class gen_bill {
     public LocalDateTime getUpdatedAt() {
         return updatedAt;
     }
+    public String getCutLength() {
+        return cutLength;
+    }
+
+    public void setCutLength(String cutLength) {
+        this.cutLength = cutLength;
+    }
+
+    public String getMinimumDelivery() {
+        return minimumDelivery;
+    }
+
+    public void setMinimumDelivery(String minimumDelivery) {
+        this.minimumDelivery = minimumDelivery;
+    }
+
+    public String getRollingFolding() {
+        return rollingFolding;
+    }
+
+    public void setRollingFolding(String rollingFolding) {
+        this.rollingFolding = rollingFolding;
+    }
+
 }
