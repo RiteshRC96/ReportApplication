@@ -6,4 +6,3 @@
 4. now go to report.html and another label for beams. it will directly take from the entity
 5. flow :- html -> controller -> service -> entity.
 6. now for adding that column into excel go to report controller and add into column names and as per column seq add in cells.
-RiteshRC96
