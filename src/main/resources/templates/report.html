@@ -92,6 +92,10 @@
                 <th>Production Schedule</th>
                 <th>Machines</th>
                 <th>Remark</th>
+                <th>Cut Length</th>
+				<th>Minimum Delivery</th>
+				<th>Rolling / Folding</th>
+                
                 <th>Created At</th>
             </tr>
             </thead>
@@ -112,6 +116,10 @@
                 <td th:text="${r.productionSchedule}"></td>
                 <td th:text="${r.noOfMachines}"></td>
                 <td th:text="${r.remark}"></td>
+                <td th:text="${r.cutLength}"></td>
+				<td th:text="${r.minimumDelivery}"></td>
+				<td th:text="${r.rollingFolding}"></td>
+                
                 <td th:text="${r.createdAt}"></td>
             </tr>
             </tbody>

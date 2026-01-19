@@ -113,10 +113,13 @@ public class ReportController {
 
         Row header = sheet.createRow(0);
         String[] columns = {
-                "Contract No", "Sr No", "Contract Date","Weaver", "Trader", "Broker",
-                "Quality", "Quantity (Meters)", "beams", "Job Rate", "Payment Days",
-                "Production Schedule", "Machines", "Remark", "Created At"
-        };
+        	    "Contract No", "Sr No", "Contract Date", "Weaver", "Trader", "Broker",
+        	    "Quality", "Quantity (Meters)", "Beams", "Job Rate", "Payment Days",
+        	    "Production Schedule", "Machines", "Remark",
+        	    "Cut Length", "Minimum Delivery", "Rolling / Folding",
+        	    "Created At"
+        	};
+
 
         for (int i = 0; i < columns.length; i++) {
             Cell cell = header.createCell(i);
@@ -144,6 +147,11 @@ public class ReportController {
             row.createCell(11).setCellValue(g.getProductionSchedule());
             row.createCell(12).setCellValue(g.getNoOfMachines());
             row.createCell(13).setCellValue(g.getRemark());
+            row.createCell(14).setCellValue(g.getCutLength());
+            row.createCell(15).setCellValue(g.getMinimumDelivery());
+            row.createCell(16).setCellValue(g.getRollingFolding());
+            row.createCell(17).setCellValue(String.valueOf(g.getCreatedAt()));
+
             row.createCell(14).setCellValue(String.valueOf(g.getCreatedAt()));
         }
 
