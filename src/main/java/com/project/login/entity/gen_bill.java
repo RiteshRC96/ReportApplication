@@ -1,3 +1,5 @@
+// commit test for cut length feature
+
 package com.project.login.entity;
 
 import jakarta.persistence.*;
