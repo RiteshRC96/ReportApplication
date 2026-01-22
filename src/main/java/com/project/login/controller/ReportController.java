@@ -113,11 +113,11 @@ public class ReportController {
 
         Row header = sheet.createRow(0);
         String[] columns = {
-        	    "Contract No", "Sr No", "Contract Date", "Weaver", "Trader", "Broker",
-        	    "Quality", "Quantity (Meters)", "Beams", "Job Rate", "Payment Days",
-        	    "Production Schedule", "Machines", "Remark",
-        	    "Cut Length", "Minimum Delivery", "Rolling / Folding",
-        	    "Created At"
+        	    "Contract No", "Contract Date", "Weaver", "Trader", "Quality",
+        	    "Quantity (Meters)", "Beams", "Job Rate", "Payment Days",
+        	    "Production Schedule", "Machines", "Remark","Cut Length",
+        	    "Minimum Delivery", "Rolling / Folding", "Created At"
+        	    
         	};
 
 
@@ -134,11 +134,9 @@ public class ReportController {
             Row row = sheet.createRow(rowNum++);
 
             row.createCell(0).setCellValue(g.getContractNo());
-            row.createCell(1).setCellValue(g.getSrNo());
             row.createCell(2).setCellValue(String.valueOf(g.getContractDate()));
             row.createCell(3).setCellValue(g.getWeaverName());
             row.createCell(4).setCellValue(g.getTraderName());
-            row.createCell(5).setCellValue(g.getBrokerName());
             row.createCell(6).setCellValue(g.getQuality());
             row.createCell(7).setCellValue(g.getQuantityMeters());
             row.createCell(8).setCellValue(g.getBeams());
