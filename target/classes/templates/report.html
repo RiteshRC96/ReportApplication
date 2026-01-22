@@ -79,11 +79,9 @@
             <thead class="table-dark">
             <tr>
                 <th>Contract No</th>
-                <th>Sr No</th>
                 <th>Contract Date</th>
                 <th>Weaver</th>
                 <th>Trader</th>
-                <th>Broker</th>
                 <th>Quality</th>
                 <th>Qty (Meters)</th>
                 <th>Beams</th>
@@ -95,7 +93,6 @@
                 <th>Cut Length</th>
 				<th>Minimum Delivery</th>
 				<th>Rolling / Folding</th>
-                
                 <th>Created At</th>
             </tr>
             </thead>
@@ -103,11 +100,9 @@
             <tbody>
             <tr th:each="r : ${reports}">
                 <td th:text="${r.contractNo}"></td>
-                <td th:text="${r.srNo}"></td>
                 <td th:text="${r.contractDate}"></td>
                 <td th:text="${r.weaverName}"></td>
                 <td th:text="${r.traderName}"></td>
-                <td th:text="${r.brokerName}"></td>
                 <td th:text="${r.quality}"></td>
                 <td th:text="${r.quantityMeters}"></td>
                 <td th:text="${r.beams}"></td>
@@ -119,7 +114,6 @@
                 <td th:text="${r.cutLength}"></td>
 				<td th:text="${r.minimumDelivery}"></td>
 				<td th:text="${r.rollingFolding}"></td>
-                
                 <td th:text="${r.createdAt}"></td>
             </tr>
             </tbody>

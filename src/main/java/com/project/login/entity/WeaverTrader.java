@@ -13,6 +13,9 @@ public class WeaverTrader {
 
     @Column(nullable = false)
     private String name;
+    
+    @Column(nullable = false)
+    private Long phno;
 
     // WEAVER or TRADER
     @Column(nullable = false)
@@ -29,6 +32,9 @@ public class WeaverTrader {
 
     public String getName() { return name; }
     public void setName(String name) { this.name = name; }
+    
+    public Long getphno() { return phno; }
+    public void setphno(Long phno) { this.phno = phno; }
 
     public String getType() { return type; }
     public void setType(String type) { this.type = type; }
