@@ -125,14 +125,18 @@
         </div>
 
         <div class="section-box">
-    		<label>Weaver</label>
-    		<select class="form-control mb-2" name="weaver_name" required>
-        		<option value="">Select Weaver</option>
-        		<option th:each="w : ${weavers}"
-                	th:value="${w.name}"
-                	th:text="${w.name}">
-        		</option>
-    		</select>
+    		<label class="d-flex justify-content-between align-items-center">Weaver
+    			<a href="/weaver-trader/create?returnUrl=/gen-bill" class="btn btn-sm btn-outline-dark ms-2">➕</a>
+			</label>
+
+			<select class="form-control mb-2" name="weaver_name" required>
+    			<option value="">Select Weaver</option>
+    				<option th:each="w : ${weavers}"
+            			th:value="${w.name}"
+            			th:text="${w.name}">
+    				</option>
+			</select>
+
 
     		<label>Trader</label>
     		<select class="form-control mb-2" name="trader_name" required>
