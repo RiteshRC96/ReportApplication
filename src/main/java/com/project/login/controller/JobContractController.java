@@ -51,6 +51,11 @@ public class JobContractController {
 
         model.addAttribute("editMode", false);
         model.addAttribute("job", new gen_bill());
+        
+        gen_bill job = new gen_bill();
+        job.setContractDate(java.time.LocalDate.now());   // ✅ Set today's date
+
+        model.addAttribute("job", job);
 
         return "gen_bill";
     }
@@ -115,7 +120,8 @@ public class JobContractController {
             @RequestParam(required = false) String remark,
             @RequestParam(required = false) String cut_length,
             @RequestParam(required = false) String minimum_delivery,
-            @RequestParam(required = false) String rolling_folding
+            @RequestParam(required = false) String rolling_folding,
+            @RequestParam(required = false) String sizing_fabric
     ) {
 
         Authentication authentication =
@@ -157,6 +163,8 @@ public class JobContractController {
             bill.setCutLength(cut_length);
             bill.setMinimumDelivery(minimum_delivery);
             bill.setRollingFolding(rolling_folding);
+            bill.setSizingfabric(sizing_fabric);
+            
 
             // 🔄 Same service handles save or update
             jobContractService.saveOrUpdate(bill, user);

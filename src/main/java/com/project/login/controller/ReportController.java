@@ -129,7 +129,7 @@ public class ReportController {
         Row header = sheet.createRow(0);
         String[] columns = {
                 "Contract No", "Contract Date", "Weaver", "Trader", "Quality",
-                "Quantity", "Beams", "Job Rate", "Payment Days",
+                "Quantity","Sizing/Fabric", "Beams", "Job Rate", "Payment Days",
                 "Production Schedule", "Machines", "Remark",
                 "Cut Length", "Minimum Delivery", "Rolling/Folding", "Created At"
         };
@@ -147,16 +147,17 @@ public class ReportController {
             row.createCell(3).setCellValue(g.getTraderName());
             row.createCell(4).setCellValue(g.getQuality());
             row.createCell(5).setCellValue(g.getQuantityMeters());
-            row.createCell(6).setCellValue(g.getBeams());
-            row.createCell(7).setCellValue(g.getJobRate());
-            row.createCell(8).setCellValue(g.getPaymentDays());
-            row.createCell(9).setCellValue(g.getProductionSchedule());
-            row.createCell(10).setCellValue(g.getNoOfMachines());
-            row.createCell(11).setCellValue(g.getRemark());
-            row.createCell(12).setCellValue(g.getCutLength());
-            row.createCell(13).setCellValue(g.getMinimumDelivery());
-            row.createCell(14).setCellValue(g.getRollingFolding());
-            row.createCell(15).setCellValue(String.valueOf(g.getCreatedAt()));
+            row.createCell(6).setCellValue(g.getSizingfabric());
+            row.createCell(7).setCellValue(g.getBeams());
+            row.createCell(8).setCellValue(g.getJobRate());
+            row.createCell(9).setCellValue(g.getPaymentDays());
+            row.createCell(10).setCellValue(g.getProductionSchedule());
+            row.createCell(11).setCellValue(g.getNoOfMachines());
+            row.createCell(12).setCellValue(g.getRemark());
+            row.createCell(13).setCellValue(g.getCutLength());
+            row.createCell(14).setCellValue(g.getMinimumDelivery());
+            row.createCell(15).setCellValue(g.getRollingFolding());
+            row.createCell(16).setCellValue(String.valueOf(g.getCreatedAt()));
         }
 
         response.setContentType(

@@ -51,24 +51,16 @@ public class JobContractPdfService {
             document.add(title);
             document.add(new Paragraph(" "));
 
-            // 16 Columns
-            float[] columnWidths = {
-                    70f, 80f, 100f, 100f, 100f,
-                    70f, 60f, 70f, 70f,
-                    120f, 60f, 120f,
-                    80f, 100f, 100f, 110f
-            };
-
-            Table table = new Table(UnitValue.createPointArray(columnWidths));
+            Table table = new Table(UnitValue.createPercentArray(16));
             table.setWidth(UnitValue.createPercentValue(100));
-            table.setHorizontalAlignment(HorizontalAlignment.CENTER);
+            table.setAutoLayout();
 
             // ===== Header Row =====
             String[] headers = {
                     "Contract No", "Contract Date", "Weaver", "Trader", "Quality",
-                    "Quantity", "Beams", "Job Rate", "Payment Days",
+                    "Quantity","Sizing/  Fabric", "Beams", "Job       Rate", "Payment Days",
                     "Production Schedule", "Machines", "Remark",
-                    "Cut Length", "Minimum Delivery", "Rolling/Folding", "Created At"
+                    "Cut    Length", "Minimum Delivery", "Rolling/  Folding", "Created At"
             };
 
             for (String header : headers) {
@@ -101,6 +93,7 @@ public class JobContractPdfService {
                 table.addCell(getCell(bill.getWeaverName(), normalFont));
                 table.addCell(getCell(bill.getTraderName(), normalFont));
                 table.addCell(getCell(bill.getQuality(), normalFont));
+                table.addCell(getCell(bill.getSizingfabric(), normalFont));
                 table.addCell(getCell(qty != null ? qty.toString() : "0", normalFont));
                 table.addCell(getCell(bill.getBeams() != null ? bill.getBeams().toString() : "0", normalFont));
                 table.addCell(getCell(rate != null ? rate.toString() : "0", normalFont));

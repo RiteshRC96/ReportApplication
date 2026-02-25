@@ -64,9 +64,20 @@ public class gen_bill {
 
     @Column(name = "rolling_folding")
     private String rollingFolding;
+    
+    @Column(name = "sizing_fabric")
+    private String sizingfabric;
 
 
-    @Column(name = "created_at", updatable = false)
+    public String getSizingfabric() {
+		return sizingfabric;
+	}
+
+	public void setSizingfabric(String sizingfabric) {
+		this.sizingfabric = sizingfabric;
+	}
+
+	@Column(name = "created_at", updatable = false)
     private LocalDateTime createdAt;
 
     @Column(name = "updated_at")
