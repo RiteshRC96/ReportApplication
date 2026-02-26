@@ -12,6 +12,7 @@ public class EmailService {
     @Autowired
     private JavaMailSender mailSender;
 
+    @SuppressWarnings("null")
     public void sendOtp(String toEmail, String otp) {
 
         try {

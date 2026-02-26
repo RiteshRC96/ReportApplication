@@ -33,6 +33,7 @@ public class JobContractService {
     /* ==========================
        DELETE
        ========================== */
+    @SuppressWarnings("null")
     public void deleteByUserIdAndContractNo(
             Long userId,
             Integer contractNo
@@ -86,6 +87,7 @@ public class JobContractService {
     /* ==========================
        LEGACY UPDATE (KEEP)
        ========================== */
+    @SuppressWarnings("null")
     public void updateJobContract(gen_bill bill) {
         jobContractRepository.save(bill);
     }

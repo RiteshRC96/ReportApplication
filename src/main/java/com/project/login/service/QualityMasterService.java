@@ -16,6 +16,7 @@ public class QualityMasterService {
 		this.repository = repository;
 	}
 	
+	@SuppressWarnings("null")
 	public QualityMasterEntity save(QualityMasterEntity qtEntity) {
 		return repository.save(qtEntity);		
 		
@@ -32,5 +33,9 @@ public class QualityMasterService {
 	@Transactional
 	public void delete(Long id, Long userId) {
 	     repository.deleteByIdAndUserId(id, userId);
+	}
+
+	public Optional<QualityMasterEntity> findByNameAndUser(String qualityName, Long userId) {
+		return repository.findByQualityNameAndUserId(qualityName, userId);
 	}
 }

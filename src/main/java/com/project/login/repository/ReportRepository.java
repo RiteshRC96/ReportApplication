@@ -1,7 +1,6 @@
 package com.project.login.repository;
 
 import com.project.login.entity.ReportEntity;
-import com.project.login.entity.gen_bill;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -10,7 +9,6 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
 import java.time.LocalDate;
-import java.util.Optional;
 
 public interface ReportRepository extends JpaRepository<ReportEntity, Long> {
 

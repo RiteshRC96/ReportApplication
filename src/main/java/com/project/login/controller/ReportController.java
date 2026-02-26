@@ -212,9 +212,12 @@ public class ReportController {
                 "attachment; filename=job_contract_report.pdf"
         );
 
-        return ResponseEntity.ok()
+        @SuppressWarnings("null")
+        ResponseEntity<InputStreamResource> response = ResponseEntity.ok()
                 .headers(headers)
                 .contentType(MediaType.APPLICATION_PDF)
                 .body(new InputStreamResource(pdf));
+        
+        return response;
     }
 }

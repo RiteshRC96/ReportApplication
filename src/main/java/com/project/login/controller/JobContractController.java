@@ -121,7 +121,14 @@ public class JobContractController {
             @RequestParam(required = false) String cut_length,
             @RequestParam(required = false) String minimum_delivery,
             @RequestParam(required = false) String rolling_folding,
-            @RequestParam(required = false) String sizing_fabric
+            @RequestParam(required = false) String sizing_fabric,
+            @RequestParam(required = false) Double pick,
+            @RequestParam(required = false) Double weaver_brokerage_percent,
+            @RequestParam(required = false) Double weaver_brokerage_paisa,
+            @RequestParam(required = false) Double rate,
+            @RequestParam(required = false) Double amount,
+            @RequestParam(required = false) Double brokerage_percent_amt,
+            @RequestParam(required = false) Double brokerage_mtr_amt
     ) {
 
         Authentication authentication =
@@ -164,6 +171,13 @@ public class JobContractController {
             bill.setMinimumDelivery(minimum_delivery);
             bill.setRollingFolding(rolling_folding);
             bill.setSizingfabric(sizing_fabric);
+            bill.setPick(pick);
+            bill.setWeaverBrokeragePercent(weaver_brokerage_percent);
+            bill.setWeaverBrokeragePaisa(weaver_brokerage_paisa);
+            bill.setRate(rate);
+            bill.setAmount(amount);
+            bill.setBrokeragePercentAmt(brokerage_percent_amt);
+            bill.setBrokerageMtrAmt(brokerage_mtr_amt);
             
 
             // 🔄 Same service handles save or update
@@ -175,5 +189,63 @@ public class JobContractController {
         }
 
         return ResponseEntity.ok("SUCCESS");
+    }
+
+    /* =====================
+       API: GET WEAVER DETAILS (FOR AUTO-FILL)
+       ===================== */
+    @GetMapping("/api/weaver-details/{weaverName}")
+    @ResponseBody
+    public ResponseEntity<?> getWeaverDetails(
+            @PathVariable String weaverName,
+            Authentication authentication
+    ) {
+        CustomUserDetails userDetails =
+                (CustomUserDetails) authentication.getPrincipal();
+
+        Long userId = userDetails.getId();
+
+        var weaver = weaverTraderService.findByNameAndUser(weaverName, userId)
+                .map(w -> java.util.Map.of(
+                    "brokeragePercent", w.getWeaverBrokeragePercent(),
+                    "brokeragePaisa", w.getWeaverBrokeragePaisa()
+                ))
+                .orElse(null);
+
+        if (weaver == null) {
+            return ResponseEntity.ok(java.util.Map.of(
+                "brokeragePercent", 0.0,
+                "brokeragePaisa", 0.0
+            ));
+        }
+
+        return ResponseEntity.ok(weaver);
+    }
+
+    /* =====================
+       API: GET QUALITY DETAILS (FOR AUTO-FILL PICK)
+       ===================== */
+    @GetMapping("/api/quality-details/{qualityName}")
+    @ResponseBody
+    public ResponseEntity<?> getQualityDetails(
+            @PathVariable String qualityName,
+            Authentication authentication
+    ) {
+        CustomUserDetails userDetails =
+                (CustomUserDetails) authentication.getPrincipal();
+
+        Long userId = userDetails.getId();
+
+        var quality = qulitymasterMasterService.findByNameAndUser(qualityName, userId)
+                .map(q -> java.util.Map.of(
+                    "pick", q.getPick()
+                ))
+                .orElse(null);
+
+        if (quality == null) {
+            return ResponseEntity.ok(java.util.Map.of("pick", "0"));
+        }
+
+        return ResponseEntity.ok(quality);
     }
 }

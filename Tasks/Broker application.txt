@@ -1,10 +1,4 @@
-3. Contact Book Option at Mobile Number add in Weaver and Treder Master. and Owner Mobi.No. and Divanji Mobi.No.
-Weaver Brokerage % and Brokerage Paisa.
-owner mob no
-diwanji mob no
-weaver Brokerage %
-Brokerage per meter Paisa.
-type should be at top.
+
 
 4. weaver, treder, Quality + Button want.
 5. contract no editable (no duplete crNo in same account yr (1april 2026 to 31 march 2027).

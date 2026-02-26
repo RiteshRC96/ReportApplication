@@ -21,6 +21,18 @@ public class WeaverTrader {
     @Column(nullable = false)
     private String type;
 
+    @Column(name = "owner_mob_no")
+    private Long ownerMobNo;
+
+    @Column(name = "divanji_mob_no")
+    private Long divanjMobNo;
+
+    @Column(name = "weaver_brokerage_percent")
+    private Double weaverBrokeragePercent;
+
+    @Column(name = "weaver_brokerage_paisa")
+    private Double weaverBrokeragePaisa;
+
     @Column(name = "user_id", nullable = false)
     private Long userId;
 
@@ -38,6 +50,18 @@ public class WeaverTrader {
 
     public String getType() { return type; }
     public void setType(String type) { this.type = type; }
+
+    public Long getOwnerMobNo() { return ownerMobNo; }
+    public void setOwnerMobNo(Long ownerMobNo) { this.ownerMobNo = ownerMobNo; }
+
+    public Long getDivanjMobNo() { return divanjMobNo; }
+    public void setDivanjMobNo(Long divanjMobNo) { this.divanjMobNo = divanjMobNo; }
+
+    public Double getWeaverBrokeragePercent() { return weaverBrokeragePercent; }
+    public void setWeaverBrokeragePercent(Double weaverBrokeragePercent) { this.weaverBrokeragePercent = weaverBrokeragePercent; }
+
+    public Double getWeaverBrokeragePaisa() { return weaverBrokeragePaisa; }
+    public void setWeaverBrokeragePaisa(Double weaverBrokeragePaisa) { this.weaverBrokeragePaisa = weaverBrokeragePaisa; }
 
     public Long getUserId() { return userId; }
     public void setUserId(Long userId) { this.userId = userId; }

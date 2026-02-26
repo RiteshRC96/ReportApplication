@@ -68,6 +68,27 @@ public class gen_bill {
     @Column(name = "sizing_fabric")
     private String sizingfabric;
 
+    @Column(name = "pick")
+    private Double pick;
+
+    @Column(name = "weaver_brokerage_percent")
+    private Double weaverBrokeragePercent;
+
+    @Column(name = "weaver_brokerage_paisa")
+    private Double weaverBrokeragePaisa;
+
+    @Column(name = "rate")
+    private Double rate;
+
+    @Column(name = "amount")
+    private Double amount;
+
+    @Column(name = "brokerage_percent_amt")
+    private Double brokeragePercentAmt;
+
+    @Column(name = "brokerage_mtr_amt")
+    private Double brokerageMtrAmt;
+
 
     public String getSizingfabric() {
 		return sizingfabric;
@@ -254,5 +275,26 @@ public class gen_bill {
     public void setRollingFolding(String rollingFolding) {
         this.rollingFolding = rollingFolding;
     }
+
+    public Double getPick() { return pick; }
+    public void setPick(Double pick) { this.pick = pick; }
+
+    public Double getWeaverBrokeragePercent() { return weaverBrokeragePercent; }
+    public void setWeaverBrokeragePercent(Double weaverBrokeragePercent) { this.weaverBrokeragePercent = weaverBrokeragePercent; }
+
+    public Double getWeaverBrokeragePaisa() { return weaverBrokeragePaisa; }
+    public void setWeaverBrokeragePaisa(Double weaverBrokeragePaisa) { this.weaverBrokeragePaisa = weaverBrokeragePaisa; }
+
+    public Double getRate() { return rate; }
+    public void setRate(Double rate) { this.rate = rate; }
+
+    public Double getAmount() { return amount; }
+    public void setAmount(Double amount) { this.amount = amount; }
+
+    public Double getBrokeragePercentAmt() { return brokeragePercentAmt; }
+    public void setBrokeragePercentAmt(Double brokeragePercentAmt) { this.brokeragePercentAmt = brokeragePercentAmt; }
+
+    public Double getBrokerageMtrAmt() { return brokerageMtrAmt; }
+    public void setBrokerageMtrAmt(Double brokerageMtrAmt) { this.brokerageMtrAmt = brokerageMtrAmt; }
 
 }

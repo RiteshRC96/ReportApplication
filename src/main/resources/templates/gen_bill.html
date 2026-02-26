@@ -146,7 +146,7 @@
         <!-- Weaver -->
         <div class="section-box">
             <label>Weaver</label>
-            <select class="form-control searchable" name="weaver_name">
+            <select class="form-control searchable" name="weaver_name" id="weaverSelect">
                 <option value="">Select Weaver</option>
                 <option th:each="w : ${weavers}"
                         th:value="${w.name}"
@@ -154,6 +154,14 @@
                         th:selected="${job?.weaverName == w.name}">
                 </option>
             </select>
+
+            <label class="mt-2">Weaver Brokerage %</label>
+            <input class="form-control mb-2" name="weaver_brokerage_percent" id="weaverBrokeragePercent"
+                   th:value="${job?.weaverBrokeragePercent}" readonly>
+
+            <label>Weaver Brokerage Paisa (₹)</label>
+            <input class="form-control" name="weaver_brokerage_paisa" id="weaverBrokeragePaisa"
+                   th:value="${job?.weaverBrokeragePaisa}" readonly>
         </div>
 
         <!-- Trader -->
@@ -176,7 +184,7 @@
         <!-- Quality -->
         <div class="section-box">
             <label>Quality</label>
-            <select class="form-control searchable" name="quality">
+            <select class="form-control searchable" name="quality" id="qualitySelect">
                 <option value="">Select Quality</option>
                 <option th:each="q : ${quality}"
                         th:value="${q.qualityName}"
@@ -185,8 +193,12 @@
                 </option>
             </select>
 
+            <label class="mt-2">Pick</label>
+            <input class="form-control mb-2" name="pick" id="pick"
+                   th:value="${job?.pick}" readonly>
+
             <label>Quantity (Meters)</label>
-            <input class="form-control mb-2" name="quantity_meters"
+            <input class="form-control mb-2" name="quantity_meters" id="quantityMeters"
                    th:value="${job?.quantityMeters}">
 
             <label>Beam</label>
@@ -219,8 +231,24 @@
         <!-- Job Details -->
         <div class="section-box">
             <label>Job Rate</label>
-            <input class="form-control mb-2" name="job_rate"
+            <input class="form-control mb-2" name="job_rate" id="jobRate"
                    th:value="${job?.jobRate}">
+
+            <label>Rate = ((Job Rate/100) * Pick)</label>
+            <input class="form-control mb-2" name="rate" id="rate"
+                   th:value="${job?.rate}" readonly>
+
+            <label>Amount = (Rate * Quantity Mtr)</label>
+            <input class="form-control mb-2" name="amount" id="amount"
+                   th:value="${job?.amount}" readonly>
+
+            <label>Brokerage % Amt = Amount * (Brokerage %/100)</label>
+            <input class="form-control mb-2" name="brokerage_percent_amt" id="brokeragePercentAmt"
+                   th:value="${job?.brokeragePercentAmt}" readonly>
+
+            <label>Brokerage Mtr Amt = Quantity Mtr * (Brokerage Paisa/100)</label>
+            <input class="form-control mb-2" name="brokerage_mtr_amt" id="brokerageMtrAmt"
+                   th:value="${job?.brokerageMtrAmt}" readonly>
 
             <label>Payment Days</label>
             <input class="form-control mb-2" name="payment_days"
@@ -295,18 +323,108 @@
         document.getElementById("contractDate").value = `${year}-${month}-${day}`;
     });
 
-    // Enable search dropdown
+    // Submit logic
+    const form = document.getElementById("billForm");
+    const loader = document.getElementById("loadingOverlay");
+    const submitBtn = document.getElementById("submitBtn");
+
+    // Initialize Select2 and event listeners
     $(document).ready(function() {
         $('.searchable').select2({
             placeholder: "Search here...",
             allowClear: true
         });
+
+        // Auto-fill Weaver Brokerage on weaver selection
+        $('#weaverSelect').on('select2:select', function(e) {
+            const weaverName = $(this).val();
+            console.log("Weaver selected:", weaverName);
+            if (weaverName) {
+                const url = `/api/weaver-details/${encodeURIComponent(weaverName)}`;
+                console.log("Fetching from:", url);
+                fetch(url)
+                    .then(res => {
+                        console.log("Response status:", res.status);
+                        return res.json();
+                    })
+                    .then(data => {
+                        console.log("Weaver data:", data);
+                        document.getElementById("weaverBrokeragePercent").value = data.brokeragePercent || 0;
+                        document.getElementById("weaverBrokeragePaisa").value = data.brokeragePaisa || 0;
+                        calculateAll();
+                    })
+                    .catch(err => console.error("Error fetching weaver details:", err));
+            }
+        });
+
+        // Auto-fill Pick from Quality
+        $('#qualitySelect').on('select2:select', function(e) {
+            const qualityName = $(this).val();
+            console.log("Quality selected:", qualityName);
+            if (qualityName) {
+                const url = `/api/quality-details/${encodeURIComponent(qualityName)}`;
+                console.log("Fetching from:", url);
+                fetch(url)
+                    .then(res => {
+                        console.log("Response status:", res.status);
+                        return res.json();
+                    })
+                    .then(data => {
+                        console.log("Quality data:", data);
+                        document.getElementById("pick").value = data.pick || 0;
+                        calculateAll();
+                    })
+                    .catch(err => console.error("Error fetching quality details:", err));
+            }
+        });
     });
 
-    // Submit logic
-    const form = document.getElementById("billForm");
-    const loader = document.getElementById("loadingOverlay");
-    const submitBtn = document.getElementById("submitBtn");
+    // Listen for changes to recalculate
+    const jobRateInput = document.getElementById("jobRate");
+    const quantityMetersInput = document.getElementById("quantityMeters");
+
+    if (jobRateInput) jobRateInput.addEventListener("change", calculateAll);
+    if (jobRateInput) jobRateInput.addEventListener("input", calculateAll);
+    if (quantityMetersInput) quantityMetersInput.addEventListener("change", calculateAll);
+    if (quantityMetersInput) quantityMetersInput.addEventListener("input", calculateAll);
+
+    function calculateAll() {
+        // Get values
+        const jobRate = parseFloat(document.getElementById("jobRate")?.value || 0);
+        const pick = parseFloat(document.getElementById("pick")?.value || 0);
+        const quantityMeters = parseFloat(document.getElementById("quantityMeters")?.value || 0);
+        const brokeragePercent = parseFloat(document.getElementById("weaverBrokeragePercent")?.value || 0);
+        const brokeragePaisa = parseFloat(document.getElementById("weaverBrokeragePaisa")?.value || 0);
+
+        // 1. Rate = ((Job Rate/100) * Pick)
+        const rate = (jobRate / 100) * pick;
+        document.getElementById("rate").value = rate.toFixed(2);
+
+        // 2. Amount = (Rate * Quantity Mtr)
+        const amount = rate * quantityMeters;
+        document.getElementById("amount").value = amount.toFixed(2);
+
+        // 3. Brokerage % Amt = Amount * (Brokerage %/100)
+        const brokeragePercentAmt = amount * (brokeragePercent / 100);
+        document.getElementById("brokeragePercentAmt").value = brokeragePercentAmt.toFixed(2);
+
+        // 4. Brokerage Mtr Amt = Quantity Mtr * (Brokerage Paisa/100)
+        const brokerageMtrAmt = quantityMeters * (brokeragePaisa / 100);
+        document.getElementById("brokerageMtrAmt").value = brokerageMtrAmt.toFixed(2);
+    }
+
+    // Calculate on page load if editing
+    document.addEventListener("DOMContentLoaded", function() {
+        // Set today's date
+        const today = new Date();
+        const year = today.getFullYear();
+        const month = String(today.getMonth() + 1).padStart(2, '0');
+        const day = String(today.getDate()).padStart(2, '0');
+        document.getElementById("contractDate").value = `${year}-${month}-${day}`;
+
+        // Initial calculation if editing
+        calculateAll();
+    });
 
     form.addEventListener("submit", function (e) {
         e.preventDefault();

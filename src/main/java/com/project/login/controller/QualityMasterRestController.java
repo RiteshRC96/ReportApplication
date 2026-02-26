@@ -79,7 +79,7 @@ public class QualityMasterRestController {
 
         Long userId = userDetails.getId();
 
-        QualityMasterEntity existing = service
+        service
                 .findByIdAndUser(id, userId)
                 .orElseThrow(() -> new RuntimeException("Record not found"));
 

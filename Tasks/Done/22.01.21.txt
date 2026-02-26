@@ -13,3 +13,11 @@
 2. DATE TOADY BY DEFULT.
 1.Quality  weaver tredar Search want. 
 
+3. Contact Book Option at Mobile Number add in Weaver and Treder Master. and Owner Mobi.No. and Divanji Mobi.No.
+Weaver Brokerage % and Brokerage Paisa.
+owner mob no
+diwanji mob no
+weaver Brokerage %
+Brokerage per meter Paisa.
+type should be at top.
+

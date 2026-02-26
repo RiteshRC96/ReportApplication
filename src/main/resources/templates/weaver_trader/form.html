@@ -128,6 +128,53 @@
             padding: 8px 22px;
             font-weight: 600;
         }
+
+        /* Mobile Contact Book Styles */
+        .contact-book-btn {
+            background: #007bff;
+            color: white;
+            border: none;
+            border-radius: 10px;
+            padding: 8px 12px;
+            font-weight: 600;
+            cursor: pointer;
+            font-size: 14px;
+            transition: 0.3s ease;
+        }
+
+        .contact-book-btn:hover {
+            background: #0056b3;
+        }
+
+        .input-group-btn {
+            display: flex;
+            gap: 5px;
+        }
+
+        .phone-input {
+            flex: 1;
+        }
+
+        @media (max-width: 768px) {
+            .form-card {
+                max-width: 100%;
+                margin: 20px;
+                padding: 25px 20px;
+            }
+
+            .form-card h2 {
+                font-size: 18px;
+                margin-bottom: 20px;
+            }
+
+            .input-group-btn {
+                flex-direction: column;
+            }
+
+            .contact-book-btn {
+                width: 100%;
+            }
+        }
     </style>
 </head>
 
@@ -159,16 +206,7 @@
     <form th:action="@{/weaver-trader/save}" method="post" th:object="${wt}">
         <input type="hidden" th:field="*{id}" />
 
-        <div class="mb-3">
-            <label class="form-label">Name</label>
-            <input type="text" class="form-control" th:field="*{name}" required>
-        </div>
-
-        <div class="mb-3">
-            <label class="form-label">Phone No</label>
-            <input type="text" class="form-control" th:field="*{phno}" required>
-        </div>
-
+        <!-- Type Selection (Moved to Top) -->
         <div class="mb-4">
             <label class="form-label">Type</label>
             <select class="form-select" th:field="*{type}" required>
@@ -176,6 +214,45 @@
                 <option value="WEAVER">WEAVER</option>
                 <option value="TRADER">TRADER</option>
             </select>
+        </div>
+
+        <div class="mb-3">
+            <label class="form-label">Name</label>
+            <input type="text" class="form-control" th:field="*{name}" required>
+        </div>
+
+        <div class="mb-3">
+            <label class="form-label">Phone No</label>
+            <div class="input-group-btn">
+                <input type="text" class="form-control phone-input" th:field="*{phno}" required>
+                <button type="button" class="contact-book-btn" id="contactBookBtn" onclick="selectFromContacts('phno')">📇</button>
+            </div>
+        </div>
+
+        <div class="mb-3">
+            <label class="form-label">Owner Mob No</label>
+            <div class="input-group-btn">
+                <input type="text" class="form-control phone-input" th:field="*{ownerMobNo}">
+                <button type="button" class="contact-book-btn" id="ownerContactBtn" onclick="selectFromContacts('ownerMobNo')">📇</button>
+            </div>
+        </div>
+
+        <div class="mb-3">
+            <label class="form-label">Divanji Mob No</label>
+            <div class="input-group-btn">
+                <input type="text" class="form-control phone-input" th:field="*{divanjMobNo}">
+                <button type="button" class="contact-book-btn" id="divanjContactBtn" onclick="selectFromContacts('divanjMobNo')">📇</button>
+            </div>
+        </div>
+
+        <div class="mb-3">
+            <label class="form-label">Weaver Brokerage %</label>
+            <input type="number" class="form-control" th:field="*{weaverBrokeragePercent}" step="0.01" placeholder="e.g., 2.5">
+        </div>
+
+        <div class="mb-4">
+            <label class="form-label">Weaver Brokerage Paisa (₹)</label>
+            <input type="number" class="form-control" th:field="*{weaverBrokeragePaisa}" step="0.01" placeholder="e.g., 100.50">
         </div>
 
         <div class="d-flex justify-content-center gap-3">
@@ -186,5 +263,94 @@
 
 </div>
 
-</body>
-</html>
+<!-- JavaScript for Mobile Contact Book Functionality -->
+<script>
+    // Helper function to detect if device is mobile
+    function isMobileDevice() {
+        const ua = navigator.userAgent || navigator.vendor || window.opera;
+        return /android|webos|iphone|ipad|ipod|blackberry|iemobile|opera mini/i.test(ua.toLowerCase());
+    }
+
+    // Helper function to check if Contact Picker API is supported
+    function isContactPickerSupported() {
+        return 'contacts' in navigator && 'ContactsManager' in window;
+    }
+
+    // Helper function to check if Cordova Contacts API is available
+    function isCordonvaContactsSupported() {
+        return typeof navigator.contacts !== 'undefined' && navigator.contacts;
+    }
+
+    async function selectFromContacts(fieldId) {
+        // Try Contact Picker API first (modern standard)
+        if (isContactPickerSupported()) {
+            try {
+                const props = ['tel'];
+                const contacts = await navigator.contacts.select(props, { multiple: false });
+                if (contacts && contacts.length > 0 && contacts[0].tel && contacts[0].tel.length > 0) {
+                    const phoneNumber = contacts[0].tel[0].replace(/\D/g, '');
+                    document.querySelector(`[name="${fieldId}"]`).value = phoneNumber;
+                    return;
+                }
+            } catch (error) {
+                console.log("Contact Picker API error: " + error);
+            }
+        }
+
+        // Fallback to Cordova Contacts API (for apps wrapped in Cordova/PhoneGap)
+        if (isCordonvaContactsSupported()) {
+            try {
+                let options = new ContactFindOptions();
+                options.filter = "";
+                options.multiple = false;
+                options.desiredFields = [navigator.contacts.fieldType.phoneNumbers];
+                
+                navigator.contacts.find(
+                    [navigator.contacts.fieldType.displayName, navigator.contacts.fieldType.phoneNumbers],
+                    function(contacts) {
+                        if (contacts && contacts.length > 0) {
+                            const contact = contacts[0];
+                            if (contact.phoneNumbers && contact.phoneNumbers.length > 0) {
+                                let phoneNumber = contact.phoneNumbers[0].value.replace(/\D/g, '');
+                                document.querySelector(`[name="${fieldId}"]`).value = phoneNumber;
+                            }
+                        }
+                    },
+                    function(error) {
+                        console.log("Cordova Contact error: " + error);
+                    }
+                );
+                return;
+            } catch (error) {
+                console.log("Cordova Contacts error: " + error);
+            }
+        }
+
+        // If no contact APIs available, show a message
+        if (isMobileDevice()) {
+            alert("Your mobile browser doesn't support the contact picker feature. Please enter the phone number manually.\n\nNote: This feature works best with Android native apps or certain mobile browsers with permission granted.");
+        } else {
+            alert("Contact book feature is available on mobile devices only. Please enter the phone number manually.");
+        }
+    }
+
+    // Initialize contact buttons visibility based on device capability
+    document.addEventListener('DOMContentLoaded', function() {
+        const hasContactSupport = isContactPickerSupported() || isCordonvaContactsSupported();
+        const contactButtons = document.querySelectorAll('.contact-book-btn');
+        
+        if (!hasContactSupport && !isMobileDevice()) {
+            // Hide contact buttons on non-mobile desktop browsers
+            contactButtons.forEach(btn => {
+                btn.style.display = 'none';
+            });
+        } else if (!hasContactSupport && isMobileDevice()) {
+            // Show contact buttons on mobile but with a disabled/muted appearance
+            contactButtons.forEach(btn => {
+                btn.title = 'Contact picker not available in this browser';
+                btn.style.opacity = '0.6';
+                btn.style.cursor = 'not-allowed';
+            });
+        }
+    });
+</script>

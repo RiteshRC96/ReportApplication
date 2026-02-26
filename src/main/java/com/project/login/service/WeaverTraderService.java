@@ -18,6 +18,7 @@ public class WeaverTraderService {
         this.repository = repository;
     }
 
+    @SuppressWarnings("null")
     public WeaverTrader save(WeaverTrader wt) {
         return repository.save(wt);
     }
@@ -39,6 +40,10 @@ public class WeaverTraderService {
 
     public List<WeaverTrader> getTraders(Long userId) {
         return repository.findByUserIdAndType(userId, "TRADER");
+    }
+
+    public Optional<WeaverTrader> findByNameAndUser(String name, Long userId) {
+        return repository.findByNameAndUserId(name, userId);
     }
 
 }
