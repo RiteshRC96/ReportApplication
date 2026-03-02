@@ -1,5 +1,4 @@
 
-
 4. weaver, treder, Quality + Button want.
 5. contract no editable (no duplete crNo in same account yr (1april 2026 to 31 march 2027).
 6. After Quantity want combo Sizing / Fabric
