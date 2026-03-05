@@ -15,9 +15,8 @@
 <style>
     body {
         font-family: "Times New Roman", serif;
-        background:
-            linear-gradient(rgba(0,0,0,0.55), rgba(0,0,0,0.55)),
-            url("https://t3.ftcdn.net/jpg/16/23/08/86/240_F_1623088639_VM4EkuCvXjWV7qfyzIBr4e6GDzCeY3rA.jpg");
+        background: linear-gradient(rgba(0,0,0,0.55), rgba(0,0,0,0.55)), 
+                    url("https://t3.ftcdn.net/jpg/16/23/08/86/240_F_1623088639_VM4EkuCvXjWV7qfyzIBr4e6GDzCeY3rA.jpg");
         background-size: cover;
         background-position: center;
         min-height: 100vh;
@@ -42,22 +41,18 @@
     }
 
     .bill-card {
-        background: rgba(255,255,255,0.95);
-        border-radius: 8px;
+        background: rgba(255,255,255,0.98);
+        border-radius: 4px;
         padding: 30px;
-        max-width: 900px;
+        max-width: 1000px;
         margin: 30px auto;
-    }
-
-    .contract-header {
-        text-align: center;
-        border-bottom: 2px solid #333;
-        margin-bottom: 20px;
+        box-shadow: 0 4px 15px rgba(0,0,0,0.2);
     }
 
     label {
-        font-weight: bold;
+        font-weight: 600;
         font-size: 0.9rem;
+        margin: 0;
     }
 
     .form-control {
@@ -65,18 +60,17 @@
         border-bottom: 1px solid #000;
         border-radius: 0;
         background: transparent;
+        padding: 4px 2px;
+        font-size: 0.9rem;
     }
 
-    .section-box {
-        border: 1px solid #000;
-        padding: 12px;
-        margin-bottom: 15px;
+    .form-control:focus {
+        border-bottom: 2px solid #007bff;
+        background-color: #f8f9fa;
     }
 
-    .btn-submit {
-        background: #333;
-        color: #fff;
-        font-weight: bold;
+    .form-control[readonly] {
+        background-color: transparent;
     }
 
     #loadingOverlay {
@@ -92,6 +86,42 @@
     /* Select2 full width */
     .select2-container {
         width: 100% !important;
+    }
+
+    /* Button styles */
+    .btn-secondary {
+        background-color: #7a7a7a;
+        border: none;
+        color: white;
+    }
+
+    .btn-warning {
+        background-color: #ff9800;
+        border: none;
+        color: white;
+    }
+
+    .btn-danger {
+        background-color: #d32f2f;
+        border: none;
+        color: white;
+    }
+
+    .btn-secondary:hover, .btn-warning:hover, .btn-danger:hover {
+        opacity: 0.9;
+    }
+
+    /* Print styles */
+    @media print {
+        .navbar, #loadingOverlay {
+            display: none !important;
+        }
+        .bill-card {
+            max-width: 100%;
+            margin: 0;
+            padding: 0;
+            box-shadow: none;
+        }
     }
 </style>
 </head>
@@ -127,328 +157,331 @@
 <!-- FORM -->
 <div class="bill-card">
 
-    <div class="contract-header">
-        <h4>Airjet Loom Owner's Association, Ichalkaranji</h4>
-        <small th:text="${editMode} ? 'EDIT JOB CONTRACT' : 'JOB CONTRACT'"></small>
+    <!-- HEADER TABLE -->
+    <table style="width: 100%; margin-bottom: 15px;">
+        <tr>
+            <td style="text-align: left; width: 50%;">
+                <strong>Broker : </strong>
+                <span th:text="${#authentication.principal.name}"></span>
+            </td>
+            <td style="text-align: right; width: 50%;">
+                <strong>Date</strong><br>
+                <input type="date" class="form-control" id="contractDate" name="contract_date" style="width: 150px;">
+            </td>
+        </tr>
+    </table>
+
+    <div style="text-align: center; border-bottom: 2px solid #000; padding: 10px 0; margin-bottom: 15px;">
+        <h5 style="margin: 0;">Airjet Loom Owner's Association, Ichalkaranji</h5>
+        <strong>JOB CONTRACT</strong>
     </div>
 
     <form id="billForm">
-
         <input type="hidden" name="userId" th:value="${job?.userId}">
         <input type="hidden" name="contractNo" th:value="${job?.contractNo}">
 
-        <!-- Date -->
-        <div class="section-box">
-            <label>Date</label>
-            <input type="date" class="form-control" id="contractDate" name="contract_date">
+        <!-- SECTION 1: WEAVER & TRADER & QUALITY -->
+        <table style="width: 100%; border: 1px solid #000; margin-bottom: 15px;">
+            <tr>
+                <td style="padding: 10px; width: 33%;">
+                    <label><strong>Weaver</strong></label><br>
+                    <div class="d-flex gap-2 mb-2">
+                        <select class="form-control searchable" name="weaver_name" id="weaverSelect" style="flex:1;">
+                            <option value="">Select Weaver</option>
+                            <option th:each="w : ${weavers}"
+                                    th:value="${w.name}"
+                                    th:text="${w.name}"
+                                    th:selected="${job?.weaverName == w.name}"></option>
+                        </select>
+                        <button type="button" class="btn btn-sm btn-success" data-bs-toggle="modal" data-bs-target="#addWeaverModal">+</button>
+                    </div>
+                    <label><small>Weaver Brokerage %</small></label>
+                    <input class="form-control" name="weaver_brokerage_percent" id="weaverBrokeragePercent"
+                           th:value="${job?.weaverBrokeragePercent}" readonly style="background-color: #f5f5f5; font-size: 0.9rem;">
+                </td>
+                <td style="padding: 10px; width: 33%;">
+                    <label><small>&nbsp;</small></label><br>
+                    <small style="color: #666;">Weaver Brokerage Paisa (₹)</small><br>
+                    <input class="form-control" name="weaver_brokerage_paisa" id="weaverBrokeragePaisa"
+                           th:value="${job?.weaverBrokeragePaisa}" readonly style="background-color: #f5f5f5; font-size: 0.9rem;">
+                </td>
+                <td style="padding: 10px; width: 34%;">
+                    <label><strong>Trader</strong></label><br>
+                    <div class="d-flex gap-2">
+                        <select class="form-control searchable" name="trader_name" id="traderSelect" style="flex:1;">
+                            <option value="">Select Trader</option>
+                            <option th:each="t : ${traders}"
+                                    th:value="${t.name}"
+                                    th:text="${t.name}"
+                                    th:selected="${job?.traderName == t.name}"></option>
+                        </select>
+                        <button type="button" class="btn btn-sm btn-success" data-bs-toggle="modal" data-bs-target="#addTraderModal">+</button>
+                    </div>
+                </td>
+            </tr>
+        </table>
+
+        <!-- SECTION 2: QUALITY & PICK -->
+        <table style="width: 100%; border: 1px solid #000; margin-bottom: 15px;">
+            <tr>
+                <td style="padding: 10px; width: 70%;">
+                    <label><strong>Quality</strong></label><br>
+                    <div class="d-flex gap-2">
+                        <select class="form-control searchable" name="quality" id="qualitySelect" style="flex:1;">
+                            <option value="">Select Quality</option>
+                            <option th:each="q : ${quality}"
+                                    th:value="${q.qualityName}"
+                                    th:text="${q.qualityName}"
+                                    th:selected="${job?.quality == q.qualityName}"></option>
+                        </select>
+                        <button type="button" class="btn btn-sm btn-success" data-bs-toggle="modal" data-bs-target="#addQualityModal">+</button>
+                    </div>
+                </td>
+                <td style="padding: 10px; width: 30%;">
+                    <label><strong>Pick</strong></label><br>
+                    <input class="form-control" name="pick" id="pick" th:value="${job?.pick}" readonly style="background-color: #f5f5f5;">
+                </td>
+            </tr>
+        </table>
+
+        <!-- SECTION 3: QUANTITY, BEAM, JOB RATE -->
+        <table style="width: 100%; border: 1px solid #000; margin-bottom: 15px;">
+            <tr>
+                <td style="padding: 10px; width: 33%; text-align: center;">
+                    <label><strong>Quantity (Meters)</strong></label><br>
+                    <input class="form-control" name="quantity_meters" id="quantityMeters" th:value="${job?.quantityMeters}" style="text-align: center;">
+                </td>
+                <td style="padding: 10px; width: 33%; text-align: center;">
+                    <label><strong>Beam</strong></label><br>
+                    <input class="form-control" name="beams" th:value="${job?.beams}" style="text-align: center;">
+                </td>
+                <td style="padding: 10px; width: 34%; text-align: center;">
+                    <label><strong>Job Rate</strong></label><br>
+                    <input class="form-control" name="job_rate" id="jobRate" th:value="${job?.jobRate}" style="text-align: center;">
+                </td>
+            </tr>
+        </table>
+
+        <!-- SECTION 4: CALCULATED FIELDS -->
+        <table style="width: 100%; border: 1px solid #000; margin-bottom: 15px;">
+            <tr>
+                <td style="padding: 10px; width: 25%; text-align: center;">
+                    <label><small>Rate</small></label><br>
+                    <small style="display: block; font-size: 0.75rem; color: #666;">= ((Job Rate/100) * Pick)</small><br>
+                    <input class="form-control" name="rate" id="rate" th:value="${job?.rate}" readonly style="background-color: #fff3cd; font-weight: bold; text-align: center;">
+                </td>
+                <td style="padding: 10px; width: 25%; text-align: center;">
+                    <label><small>Amount</small></label><br>
+                    <small style="display: block; font-size: 0.75rem; color: #666;">= Rate * Qty Mtr</small><br>
+                    <input class="form-control" name="amount" id="amount" th:value="${job?.amount}" readonly style="background-color: #fff3cd; font-weight: bold; text-align: center;">
+                </td>
+                <td style="padding: 10px; width: 25%; text-align: center;">
+                    <label><small>Brokerage % Amt</small></label><br>
+                    <small style="display: block; font-size: 0.75rem; color: #666;">= Amt * (Brok %/100)</small><br>
+                    <input class="form-control" name="brokerage_percent_amt" id="brokeragePercentAmt" th:value="${job?.brokeragePercentAmt}" readonly style="background-color: #fff3cd; font-weight: bold; text-align: center;">
+                </td>
+                <td style="padding: 10px; width: 25%; text-align: center;">
+                    <label><small>Brokerage Mtr Amt</small></label><br>
+                    <small style="display: block; font-size: 0.75rem; color: #666;">= Qty Mtr * (Brok Paisa/100)</small><br>
+                    <input class="form-control" name="brokerage_mtr_amt" id="brokerageMtrAmt" th:value="${job?.brokerageMtrAmt}" readonly style="background-color: #fff3cd; font-weight: bold; text-align: center;">
+                </td>
+            </tr>
+        </table>
+
+        <!-- SECTION 5: PAYMENT, PRODUCTION, MACHINES, REMARK -->
+        <table style="width: 100%; border: 1px solid #000; margin-bottom: 15px;">
+            <tr>
+                <td style="padding: 10px; width: 25%; text-align: center;">
+                    <label><small><strong>Payment Days</strong></small></label><br>
+                    <input class="form-control" name="payment_days" th:value="${job?.paymentDays}" style="text-align: center;">
+                </td>
+                <td style="padding: 10px; width: 25%; text-align: center;">
+                    <label><small><strong>Production Schedule</strong></small></label><br>
+                    <input class="form-control" name="production_schedule" th:value="${job?.productionSchedule}" style="text-align: center; font-size: 0.85rem;">
+                </td>
+                <td style="padding: 10px; width: 25%; text-align: center;">
+                    <label><small><strong>No of Machines</strong></small></label><br>
+                    <input class="form-control" name="no_of_machines" th:value="${job?.noOfMachines}" style="text-align: center;">
+                </td>
+                <td style="padding: 10px; width: 25%; text-align: center;">
+                    <label><small><strong>Remark</strong></small></label><br>
+                    <input class="form-control" name="remark" th:value="${job?.remark}" style="font-size: 0.85rem;">
+                </td>
+            </tr>
+        </table>
+
+        <!-- SECTION 6: CUT LENGTH, MINIMUM DELIVERY, SIZING FABRIC, ROLLING/FOLDING -->
+        <table style="width: 100%; border: 1px solid #000; margin-bottom: 15px;">
+            <tr>
+                <td style="padding: 10px; width: 25%; text-align: center;">
+                    <label><small><strong>Cut Length</strong></small></label><br>
+                    <input class="form-control" name="cut_length" th:value="${job?.cutLength}" style="text-align: center;">
+                </td>
+                <td style="padding: 10px; width: 25%; text-align: center;">
+                    <label><small><strong>Minimum Delivery</strong></small></label><br>
+                    <input class="form-control" name="minimum_delivery" th:value="${job?.minimumDelivery}" style="text-align: center;">
+                </td>
+                <td style="padding: 10px; width: 25%;">
+                    <label><small><strong>Sizing Fabric</strong></small></label><br>
+                    <div style="font-size: 0.85rem;">
+                        <label><input type="radio" name="sizing_fabric" value="Sizing" th:checked="${job?.sizingfabric == 'Sizing'}"> Sizing</label><br>
+                        <label><input type="radio" name="sizing_fabric" value="Fabric" th:checked="${job?.sizingfabric == 'Fabric'}"> Fabric</label>
+                    </div>
+                </td>
+                <td style="padding: 10px; width: 25%;">
+                    <label><small><strong>Rolling / Folding</strong></small></label><br>
+                    <div style="font-size: 0.85rem;">
+                        <label><input type="radio" name="rolling_folding" value="Rolling" th:checked="${job?.rollingFolding == 'Rolling'}"> Rolling</label><br>
+                        <label><input type="radio" name="rolling_folding" value="Folding" th:checked="${job?.rollingFolding == 'Folding'}"> Folding</label>
+                    </div>
+                </td>
+            </tr>
+        </table>
+
+        <!-- ACTION BUTTONS -->
+        <div style="text-align: center; margin-top: 20px;">
+            <button type="submit" id="submitBtn" class="btn btn-secondary" style="padding: 8px 35px; font-weight: bold;">SUBMIT</button>
+            <button type="reset" class="btn btn-warning" style="padding: 8px 35px; font-weight: bold; margin-left: 10px;">RESET</button>
+            <a href="/dashboard" class="btn btn-danger" style="padding: 8px 35px; font-weight: bold; margin-left: 10px;">CANCEL</a>
         </div>
-
-        <!-- Weaver -->
-        <div class="section-box">
-            <label>Weaver</label>
-            <select class="form-control searchable" name="weaver_name" id="weaverSelect">
-                <option value="">Select Weaver</option>
-                <option th:each="w : ${weavers}"
-                        th:value="${w.name}"
-                        th:text="${w.name}"
-                        th:selected="${job?.weaverName == w.name}">
-                </option>
-            </select>
-
-            <label class="mt-2">Weaver Brokerage %</label>
-            <input class="form-control mb-2" name="weaver_brokerage_percent" id="weaverBrokeragePercent"
-                   th:value="${job?.weaverBrokeragePercent}" readonly>
-
-            <label>Weaver Brokerage Paisa (₹)</label>
-            <input class="form-control" name="weaver_brokerage_paisa" id="weaverBrokeragePaisa"
-                   th:value="${job?.weaverBrokeragePaisa}" readonly>
-        </div>
-
-        <!-- Trader -->
-        <div class="section-box">
-            <label>Trader</label>
-            <select class="form-control searchable" name="trader_name">
-                <option value="">Select Trader</option>
-                <option th:each="t : ${traders}"
-                        th:value="${t.name}"
-                        th:text="${t.name}"
-                        th:selected="${job?.traderName == t.name}">
-                </option>
-            </select>
-
-            <label class="mt-2">Broker :
-                <span th:text="${#authentication.principal.name}"></span>
-            </label>
-        </div>
-
-        <!-- Quality -->
-        <div class="section-box">
-            <label>Quality</label>
-            <select class="form-control searchable" name="quality" id="qualitySelect">
-                <option value="">Select Quality</option>
-                <option th:each="q : ${quality}"
-                        th:value="${q.qualityName}"
-                        th:text="${q.qualityName}"
-                        th:selected="${job?.quality == q.qualityName}">
-                </option>
-            </select>
-
-            <label class="mt-2">Pick</label>
-            <input class="form-control mb-2" name="pick" id="pick"
-                   th:value="${job?.pick}" readonly>
-
-            <label>Quantity (Meters)</label>
-            <input class="form-control mb-2" name="quantity_meters" id="quantityMeters"
-                   th:value="${job?.quantityMeters}">
-
-            <label>Beam</label>
-            <input class="form-control mb-2" name="beams"
-                   th:value="${job?.beams}">
-        </div>
-        
-        <div class="mt-3">
-    		<label>Sizing Fabric</label>
-
-    		<div class="form-check">
-        		<input class="form-check-input"
-             		type="radio"
-               		name="sizing_fabric"
-               		value="Sizing"
-               		th:checked="${job?.sizingfabric == 'YES'}">
-        		<label class="form-check-label">Sizing</label>
-        	</div>
-
-    		<div class="form-check">
-        		<input class="form-check-input"
-               		type="radio"
-               		name="sizing_fabric"
-               		value="Fabric"
-               		th:checked="${job?.sizingfabric == 'NO'}">
-        		<label class="form-check-label">Fabric</label>
-    		</div>
-		</div>
-
-        <!-- Job Details -->
-        <div class="section-box">
-            <label>Job Rate</label>
-            <input class="form-control mb-2" name="job_rate" id="jobRate"
-                   th:value="${job?.jobRate}">
-
-            <label>Rate = ((Job Rate/100) * Pick)</label>
-            <input class="form-control mb-2" name="rate" id="rate"
-                   th:value="${job?.rate}" readonly>
-
-            <label>Amount = (Rate * Quantity Mtr)</label>
-            <input class="form-control mb-2" name="amount" id="amount"
-                   th:value="${job?.amount}" readonly>
-
-            <label>Brokerage % Amt = Amount * (Brokerage %/100)</label>
-            <input class="form-control mb-2" name="brokerage_percent_amt" id="brokeragePercentAmt"
-                   th:value="${job?.brokeragePercentAmt}" readonly>
-
-            <label>Brokerage Mtr Amt = Quantity Mtr * (Brokerage Paisa/100)</label>
-            <input class="form-control mb-2" name="brokerage_mtr_amt" id="brokerageMtrAmt"
-                   th:value="${job?.brokerageMtrAmt}" readonly>
-
-            <label>Payment Days</label>
-            <input class="form-control mb-2" name="payment_days"
-                   th:value="${job?.paymentDays}">
-        </div>
-
-        <!-- Production -->
-        <div class="section-box">
-            <label>Production Schedule</label>
-            <input class="form-control mb-2" name="production_schedule"
-                   th:value="${job?.productionSchedule}">
-
-            <label>No of Machines</label>
-            <input class="form-control mb-2" name="no_of_machines"
-                   th:value="${job?.noOfMachines}">
-        </div>
-
-        <!-- Remark -->
-        <div class="section-box">
-            <label>Remark</label>
-            <input class="form-control" name="remark"
-                   th:value="${job?.remark}">
-        </div>
-
-        <!-- Delivery -->
-        <div class="section-box">
-            <label>Cut Length</label>
-            <input class="form-control mb-2" name="cut_length"
-                   th:value="${job?.cutLength}">
-
-            <label>Minimum Delivery</label>
-            <input class="form-control mb-2" name="minimum_delivery"
-                   th:value="${job?.minimumDelivery}">
-
-            <label>Rolling / Folding</label>
-
-            <div class="form-check">
-                <input class="form-check-input" type="radio"
-                       name="rolling_folding" value="ROLLING"
-                       th:checked="${job?.rollingFolding == 'ROLLING'}">
-                <label class="form-check-label">Rolling</label>
-            </div>
-
-            <div class="form-check">
-                <input class="form-check-input" type="radio"
-                       name="rolling_folding" value="FOLDING"
-                       th:checked="${job?.rollingFolding == 'FOLDING'}">
-                <label class="form-check-label">Folding</label>
-            </div>
-        </div>
-
-        <button type="submit" id="submitBtn" class="btn btn-submit w-100 mt-3"
-                th:text="${editMode} ? 'UPDATE CONTRACT' : 'SUBMIT'">
-        </button>
 
     </form>
 </div>
 
-<!-- JS -->
+<!-- MODAL: ADD WEAVER -->
+<div class="modal fade" id="addWeaverModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Add New Weaver</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <form id="addWeaverForm">
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <label>Weaver Name</label>
+                        <input type="text" class="form-control" name="weaver_name" required>
+                    </div>
+                    <div class="mb-3">
+                        <label>Phone No</label>
+                        <input type="number" class="form-control" name="weaver_phno" required>
+                    </div>
+                    <div class="mb-3">
+                        <label>Brokerage %</label>
+                        <input type="number" class="form-control" name="weaver_brokerage_percent" step="0.01" value="0">
+                    </div>
+                    <div class="mb-3">
+                        <label>Brokerage Paisa (₹)</label>
+                        <input type="number" class="form-control" name="weaver_brokerage_paisa" step="0.01" value="0">
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="submit" class="btn btn-primary">Add Weaver</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- MODAL: ADD TRADER -->
+<div class="modal fade" id="addTraderModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Add New Trader</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <form id="addTraderForm">
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <label>Trader Name</label>
+                        <input type="text" class="form-control" name="trader_name" required>
+                    </div>
+                    <div class="mb-3">
+                        <label>Phone No</label>
+                        <input type="number" class="form-control" name="trader_phno" required>
+                    </div>
+                    <div class="mb-3">
+                        <label>Brokerage %</label>
+                        <input type="number" class="form-control" name="trader_brokerage_percent" step="0.01" value="0">
+                    </div>
+                    <div class="mb-3">
+                        <label>Brokerage Paisa (₹)</label>
+                        <input type="number" class="form-control" name="trader_brokerage_paisa" step="0.01" value="0">
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="submit" class="btn btn-primary">Add Trader</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- MODAL: ADD QUALITY -->
+<div class="modal fade" id="addQualityModal" tabindex="-1">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Add New Quality</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <form id="addQualityForm">
+                <div class="modal-body">
+                    <div class="row g-2">
+                        <div class="col-md-6">
+                            <label>Width</label>
+                            <input type="text" class="form-control quality-input" name="quality_width" id="qual_width">
+                        </div>
+                        <div class="col-md-6">
+                            <label>Reed</label>
+                            <input type="text" class="form-control quality-input" name="quality_reed" id="qual_reed">
+                        </div>
+                        <div class="col-md-6">
+                            <label>Pick</label>
+                            <input type="text" class="form-control quality-input" name="quality_pick" id="qual_pick">
+                        </div>
+                        <div class="col-md-6">
+                            <label>Warp</label>
+                            <input type="text" class="form-control quality-input" name="quality_warp" id="qual_warp">
+                        </div>
+                        <div class="col-md-6">
+                            <label>Weft</label>
+                            <input type="text" class="form-control quality-input" name="quality_weft" id="qual_weft">
+                        </div>
+                        <div class="col-md-6">
+                            <label>Weave</label>
+                            <input type="text" class="form-control quality-input" name="quality_weave" id="qual_weave">
+                        </div>
+                    </div>
+                    <hr>
+                    <div class="mb-3">
+                        <label>Quality Name</label>
+                        <input type="text" class="form-control" name="quality_name" id="qual_name" readonly style="background-color: #fff3cd;">
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="submit" class="btn btn-primary">Add Quality</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- JS LIBRARIES -->
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 
 <!-- Select2 -->
 <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
 
-<script>
-    // Set today's date
-    document.addEventListener("DOMContentLoaded", function () {
-        const today = new Date();
-        const year = today.getFullYear();
-        const month = String(today.getMonth() + 1).padStart(2, '0');
-        const day = String(today.getDate()).padStart(2, '0');
-        document.getElementById("contractDate").value = `${year}-${month}-${day}`;
-    });
+<!-- Job Contract Module -->
+<script src="/js/gen_bill.js"></script>
 
-    // Submit logic
-    const form = document.getElementById("billForm");
-    const loader = document.getElementById("loadingOverlay");
-    const submitBtn = document.getElementById("submitBtn");
-
-    // Initialize Select2 and event listeners
-    $(document).ready(function() {
-        $('.searchable').select2({
-            placeholder: "Search here...",
-            allowClear: true
-        });
-
-        // Auto-fill Weaver Brokerage on weaver selection
-        $('#weaverSelect').on('select2:select', function(e) {
-            const weaverName = $(this).val();
-            console.log("Weaver selected:", weaverName);
-            if (weaverName) {
-                const url = `/api/weaver-details/${encodeURIComponent(weaverName)}`;
-                console.log("Fetching from:", url);
-                fetch(url)
-                    .then(res => {
-                        console.log("Response status:", res.status);
-                        return res.json();
-                    })
-                    .then(data => {
-                        console.log("Weaver data:", data);
-                        document.getElementById("weaverBrokeragePercent").value = data.brokeragePercent || 0;
-                        document.getElementById("weaverBrokeragePaisa").value = data.brokeragePaisa || 0;
-                        calculateAll();
-                    })
-                    .catch(err => console.error("Error fetching weaver details:", err));
-            }
-        });
-
-        // Auto-fill Pick from Quality
-        $('#qualitySelect').on('select2:select', function(e) {
-            const qualityName = $(this).val();
-            console.log("Quality selected:", qualityName);
-            if (qualityName) {
-                const url = `/api/quality-details/${encodeURIComponent(qualityName)}`;
-                console.log("Fetching from:", url);
-                fetch(url)
-                    .then(res => {
-                        console.log("Response status:", res.status);
-                        return res.json();
-                    })
-                    .then(data => {
-                        console.log("Quality data:", data);
-                        document.getElementById("pick").value = data.pick || 0;
-                        calculateAll();
-                    })
-                    .catch(err => console.error("Error fetching quality details:", err));
-            }
-        });
-    });
-
-    // Listen for changes to recalculate
-    const jobRateInput = document.getElementById("jobRate");
-    const quantityMetersInput = document.getElementById("quantityMeters");
-
-    if (jobRateInput) jobRateInput.addEventListener("change", calculateAll);
-    if (jobRateInput) jobRateInput.addEventListener("input", calculateAll);
-    if (quantityMetersInput) quantityMetersInput.addEventListener("change", calculateAll);
-    if (quantityMetersInput) quantityMetersInput.addEventListener("input", calculateAll);
-
-    function calculateAll() {
-        // Get values
-        const jobRate = parseFloat(document.getElementById("jobRate")?.value || 0);
-        const pick = parseFloat(document.getElementById("pick")?.value || 0);
-        const quantityMeters = parseFloat(document.getElementById("quantityMeters")?.value || 0);
-        const brokeragePercent = parseFloat(document.getElementById("weaverBrokeragePercent")?.value || 0);
-        const brokeragePaisa = parseFloat(document.getElementById("weaverBrokeragePaisa")?.value || 0);
-
-        // 1. Rate = ((Job Rate/100) * Pick)
-        const rate = (jobRate / 100) * pick;
-        document.getElementById("rate").value = rate.toFixed(2);
-
-        // 2. Amount = (Rate * Quantity Mtr)
-        const amount = rate * quantityMeters;
-        document.getElementById("amount").value = amount.toFixed(2);
-
-        // 3. Brokerage % Amt = Amount * (Brokerage %/100)
-        const brokeragePercentAmt = amount * (brokeragePercent / 100);
-        document.getElementById("brokeragePercentAmt").value = brokeragePercentAmt.toFixed(2);
-
-        // 4. Brokerage Mtr Amt = Quantity Mtr * (Brokerage Paisa/100)
-        const brokerageMtrAmt = quantityMeters * (brokeragePaisa / 100);
-        document.getElementById("brokerageMtrAmt").value = brokerageMtrAmt.toFixed(2);
-    }
-
-    // Calculate on page load if editing
-    document.addEventListener("DOMContentLoaded", function() {
-        // Set today's date
-        const today = new Date();
-        const year = today.getFullYear();
-        const month = String(today.getMonth() + 1).padStart(2, '0');
-        const day = String(today.getDate()).padStart(2, '0');
-        document.getElementById("contractDate").value = `${year}-${month}-${day}`;
-
-        // Initial calculation if editing
-        calculateAll();
-    });
-
-    form.addEventListener("submit", function (e) {
-        e.preventDefault();
-
-        submitBtn.disabled = true;
-        loader.style.display = "flex";
-
-        fetch("/gen_bill", {
-            method: "POST",
-            body: new URLSearchParams(new FormData(form))
-        })
-        .then(() => {
-            loader.style.display = "none";
-            submitBtn.disabled = false;
-            Swal.fire("Success", "Job contract saved successfully", "success")
-                .then(() => window.location.href = "/dashboard");
-        })
-        .catch(() => {
-            loader.style.display = "none";
-            submitBtn.disabled = false;
-            Swal.fire("Error", "Server error occurred", "error");
-        });
-    });
-</script>
+<!-- Bootstrap JS -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
 
 </body>
 </html>

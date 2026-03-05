@@ -248,4 +248,119 @@ public class JobContractController {
 
         return ResponseEntity.ok(quality);
     }
+
+    /* =====================
+       API: ADD NEW WEAVER
+       ===================== */
+    @PostMapping("/api/add-weaver")
+    @ResponseBody
+    public ResponseEntity<?> addWeaver(
+            @RequestParam String name,
+            @RequestParam Long phno,
+            @RequestParam(defaultValue = "WEAVER") String type,
+            @RequestParam(defaultValue = "0") Double brokeragePercent,
+            @RequestParam(defaultValue = "0") Double brokeragePaisa,
+            Authentication authentication
+    ) {
+        try {
+            CustomUserDetails userDetails =
+                    (CustomUserDetails) authentication.getPrincipal();
+
+            com.project.login.entity.WeaverTrader weaver = new com.project.login.entity.WeaverTrader();
+            weaver.setName(name);
+            weaver.setphno(phno);
+            weaver.setType(type);
+            weaver.setWeaverBrokeragePercent(brokeragePercent);
+            weaver.setWeaverBrokeragePaisa(brokeragePaisa);
+            weaver.setUserId(userDetails.getId());
+
+            com.project.login.entity.WeaverTrader saved = weaverTraderService.save(weaver);
+
+            return ResponseEntity.ok(java.util.Map.of(
+                "id", saved.getId(),
+                "name", saved.getName(),
+                "phno", saved.getphno(),
+                "type", saved.getType(),
+                "brokeragePercent", saved.getWeaverBrokeragePercent(),
+                "brokeragePaisa", saved.getWeaverBrokeragePaisa()
+            ));
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body(java.util.Map.of("error", e.getMessage()));
+        }
+    }
+
+    /* =====================
+       API: ADD NEW TRADER
+       ===================== */
+    @PostMapping("/api/add-trader")
+    @ResponseBody
+    public ResponseEntity<?> addTrader(
+            @RequestParam String name,
+            @RequestParam Long phno,
+            @RequestParam(defaultValue = "TRADER") String type,
+            @RequestParam(defaultValue = "0") Double brokeragePercent,
+            @RequestParam(defaultValue = "0") Double brokeragePaisa,
+            Authentication authentication
+    ) {
+        try {
+            CustomUserDetails userDetails =
+                    (CustomUserDetails) authentication.getPrincipal();
+
+            com.project.login.entity.WeaverTrader trader = new com.project.login.entity.WeaverTrader();
+            trader.setName(name);
+            trader.setphno(phno);
+            trader.setType(type);
+            trader.setWeaverBrokeragePercent(brokeragePercent);
+            trader.setWeaverBrokeragePaisa(brokeragePaisa);
+            trader.setUserId(userDetails.getId());
+
+            com.project.login.entity.WeaverTrader saved = weaverTraderService.save(trader);
+
+            return ResponseEntity.ok(java.util.Map.of(
+                "id", saved.getId(),
+                "name", saved.getName()
+            ));
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body(java.util.Map.of("error", e.getMessage()));
+        }
+    }
+
+    /* =====================
+       API: ADD NEW QUALITY
+       ===================== */
+    @PostMapping("/api/add-quality")
+    @ResponseBody
+    public ResponseEntity<?> addQuality(
+            @RequestParam String qualityName,
+            @RequestParam(required = false) String pick,
+            @RequestParam(required = false) String width,
+            @RequestParam(required = false) String reed,
+            @RequestParam(required = false) String warp,
+            @RequestParam(required = false) String weft,
+            Authentication authentication
+    ) {
+        try {
+            CustomUserDetails userDetails =
+                    (CustomUserDetails) authentication.getPrincipal();
+
+            com.project.login.entity.QualityMasterEntity quality = new com.project.login.entity.QualityMasterEntity();
+            quality.setQualityName(qualityName);
+            quality.setPick(pick);
+            quality.setWidth(width);
+            quality.setReed(reed);
+            quality.setWarp(warp);
+            quality.setWeft(weft);
+            quality.setUserId(userDetails.getId());
+
+            com.project.login.entity.QualityMasterEntity saved = qulitymasterMasterService.save(quality);
+
+            return ResponseEntity.ok(java.util.Map.of(
+                "id", saved.getId(),
+                "qualityName", saved.getQualityName(),
+                "pick", saved.getPick()
+            ));
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body(java.util.Map.of("error", e.getMessage()));
+        }
+    }
 }

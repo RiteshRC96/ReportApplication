@@ -1,7 +1,9 @@
 package com.project.login.entity;
 
 import jakarta.persistence.*;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
+import com.project.login.enums.PaymentStatus;
 
 @Entity
 @Table(name = "payments")
@@ -14,6 +16,9 @@ public class Payment {
     @Column(nullable = false, length = 150)
     private String email;
 
+    @Column(nullable = false, length = 100)
+    private String userName;
+
     @Column(nullable = false, length = 10)
     private String mobileNumber;
 
@@ -23,15 +28,33 @@ public class Payment {
     @Column(nullable = false)
     private LocalDateTime paymentDate;
 
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
+    private PaymentStatus status = PaymentStatus.PENDING;
+
+    @Column(nullable = true)
+    private LocalDate subscriptionStartDate;
+
+    @Column(nullable = true)
+    private LocalDate subscriptionEndDate;
+
+    @Column(nullable = true, length = 500)
+    private String adminNotes;
+
+    @Column(nullable = true)
+    private LocalDateTime approvalDate;
+
     /* ========= CONSTRUCTORS ========= */
     public Payment() {
     }
 
-    public Payment(String email, String mobileNumber, String utrNumber, LocalDateTime paymentDate) {
+    public Payment(String email, String userName, String mobileNumber, String utrNumber, LocalDateTime paymentDate) {
         this.email = email;
+        this.userName = userName;
         this.mobileNumber = mobileNumber;
         this.utrNumber = utrNumber;
         this.paymentDate = paymentDate;
+        this.status = PaymentStatus.PENDING;
     }
 
     /* ========= GETTERS & SETTERS ========= */
@@ -49,6 +72,14 @@ public class Payment {
 
     public void setEmail(String email) {
         this.email = email;
+    }
+
+    public String getUserName() {
+        return userName;
+    }
+
+    public void setUserName(String userName) {
+        this.userName = userName;
     }
 
     public String getMobileNumber() {
@@ -75,14 +106,58 @@ public class Payment {
         this.paymentDate = paymentDate;
     }
 
+    public PaymentStatus getStatus() {
+        return status;
+    }
+
+    public void setStatus(PaymentStatus status) {
+        this.status = status;
+    }
+
+    public LocalDate getSubscriptionStartDate() {
+        return subscriptionStartDate;
+    }
+
+    public void setSubscriptionStartDate(LocalDate subscriptionStartDate) {
+        this.subscriptionStartDate = subscriptionStartDate;
+    }
+
+    public LocalDate getSubscriptionEndDate() {
+        return subscriptionEndDate;
+    }
+
+    public void setSubscriptionEndDate(LocalDate subscriptionEndDate) {
+        this.subscriptionEndDate = subscriptionEndDate;
+    }
+
+    public String getAdminNotes() {
+        return adminNotes;
+    }
+
+    public void setAdminNotes(String adminNotes) {
+        this.adminNotes = adminNotes;
+    }
+
+    public LocalDateTime getApprovalDate() {
+        return approvalDate;
+    }
+
+    public void setApprovalDate(LocalDateTime approvalDate) {
+        this.approvalDate = approvalDate;
+    }
+
     @Override
     public String toString() {
         return "Payment{" +
                 "id=" + id +
                 ", email='" + email + '\'' +
+                ", userName='" + userName + '\'' +
                 ", mobileNumber='" + mobileNumber + '\'' +
                 ", utrNumber='" + utrNumber + '\'' +
                 ", paymentDate=" + paymentDate +
+                ", status=" + status +
+                ", subscriptionStartDate=" + subscriptionStartDate +
+                ", subscriptionEndDate=" + subscriptionEndDate +
                 '}';
     }
 }

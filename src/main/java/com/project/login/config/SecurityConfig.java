@@ -30,12 +30,13 @@ public class SecurityConfig {
                         "/login",
                         "/register",
                         "/payment",                // ✅ PAYMENT PAGE
-                        "/send-register-otp",      // ✅ ADDED
-                        "/verify-register-otp",    // ✅ ADDED
+                        "/admin/**",
+                        "/send-register-otp",
+                        "/verify-register-otp",
                         "/css/**",
                         "/js/**",
                         "/images/**",
-                        "/qr_code.png",            // ✅ QR CODE IMAGE
+                        "/qr_code.png",
                         "/webjars/**"
                 ).permitAll()
                 .anyRequest().authenticated()

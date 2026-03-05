@@ -129,7 +129,8 @@ public class ReportController {
         Row header = sheet.createRow(0);
         String[] columns = {
                 "Contract No", "Contract Date", "Weaver", "Trader", "Quality",
-                "Quantity","Sizing/Fabric", "Beams", "Job Rate", "Payment Days",
+                "Quantity","Sizing/Fabric", "Beams", "Job Rate", "Pick", "Rate", "Amount",
+                "Brokerage % Amt", "Brokerage Mtr Amt", "Payment Days",
                 "Production Schedule", "Machines", "Remark",
                 "Cut Length", "Minimum Delivery", "Rolling/Folding", "Created At"
         };
@@ -150,14 +151,19 @@ public class ReportController {
             row.createCell(6).setCellValue(g.getSizingfabric());
             row.createCell(7).setCellValue(g.getBeams());
             row.createCell(8).setCellValue(g.getJobRate());
-            row.createCell(9).setCellValue(g.getPaymentDays());
-            row.createCell(10).setCellValue(g.getProductionSchedule());
-            row.createCell(11).setCellValue(g.getNoOfMachines());
-            row.createCell(12).setCellValue(g.getRemark());
-            row.createCell(13).setCellValue(g.getCutLength());
-            row.createCell(14).setCellValue(g.getMinimumDelivery());
-            row.createCell(15).setCellValue(g.getRollingFolding());
-            row.createCell(16).setCellValue(String.valueOf(g.getCreatedAt()));
+            row.createCell(9).setCellValue(g.getPick() != null ? g.getPick() : 0.0);
+            row.createCell(10).setCellValue(g.getRate() != null ? g.getRate() : 0.0);
+            row.createCell(11).setCellValue(g.getAmount() != null ? g.getAmount() : 0.0);
+            row.createCell(12).setCellValue(g.getBrokeragePercentAmt() != null ? g.getBrokeragePercentAmt() : 0.0);
+            row.createCell(13).setCellValue(g.getBrokerageMtrAmt() != null ? g.getBrokerageMtrAmt() : 0.0);
+            row.createCell(14).setCellValue(g.getPaymentDays());
+            row.createCell(15).setCellValue(g.getProductionSchedule());
+            row.createCell(16).setCellValue(g.getNoOfMachines());
+            row.createCell(17).setCellValue(g.getRemark());
+            row.createCell(18).setCellValue(g.getCutLength());
+            row.createCell(19).setCellValue(g.getMinimumDelivery());
+            row.createCell(20).setCellValue(g.getRollingFolding());
+            row.createCell(21).setCellValue(String.valueOf(g.getCreatedAt()));
         }
 
         response.setContentType(

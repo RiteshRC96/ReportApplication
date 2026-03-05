@@ -95,6 +95,11 @@
                 <th>Sizing/Fabric</th>
                 <th>Beams</th>
                 <th>Job Rate</th>
+                <th>Pick</th>
+                <th>Rate</th>
+                <th>Amount</th>
+                <th>Brokerage % Amt</th>
+                <th>Brokerage Mtr Amt</th>
                 <th>Payment Days</th>
                 <th>Production Schedule</th>
                 <th>Machines</th>
@@ -118,6 +123,11 @@
                 <td th:text="${r.sizingfabric}"></td>
                 <td th:text="${r.beams}"></td>
                 <td th:text="${r.jobRate}"></td>
+                <td th:text="${#numbers.formatDecimal(r.pick, 1, 2)}"></td>
+                <td th:text="${#numbers.formatDecimal(r.rate, 1, 2)}"></td>
+                <td th:text="${#numbers.formatDecimal(r.amount, 1, 2)}"></td>
+                <td th:text="${#numbers.formatDecimal(r.brokeragePercentAmt, 1, 2)}"></td>
+                <td th:text="${#numbers.formatDecimal(r.brokerageMtrAmt, 1, 2)}"></td>
                 <td th:text="${r.paymentDays}"></td>
                 <td th:text="${r.productionSchedule}"></td>
                 <td th:text="${r.noOfMachines}"></td>

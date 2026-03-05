@@ -50,16 +50,17 @@ public class JobContractPdfService {
             document.add(title);
             document.add(new Paragraph(" "));
 
-            Table table = new Table(UnitValue.createPercentArray(16));
+            Table table = new Table(UnitValue.createPercentArray(21));
             table.setWidth(UnitValue.createPercentValue(100));
             table.setAutoLayout();
 
             // ===== Header Row =====
             String[] headers = {
                     "Contract No", "Contract Date", "Weaver", "Trader", "Quality",
-                    "Quantity","Sizing/  Fabric", "Beams", "Job       Rate", "Payment Days",
+                    "Quantity","Sizing/Fabric", "Beams", "Job Rate", "Pick", "Rate", "Amount",
+                    "Brokerage % Amt", "Brokerage Mtr Amt", "Payment Days",
                     "Production Schedule", "Machines", "Remark",
-                    "Cut    Length", "Minimum Delivery", "Rolling/  Folding", "Created At"
+                    "Cut Length", "Minimum Delivery", "Rolling/Folding", "Created At"
             };
 
             for (String header : headers) {
@@ -96,6 +97,14 @@ public class JobContractPdfService {
                 table.addCell(getCell(qty != null ? qty.toString() : "0", normalFont));
                 table.addCell(getCell(bill.getBeams() != null ? bill.getBeams().toString() : "0", normalFont));
                 table.addCell(getCell(rate != null ? rate.toString() : "0", normalFont));
+                
+                // New calculation columns
+                table.addCell(getCell(bill.getPick() != null ? String.format("%.2f", bill.getPick()) : "0.00", normalFont));
+                table.addCell(getCell(bill.getRate() != null ? String.format("%.2f", bill.getRate()) : "0.00", normalFont));
+                table.addCell(getCell(bill.getAmount() != null ? String.format("%.2f", bill.getAmount()) : "0.00", normalFont));
+                table.addCell(getCell(bill.getBrokeragePercentAmt() != null ? String.format("%.2f", bill.getBrokeragePercentAmt()) : "0.00", normalFont));
+                table.addCell(getCell(bill.getBrokerageMtrAmt() != null ? String.format("%.2f", bill.getBrokerageMtrAmt()) : "0.00", normalFont));
+                
                 table.addCell(getCell(bill.getPaymentDays() != null ? bill.getPaymentDays().toString() : "-", normalFont));
 
                 // ✅ Production Schedule

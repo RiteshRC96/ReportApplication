@@ -369,6 +369,18 @@
                         </div>
 
                         <div class="form-group">
+                            <label for="userName">Full Name *</label>
+                            <input 
+                                type="text" 
+                                class="form-control" 
+                                id="userName"
+                                name="userName" 
+                                placeholder="Enter your full name"
+                                required>
+                            <small style="color: #a0aec0; margin-top: 5px; display: block;">Your registered name</small>
+                        </div>
+
+                        <div class="form-group">
                             <label for="mobileNumber">Mobile Number *</label>
                             <input 
                                 type="text" 
@@ -431,6 +443,7 @@
         // Form validation
         document.getElementById('paymentForm')?.addEventListener('submit', function(e) {
             const email = document.getElementById('email').value;
+            const userName = document.getElementById('userName').value;
             const mobile = document.getElementById('mobileNumber').value;
             const utr = document.getElementById('utrNumber').value;
             const emailRegex = /^[A-Za-z0-9+_.-]+@(.+)$/;
@@ -438,6 +451,12 @@
             if (!emailRegex.test(email)) {
                 e.preventDefault();
                 alert('Please enter a valid email address');
+                return false;
+            }
+
+            if (userName.trim().length === 0) {
+                e.preventDefault();
+                alert('Full name is required');
                 return false;
             }
 
