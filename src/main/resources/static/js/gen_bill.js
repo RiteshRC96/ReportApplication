@@ -50,19 +50,52 @@ $(document).ready(function() {
         const qualityName = $(this).val();
         console.log("Quality selected:", qualityName);
         if (qualityName) {
-            const url = `/api/quality-details/${encodeURIComponent(qualityName)}`;
+            const url = `/api/quality-details?qualityName=${encodeURIComponent(qualityName)}`;
             console.log("Fetching from:", url);
             fetch(url)
                 .then(res => {
                     console.log("Response status:", res.status);
+                    if (!res.ok) {
+                        throw new Error(`HTTP ${res.status}: Failed to fetch quality details`);
+                    }
                     return res.json();
                 })
                 .then(data => {
-                    console.log("Quality data:", data);
-                    document.getElementById("pick").value = data.pick || 0;
+                    console.log("✓ Quality data received:", data);
+                    
+                    // Handle pick value (might be string or number)
+                    const pickValue = data.pick ? String(data.pick).trim() : "0";
+                    document.getElementById("pick").value = pickValue || "0";
+                    
+                    console.log("✓ Pick value set to:", pickValue);
+                    
+                    // Update other quality fields if they exist in the DOM
+                    const fieldsToUpdate = {
+                        "width": data.width,
+                        "reed": data.reed,
+                        "warp": data.warp,
+                        "weft": data.weft,
+                        "weave": data.weave
+                    };
+                    
+                    for (const [fieldId, value] of Object.entries(fieldsToUpdate)) {
+                        const element = document.getElementById(fieldId);
+                        if (element && value) {
+                            element.value = value;
+                        }
+                    }
+                    
+                    // Recalculate with the new pick value
                     calculateAll();
+                    
+                    if (data.error) {
+                        console.warn("Warning from API:", data.error);
+                    }
                 })
-                .catch(err => console.error("Error fetching quality details:", err));
+                .catch(err => {
+                    console.error("✗ Error fetching quality details:", err);
+                    Swal.fire("Warning", "Could not fetch quality details: " + err.message, "warning");
+                });
         }
     });
 });
@@ -141,16 +174,31 @@ form.addEventListener("submit", function (e) {
         method: "POST",
         body: new URLSearchParams(new FormData(form))
     })
-    .then(() => {
-        loader.style.display = "none";
-        submitBtn.disabled = false;
-        Swal.fire("Success", "Job contract saved successfully", "success")
-            .then(() => window.location.href = "/dashboard");
+    .then(res => {
+        if (!res.ok) {
+            return res.text().then(text => {
+                throw new Error(text || `HTTP Error ${res.status}`);
+            });
+        }
+        return res.text();
     })
-    .catch(() => {
+    .then(data => {
         loader.style.display = "none";
         submitBtn.disabled = false;
-        Swal.fire("Error", "Server error occurred", "error");
+        
+        if (data === "SUCCESS") {
+            Swal.fire("Success", "Job contract saved successfully", "success")
+                .then(() => window.location.href = "/dashboard");
+        } else {
+            Swal.fire("Error", "Failed to save contract: " + data, "error");
+            console.error("Server response:", data);
+        }
+    })
+    .catch(err => {
+        loader.style.display = "none";
+        submitBtn.disabled = false;
+        console.error("Error:", err);
+        Swal.fire("Error", "Error: " + err.message, "error");
     });
 });
 
@@ -174,9 +222,26 @@ function generateQualityName() {
     let weft = document.getElementById("qual_weft").value || "";
     let weave = document.getElementById("qual_weave").value || "";
 
-    if (warp && weft && reed && pick && width) {
-        let quality = `${warp}*${weft} / ${reed} * ${pick} / ${width}" - ${weave}`;
+    // Build quality name with available fields - don't require all fields
+    let qualityParts = [];
+    
+    if (warp || weft) {
+        qualityParts.push(`${warp || "?"}*${weft || "?"}`);
+    }
+    if (reed || pick) {
+        qualityParts.push(`${reed || "?"}*${pick || "?"}`);
+    }
+    if (width) {
+        qualityParts.push(`${width}"`);
+    }
+    if (weave) {
+        qualityParts.push(weave);
+    }
+    
+    if (qualityParts.length > 0) {
+        let quality = qualityParts.join(" / ");
         document.getElementById("qual_name").value = quality;
+        console.log("✓ Quality name generated:", quality);
     } else {
         document.getElementById("qual_name").value = "";
     }
@@ -276,24 +341,46 @@ document.getElementById("addTraderForm")?.addEventListener("submit", function(e)
 
 document.getElementById("addQualityForm")?.addEventListener("submit", function(e) {
     e.preventDefault();
+    
+    // Validate quality name is not empty
+    const qualityName = document.getElementById("qual_name").value.trim();
+    if (!qualityName) {
+        Swal.fire("Error", "Please fill in the quality details. Quality name cannot be empty.", "error");
+        console.error("✗ Quality name is empty. Please fill in at least some fields.");
+        return;
+    }
+    
     const formData = new FormData(this);
     const params = new URLSearchParams();
     params.append("qualityName", formData.get("quality_name"));
-    params.append("pick", formData.get("quality_pick"));
-    params.append("width", formData.get("quality_width"));
-    params.append("reed", formData.get("quality_reed"));
-    params.append("warp", formData.get("quality_warp"));
-    params.append("weft", formData.get("quality_weft"));
+    params.append("pick", formData.get("quality_pick") || "");
+    params.append("width", formData.get("quality_width") || "");
+    params.append("reed", formData.get("quality_reed") || "");
+    params.append("warp", formData.get("quality_warp") || "");
+    params.append("weft", formData.get("quality_weft") || "");
+    params.append("weave", formData.get("quality_weave") || "");
 
+    console.log("✓ Submitting quality:", Object.fromEntries(params));
+    
     fetch("/api/add-quality", {
         method: "POST",
         body: params
     })
-    .then(res => res.json())
+    .then(res => {
+        console.log("Response status:", res.status);
+        if (!res.ok) {
+            return res.text().then(text => {
+                throw new Error(`HTTP ${res.status}: ${text}`);
+            });
+        }
+        return res.json();
+    })
     .then(data => {
         if (data.error) {
+            console.error("✗ API Error:", data.error);
             Swal.fire("Error", data.error, "error");
         } else {
+            console.log("✓ Quality added successfully:", data);
             // Add to quality dropdown
             const option = document.createElement("option");
             option.value = data.qualityName;
@@ -304,13 +391,16 @@ document.getElementById("addQualityForm")?.addEventListener("submit", function(e
             $("#qualitySelect").val(data.qualityName).trigger("change");
             
             // Close modal and reset form
-            bootstrap.Modal.getInstance(document.getElementById("addQualityModal")).hide();
+            const modalElement = document.getElementById("addQualityModal");
+            const modal = bootstrap.Modal.getInstance(modalElement);
+            if (modal) modal.hide();
             document.getElementById("addQualityForm").reset();
             
             Swal.fire("Success", "Quality added successfully", "success");
         }
     })
     .catch(err => {
+        console.error("✗ Error adding quality:", err);
         Swal.fire("Error", "Failed to add quality: " + err.message, "error");
     });
 });

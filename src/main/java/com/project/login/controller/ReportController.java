@@ -7,6 +7,10 @@ import com.project.security.CustomUserDetails;
 import jakarta.servlet.http.HttpServletResponse;
 import org.apache.poi.ss.usermodel.*;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
@@ -63,6 +67,7 @@ public class ReportController {
             @RequestParam(required = false)
             @DateTimeFormat(iso = DateTimeFormat.ISO.DATE)
             LocalDate toDate,
+            @RequestParam(defaultValue = "0") int page,
             Model model
     ) {
 
@@ -74,7 +79,7 @@ public class ReportController {
 
         String userName = userDetails.getName();
 
-        List<gen_bill> reports = jobContractService.searchReportsByUser(
+        List<gen_bill> allReports = jobContractService.searchReportsByUser(
                 userName,
                 weaverName,
                 traderName,
@@ -82,11 +87,21 @@ public class ReportController {
                 toDate
         );
 
-        model.addAttribute("reports", reports);
+        // Pagination logic with 7 records per page
+        int pageSize = 7;
+        int start = page * pageSize;
+        int end = Math.min(start + pageSize, allReports.size());
+        
+        List<gen_bill> paginatedReports = allReports.subList(start, end);
+        int totalPages = (int) Math.ceil((double) allReports.size() / pageSize);
+
+        model.addAttribute("reports", paginatedReports);
         model.addAttribute("weaverName", weaverName);
         model.addAttribute("traderName", traderName);
         model.addAttribute("fromDate", fromDate);
         model.addAttribute("toDate", toDate);
+        model.addAttribute("currentPage", page);
+        model.addAttribute("totalPages", totalPages);
 
         return "report";
     }

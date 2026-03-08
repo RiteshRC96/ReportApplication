@@ -2,7 +2,6 @@ package com.project.login.controller;
 
 import com.project.login.entity.Admin;
 import com.project.login.entity.Payment;
-import com.project.login.enums.PaymentStatus;
 import com.project.login.service.AdminService;
 import com.project.login.service.PaymentService;
 import org.springframework.beans.factory.annotation.Autowired;

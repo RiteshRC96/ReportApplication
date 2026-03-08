@@ -185,7 +185,9 @@ public class JobContractController {
 
         } catch (Exception e) {
             e.printStackTrace();
-            return ResponseEntity.internalServerError().body("ERROR");
+            String errorMsg = "ERROR: " + (e.getMessage() != null ? e.getMessage() : e.toString());
+            System.err.println("Job Contract Save Error: " + errorMsg);
+            return ResponseEntity.internalServerError().body(errorMsg);
         }
 
         return ResponseEntity.ok("SUCCESS");
@@ -225,10 +227,10 @@ public class JobContractController {
     /* =====================
        API: GET QUALITY DETAILS (FOR AUTO-FILL PICK)
        ===================== */
-    @GetMapping("/api/quality-details/{qualityName}")
+    @GetMapping("/api/quality-details")
     @ResponseBody
     public ResponseEntity<?> getQualityDetails(
-            @PathVariable String qualityName,
+            @RequestParam String qualityName,
             Authentication authentication
     ) {
         CustomUserDetails userDetails =
@@ -236,16 +238,32 @@ public class JobContractController {
 
         Long userId = userDetails.getId();
 
+        System.out.println("✓ API Called: /api/quality-details?qualityName=" + qualityName + " for userId=" + userId);
+
         var quality = qulitymasterMasterService.findByNameAndUser(qualityName, userId)
-                .map(q -> java.util.Map.of(
-                    "pick", q.getPick()
-                ))
+                .map(q -> {
+                    System.out.println("✓ Quality Found: " + q.getQualityName() + " | Pick=" + q.getPick());
+                    return java.util.Map.of(
+                        "pick", q.getPick() != null ? q.getPick() : "0",
+                        "qualityName", q.getQualityName(),
+                        "width", q.getWidth() != null ? q.getWidth() : "",
+                        "reed", q.getReed() != null ? q.getReed() : "",
+                        "warp", q.getWarp() != null ? q.getWarp() : "",
+                        "weft", q.getWeft() != null ? q.getWeft() : "",
+                        "weave", q.getWeave() != null ? q.getWeave() : ""
+                    );
+                })
                 .orElse(null);
 
         if (quality == null) {
-            return ResponseEntity.ok(java.util.Map.of("pick", "0"));
+            System.out.println("✗ Quality NOT Found for: " + qualityName + " | userId=" + userId);
+            return ResponseEntity.ok(java.util.Map.of(
+                "pick", "0",
+                "error", "Quality not found: " + qualityName
+            ));
         }
 
+        System.out.println("✓ Returning quality data: " + quality);
         return ResponseEntity.ok(quality);
     }
 
@@ -337,11 +355,19 @@ public class JobContractController {
             @RequestParam(required = false) String reed,
             @RequestParam(required = false) String warp,
             @RequestParam(required = false) String weft,
+            @RequestParam(required = false) String weave,
             Authentication authentication
     ) {
         try {
+            // Validate quality name
+            if (qualityName == null || qualityName.trim().isEmpty()) {
+                throw new IllegalArgumentException("Quality name cannot be empty");
+            }
+            
             CustomUserDetails userDetails =
                     (CustomUserDetails) authentication.getPrincipal();
+
+            System.out.println("✓ Adding Quality: " + qualityName + " for userId=" + userDetails.getId());
 
             com.project.login.entity.QualityMasterEntity quality = new com.project.login.entity.QualityMasterEntity();
             quality.setQualityName(qualityName);
@@ -350,17 +376,22 @@ public class JobContractController {
             quality.setReed(reed);
             quality.setWarp(warp);
             quality.setWeft(weft);
+            quality.setWeave(weave);
             quality.setUserId(userDetails.getId());
 
             com.project.login.entity.QualityMasterEntity saved = qulitymasterMasterService.save(quality);
 
+            System.out.println("✓ Quality saved successfully with ID: " + saved.getId());
+            
             return ResponseEntity.ok(java.util.Map.of(
                 "id", saved.getId(),
                 "qualityName", saved.getQualityName(),
-                "pick", saved.getPick()
+                "pick", saved.getPick() != null ? saved.getPick() : ""
             ));
         } catch (Exception e) {
-            return ResponseEntity.badRequest().body(java.util.Map.of("error", e.getMessage()));
+            System.err.println("✗ Error adding quality: " + e.getMessage());
+            e.printStackTrace();
+            return ResponseEntity.badRequest().body(java.util.Map.of("error", "Failed to add quality: " + e.getMessage()));
         }
     }
 }
