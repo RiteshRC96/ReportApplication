@@ -1,199 +1,378 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Weaver / Trader Master</title>
 
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet"
+          href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css">
 
-   <style>
-    body {
-        font-family: 'Segoe UI', sans-serif;
-        min-height: 100vh;
-        margin: 0;
-        background:
-                linear-gradient(rgba(0,0,0,0.55), rgba(0,0,0,0.55)),
-                url("https://t4.ftcdn.net/jpg/03/10/16/27/240_F_310162798_6hWbaSFgDtWp4AhhaKPlTgAZUDL1c4UY.jpg");
-            background-size: cover;
-    }
+    <style>
+        body {
+            background: #f4f6f9;
+            font-family: 'Segoe UI', sans-serif;
+        }
 
-    /* ---------- NAVBAR ---------- */
-    .navbar {
- background: linear-gradient(135deg, #1f2a30, #243840);
-         box-shadow: 0 4px 15px rgba(0,0,0,0.3);
-        height: 80px;
-    }
+        /* ---------- NAVBAR ---------- */
+        .navbar {
+            background: linear-gradient(135deg, #1f2a30, #243840);
+            box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+            padding: 0.35rem 1rem !important;
+        }
 
-    .navbar-brand {
-        font-weight: 600;
-        font-size: 25px;
-    }
+        .navbar-brand {
+            font-weight: 600;
+            font-size: 20px;
+            white-space: nowrap;
+        }
 
-    .nav-link {
-        margin: 0 14px;
-        font-size: 18px;
-        font-weight: 600;
-        color: #ffffff !important;
-        position: relative;
-    }
+        .navbar-toggler {
+            order: -1;
+            margin-right: 10px;
+        }
 
-    .nav-link::after {
-        content: "";
-        position: absolute;
-        left: 0;
-        bottom: -6px;
-        width: 0%;
-        height: 2px;
-        background: #39d98a;
-        transition: 0.3s ease;
-    }
+        .navbar-toggler:focus {
+            box-shadow: none;
+            border-color: transparent;
+        }
 
-    .nav-link:hover::after {
-        width: 100%;
-    }
+        /* ---------- NAV LINKS (WITH ANIMATION) ---------- */
+        .nav-link {
+            padding: 0.4rem 10px !important;
+            font-size: 15px;
+            font-weight: 600;
+            color: #ffffff !important;
+            position: relative;
+            transition: 0.3s ease;
+        }
 
-    .btn-logout {
-        border-radius: 20px;
-        padding: 6px 18px;
-        font-size: 18px;
-        font-weight: 600;
-    }
+        .nav-link::after {
+            content: "";
+            position: absolute;
+            left: 0;
+            bottom: -6px;
+            width: 0%;
+            height: 2px;
+            background: #39d98a;
+            transition: width 0.3s ease;
+        }
 
-    /* ---------- PAGE LAYOUT ---------- */
-    .page-container {
-        max-width: 900px;
-        margin: 45px auto;
-        padding: 0 10px;
-        color:white;
-    }
+        .nav-link:hover::after {
+            width: 100%;
+        }
 
-    /* ---------- HEADER (SAME UI AS ROWS) ---------- */
-    .page-header {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        margin-bottom: 28px;
+        .nav-link:hover {
+            transform: translateY(-2px);
+        }
 
-        backdrop-filter: blur(8px);
-        padding: 14px 18px;
-        border-radius: 8px;   /* subtle like rows */
-        box-shadow: 0 8px 22px rgba(0,0,0,0.25);
-    }
+        /* ---------- LOGOUT BUTTON ---------- */
+        .btn-logout {
+            border-radius: 20px;
+            padding: 5px 15px;
+            font-size: 14px;
+            font-weight: 600;
+        }
 
-    .page-header h2 {
-        color: #ffffff;
-        font-weight: 600;
-        margin: 0;
-    }
+        /* ---------- PAGE CONTAINER ---------- */
+        .page-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 30px 15px;
+        }
 
-    /* ---------- BUTTONS ---------- */
-    .btn-add {
-        background: #39d98a;
-        color: #000;
-        font-weight: 600;
-        border-radius: 20px;
-        padding: 8px 18px;
-        border: none;
-    }
+        .page-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
 
-    .btn-add:hover {
-        background: #2fbf78;
-    }
+        .page-header h3 {
+            margin: 0;
+            font-weight: 600;
+            color: #1f2933;
+        }
 
-    .btn-edit {
-        background: #39d98a;
-        color: #000;
-        font-weight: 600;
-        border-radius: 16px;
-        padding: 4px 14px;
-        border: none;
-    }
+        /* ---------- BUTTONS ---------- */
+        .btn-add {
+            background: #39d98a;
+            color: #000;
+            font-weight: 600;
+            border-radius: 20px;
+            padding: 8px 18px;
+            border: none;
+            transition: 0.3s ease;
+        }
 
-    .btn-edit:hover {
-        background: #2fbf78;
-    }
+        .btn-add:hover {
+            background: #2ecf7f;
+            transform: translateY(-2px);
+        }
 
-    .btn-delete {
-        background: #dc3545;
-        color: #fff;
-        font-weight: 600;
-        border-radius: 16px;
-        padding: 4px 14px;
-        border: none;
-    }
+        .btn-edit {
+            background: #39d98a;
+            color: #000;
+            font-weight: 600;
+            border-radius: 16px;
+            padding: 4px 14px;
+            border: none;
+            font-size: 13px;
+            transition: 0.3s ease;
+        }
 
-    .btn-delete:hover {
-        background: #bb2d3b;
-    }
+        .btn-edit:hover {
+            background: #2ecf7f;
+            transform: translateY(-2px);
+        }
 
-    /* ---------- TABLE ---------- */
-    .table {
-        border-collapse: separate;
-        border-spacing: 0 14px;
-        color: #ffffff;
-    }
+        .btn-delete {
+            background: #dc3545;
+            color: #fff;
+            font-weight: 600;
+            border-radius: 16px;
+            padding: 4px 14px;
+            border: none;
+            font-size: 13px;
+            transition: 0.3s ease;
+        }
 
-    .table thead th {
-        background: rgba(255,255,255,0.12);
-        border: none;
-        color:white;
-    }
+        .btn-delete:hover {
+            background: #bb2d3b;
+            transform: translateY(-2px);
+        }
 
-	
-    /* ✅ ROW STYLE */
-    .table tbody tr {
-    background: rgba(255,255,255,0.12);
-        backdrop-filter: blur(8px);
-        border-radius:  px;                 /* ⬅️ reduced radius */
-        transition: all 0.3s ease;          /* animation */
-    }
-
-    /* ✅ ROW HOVER ANIMATION */
-    .table tbody tr:hover {
-        box-shadow: 0 12px 30px rgba(0,0,0,0.45);
-        transform: translateY(-2px);
-    background: rgba(255,255,255,0.12);
-    
-    }
-
-    .table tbody td {
-        border: none;
-        vertical-align: middle;
-        padding: 16px 14px;
-        color:white;
-         background: rgba(255,255,255,0.12);
+        /* ---------- TABLE ---------- */
+        table {
+            font-size: 13px;
+        }
         
-    }
+        th, td {
+            padding: 0.5rem !important;
+        }
 
-    /* ---------- MODAL ---------- */
-    .modal.fade .modal-dialog {
-        transform: scale(0.9);
-        transition: 0.3s ease;
-    }
+        .table {
+            background: white;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+        }
 
-    .modal.show .modal-dialog {
-        transform: scale(1);
-    }
-</style>
+        .table thead {
+            background: linear-gradient(135deg, #1f2a30, #243840);
+            color: white;
+        }
 
+        .table tbody tr {
+            border-bottom: 1px solid #e9ecef;
+            transition: 0.3s ease;
+        }
+
+        .table tbody tr:hover {
+            background: #f8f9fa;
+            transform: translateY(-1px);
+            box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+        }
+
+        /* ---------- MODAL ---------- */
+        .modal-content {
+            border-radius: 12px;
+        }
+
+        /* ---------- RESPONSIVE DESIGN ---------- */
+        /* MOBILE (< 576px) */
+        @media (max-width: 575px) {
+            .navbar {
+                padding: 0.3rem !important;
+            }
+
+            .navbar-brand {
+                font-size: 14px;
+                white-space: nowrap;
+            }
+
+            .navbar-toggler {
+                margin-left: auto;
+                order: 1;
+            }
+
+            .nav-link {
+                padding: 0.4rem 6px !important;
+                font-size: 12px;
+                margin: 0;
+            }
+
+            .btn-logout {
+                padding: 4px 10px;
+                font-size: 12px;
+                width: 100% !important;
+                margin-top: 10px;
+            }
+
+            .page-container {
+                padding: 15px 10px;
+            }
+
+            .page-header {
+                flex-direction: column;
+                align-items: flex-start;
+                margin-bottom: 20px;
+            }
+
+            .page-header h3 {
+                font-size: 18px;
+            }
+
+            .btn-add {
+                width: 100%;
+                font-size: 12px;
+                padding: 6px 14px;
+            }
+
+            table {
+                font-size: 11px;
+            }
+
+            th, td {
+                padding: 0.3rem !important;
+            }
+
+            .btn-edit, .btn-delete {
+                padding: 3px 10px;
+                font-size: 10px;
+            }
+        }
+
+        /* TABLET (576px - 1023px) */
+        @media (min-width: 576px) and (max-width: 1023px) {
+            .navbar {
+                padding: 0.35rem 1rem !important;
+            }
+
+            .navbar-brand {
+                font-size: 16px;
+            }
+
+            .nav-link {
+                padding: 0.4rem 8px !important;
+                font-size: 13px;
+                margin: 0;
+            }
+
+            .btn-logout {
+                padding: 4px 12px;
+                font-size: 12px;
+            }
+
+            .page-container {
+                padding: 20px 12px;
+            }
+
+            .page-header h3 {
+                font-size: 22px;
+            }
+
+            .btn-add {
+                font-size: 13px;
+                padding: 7px 16px;
+            }
+
+            table {
+                font-size: 12px;
+            }
+
+            th, td {
+                padding: 0.4rem !important;
+            }
+
+            .btn-edit, .btn-delete {
+                padding: 3px 12px;
+                font-size: 11px;
+            }
+        }
+
+        /* DESKTOP (> 1024px) */
+        @media (min-width: 1024px) {
+            .navbar {
+                padding: 0.35rem 1rem !important;
+            }
+
+            .navbar-brand {
+                font-size: 20px;
+            }
+
+            .nav-link {
+                padding: 0.4rem 10px !important;
+                font-size: 15px;
+                margin: 0;
+            }
+
+            .btn-logout {
+                padding: 5px 15px;
+                font-size: 14px;
+            }
+
+            .page-container {
+                padding: 30px 15px;
+            }
+
+            .page-header h3 {
+                font-size: 28px;
+            }
+
+            table {
+                font-size: 13px;
+            }
+
+            th, td {
+                padding: 0.5rem !important;
+            }
+
+            .btn-edit, .btn-delete {
+                padding: 4px 14px;
+                font-size: 13px;
+            }
+        }
+    </style>
 </head>
 
 <body>
 
 <!-- NAVBAR -->
-<nav class="navbar navbar-dark px-3 d-flex justify-content-between">
-    <span class="navbar-brand">ShreeGuru Software Solutions</span>
+<nav class="navbar navbar-dark navbar-expand-lg px-3">
+    <div class="container-fluid px-0">
+        <span class="navbar-brand mb-0">ShreeGuru Software Solutions</span>
+        
+        <!-- Mobile Toggle Button -->
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" 
+                data-bs-target="#navbarMenu" aria-controls="navbarMenu" aria-expanded="false" 
+                aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
 
-    <div class="d-flex align-items-center">
-        <ul class="navbar-nav flex-row">
-            <li class="nav-item"><a class="nav-link" href="/dashboard">Dashboard</a></li>
-            <li class="nav-item"><a class="nav-link" href="/gen-bill">Create Job Contract</a></li>
-            <li class="nav-item"><a class="nav-link" href="/report">Report</a></li>
-            <li class="nav-item"><a class="nav-link" href="/quality">Quality Master</a></li>
-        </ul>
+        <!-- Collapsible Navigation Menu -->
+        <div class="collapse navbar-collapse" id="navbarMenu">
+            <ul class="navbar-nav ms-auto align-items-center">
+                <li class="nav-item">
+                    <a class="nav-link" href="/dashboard">Dashboard</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="/gen-bill">Create Job Contract</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="/report">Report</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="/quality">Quality Master</a>
+                </li>
+            </ul>
 
-        <form action="/logout" method="post" class="ms-3">
-            <button class="btn btn-danger btn-logout">Logout</button>
-        </form>
+            <form action="/logout" method="post" class="ms-3">
+                <button class="btn btn-danger btn-logout">Logout</button>
+            </form>
+        </div>
     </div>
 </nav>
 
@@ -201,41 +380,43 @@
 <div class="page-container">
 
     <div class="page-header">
-        <h2>Weaver / Trader Master</h2>
+        <h3>Weaver / Trader Master</h3>
         <a href="/weaver-trader/create" class="btn btn-add">+ Add New</a>
     </div>
 
-    <table class="table text-center">
-        <thead>
-            <tr>
-                <th>Name</th>
-                <th>Type</th>
-                <th style="width: 200px;">Action</th>
-            </tr>
-        </thead>
-        <tbody>
-            <tr th:each="w : ${list}">
-                <td th:text="${w.name}"></td>
-                <td th:text="${w.type}"></td>
-                <td>
-                    <a th:href="@{/weaver-trader/edit/{id}(id=${w.id})}"
-                       class="btn btn-edit btn-sm me-2">Edit</a>
+    <div class="table-responsive">
+        <table class="table table-hover mb-0">
+            <thead>
+                <tr>
+                    <th>Name</th>
+                    <th>Type</th>
+                    <th style="text-align: center;">Action</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr th:each="w : ${list}">
+                    <td th:text="${w.name}"></td>
+                    <td th:text="${w.type}"></td>
+                    <td style="text-align: center;">
+                        <a th:href="@{/weaver-trader/edit/{id}(id=${w.id})}"
+                           class="btn btn-edit me-2">Edit</a>
 
-                    <button class="btn btn-delete btn-sm"
-                            th:attr="data-url=@{/weaver-trader/delete/{id}(id=${w.id})}"
-                            onclick="openDeleteModal(this)">
-                        Delete
-                    </button>
-                </td>
-            </tr>
-        </tbody>
-    </table>
+                        <button class="btn btn-delete"
+                                th:attr="data-url=@{/weaver-trader/delete/{id}(id=${w.id})}"
+                                onclick="openDeleteModal(this)">
+                            Delete
+                        </button>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
 </div>
 
 <!-- DELETE MODAL -->
 <div class="modal fade" id="deleteModal" tabindex="-1">
     <div class="modal-dialog modal-dialog-centered">
-        <div class="modal-content text-center p-3">
+        <div class="modal-content p-4">
             <h5 class="mb-3">Confirm Deletion</h5>
             <p class="text-muted">Are you sure you want to delete this record?</p>
 
