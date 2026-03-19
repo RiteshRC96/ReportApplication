@@ -186,9 +186,49 @@ form.addEventListener("submit", function (e) {
         loader.style.display = "none";
         submitBtn.disabled = false;
         
-        if (data === "SUCCESS") {
+        if (data === "SUCCESS" || data.startsWith("SUCCESS:")) {
             Swal.fire("Success", "Job contract saved successfully", "success")
-                .then(() => window.location.href = "/dashboard");
+                .then(() => {
+                    // Get the userId and contractNo from form
+                    let userId = document.querySelector('input[name="userId"]')?.value;
+                    let contractNo = document.querySelector('input[name="contractNo"]')?.value;
+                    
+                    // If backend returned the ids
+                    if (data.startsWith("SUCCESS:")) {
+                        const parts = data.split(":");
+                        if (parts.length >= 3) {
+                            userId = parts[1];
+                            contractNo = parts[2];
+                            
+                            // populate hidden inputs if missing
+                            if (document.querySelector('input[name="userId"]')) {
+                                document.querySelector('input[name="userId"]').value = userId;
+                            }
+                            if (document.querySelector('input[name="contractNo"]')) {
+                                document.querySelector('input[name="contractNo"]').value = contractNo;
+                            }
+                        } else if (parts.length === 2) {
+                            contractNo = parts[1];
+                            if (document.querySelector('input[name="contractNo"]')) {
+                                document.querySelector('input[name="contractNo"]').value = contractNo;
+                            }
+                        }
+                    }
+
+                    // Show the Generate Contract button instead of redirecting
+                    if (userId && contractNo) {
+                        const generateBtn = document.getElementById('generateContractBtn');
+                        if (generateBtn) {
+                            generateBtn.style.display = 'inline-block';
+                        }
+                        
+                        // Change URL to edit mode without reloading the page
+                        window.history.replaceState({}, '', `/gen-bill/edit/${userId}/${contractNo}`);
+                    } else {
+                        // Fallback if we still don't have IDs
+                        window.location.href = "/dashboard";
+                    }
+                });
         } else {
             Swal.fire("Error", "Failed to save contract: " + data, "error");
             console.error("Server response:", data);

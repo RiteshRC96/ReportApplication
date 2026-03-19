@@ -3,6 +3,7 @@ package com.project.login.service;
 import com.project.login.entity.gen_bill;
 import com.project.login.entity.User;
 import com.project.login.repository.JobContractRepository;
+
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -27,19 +28,22 @@ public class JobContractService {
     ) {
         return jobContractRepository
                 .findByUserIdAndContractNo(userId, contractNo)
-                .orElseThrow(() -> new RuntimeException("Record not found"));
+                .orElseThrow(() ->
+                        new RuntimeException("Contract not found"));
     }
 
     /* ==========================
        DELETE
        ========================== */
-    @SuppressWarnings("null")
+    @Transactional
     public void deleteByUserIdAndContractNo(
             Long userId,
             Integer contractNo
     ) {
-        gen_bill jobContract = getByUserIdAndContractNo(userId, contractNo);
-        jobContractRepository.delete(jobContract);
+
+        gen_bill contract = getByUserIdAndContractNo(userId, contractNo);
+
+        jobContractRepository.delete(contract);
     }
 
     /* ==========================
@@ -48,24 +52,28 @@ public class JobContractService {
     @Transactional
     public gen_bill saveOrUpdate(gen_bill bill, User user) {
 
-        // always bind user
+        // bind logged in user
         bill.setUserId(user.getId());
 
-        // 🔹 CREATE
+        /* ===== CREATE OR UPDATE CHECK ===== */
         if (bill.getContractNo() == null) {
             bill.setContractNo(generateContractNo(user.getId()));
             bill.setSrNo(generateSrNo(user.getId()));
-        }
-        // 🔹 UPDATE
-        else {
-            gen_bill existing = getByUserIdAndContractNo(
-                    user.getId(),
-                    bill.getContractNo()
-            );
+        } else {
+            // Check if it already exists
+            java.util.Optional<gen_bill> existingOpt = jobContractRepository.findByUserIdAndContractNo(
+                    user.getId(), bill.getContractNo());
 
-            // preserve immutable fields
-            bill.setId(existing.getId());
-            bill.setSrNo(existing.getSrNo());
+            if (existingOpt.isPresent()) {
+                /* ===== UPDATE ===== */
+                gen_bill existing = existingOpt.get();
+                // preserve immutable fields
+                bill.setId(existing.getId());
+                bill.setSrNo(existing.getSrNo());
+            } else {
+                /* ===== CREATE WITH PRE-FILLED CONTRACT NO ===== */
+                bill.setSrNo(generateSrNo(user.getId()));
+            }
         }
 
         return jobContractRepository.save(bill);
@@ -78,7 +86,9 @@ public class JobContractService {
     public gen_bill saveJobContract(gen_bill jobContract, User user) {
 
         jobContract.setUserId(user.getId());
+
         jobContract.setContractNo(generateContractNo(user.getId()));
+
         jobContract.setSrNo(generateSrNo(user.getId()));
 
         return jobContractRepository.save(jobContract);
@@ -87,9 +97,10 @@ public class JobContractService {
     /* ==========================
        LEGACY UPDATE (KEEP)
        ========================== */
-    @SuppressWarnings("null")
-    public void updateJobContract(gen_bill bill) {
-        jobContractRepository.save(bill);
+    @Transactional
+    public gen_bill updateJobContract(gen_bill bill) {
+
+        return jobContractRepository.save(bill);
     }
 
     /* ==========================
@@ -102,12 +113,16 @@ public class JobContractService {
             LocalDate fromDate,
             LocalDate toDate
     ) {
+
         return jobContractRepository.searchReports(
                 userName,
+
                 (weaverName == null || weaverName.isBlank())
                         ? null : "%" + weaverName + "%",
+
                 (traderName == null || traderName.isBlank())
                         ? null : "%" + traderName + "%",
+
                 fromDate,
                 toDate
         );
@@ -116,15 +131,30 @@ public class JobContractService {
     /* ==========================
        CONTRACT NO GENERATOR
        ========================== */
-    private Integer generateContractNo(Long userId) {
+    public Integer generateContractNo(Long userId) {
+
         Integer maxContractNo =
                 jobContractRepository.findMaxContractNoByUser(userId);
+
+        if (maxContractNo == null) {
+            return 1;
+        }
+
         return maxContractNo + 1;
     }
 
+    /* ==========================
+       SR NO GENERATOR
+       ========================== */
     private Integer generateSrNo(Long userId) {
+
         Integer maxSrNo =
                 jobContractRepository.findMaxSrNoByUser(userId);
+
+        if (maxSrNo == null) {
+            return 1;
+        }
+
         return maxSrNo + 1;
     }
 }

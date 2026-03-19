@@ -1,4 +1,95 @@
-20/01/21
-2. weaver and treader should be addedd from creat job_contract form
-7. on report form export to excel, export to pdf for whole report. buttons want
-8. for each record in report download image(pop up want), download pfd(pop up want),send to whastapp image(pop up want) want this buttons (creates one col at last to each record and add these buttons)
+<!DOCTYPE html>
+<html>
+<head>
+<title>Feed Data Report</title>
+
+<style>
+
+body {
+    font-family: Arial, sans-serif;
+    padding: 20px;
+}
+
+h1 {
+    text-align: center;
+    color: #333;
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 25px;
+}
+
+th, td {
+    border: 1px solid #ccc;
+    padding: 8px 12px;
+    text-align: center;
+}
+
+th {
+    background-color: #444;
+    color: white;
+}
+
+</style>
+
+<script>
+alert(JSON.stringify(CUSTOM_REPORT_PARAMs));
+
+window.onload = function(){
+
+ 
+
+   
+
+    /* wait for recs:simpletable to render rows */
+    setTimeout(function(){
+
+        var rows = document.querySelectorAll("table tr");
+
+        rows.forEach(function(row){
+
+            var cells = row.querySelectorAll("td");
+
+            cells.forEach(function(cell){
+
+                if(CUSTOM_REPORT_PARAMs.CUSTOM_REPORT_PARAM_1 == "akanksha_01"){
+                    cell.style.backgroundColor = "#e6f2ff";   // faint blue
+                }
+
+                else if(CUSTOM_REPORT_PARAMs.CUSTOM_REPORT_PARAM_1 == "akanksha_02"){
+                    cell.style.backgroundColor = "#e6ffe6";   // faint green
+                }
+
+                else{
+                    cell.style.backgroundColor = "#ffffff";   // default
+                }
+
+            });
+
+        });
+
+    },500);
+
+};
+
+</script>
+
+</head>
+
+<body>
+
+<h1>Feed Data Report</h1>
+
+<table>
+<tr></tr>
+</table>
+
+<recs:simpletable
+dataQuery="q1j7r7g3Z3y0e4d8s6l273n6i2L1V4S0z8"
+rowAltColors="#FDF2DC,#EFEFEE"
+colNames="FeedId,Feed_data_Id...."/>
+
+</body>
+</html>
