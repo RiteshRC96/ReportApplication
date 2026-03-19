@@ -21,7 +21,7 @@ public class ContractImageGenerationService {
         try {
 
             InputStream templateStream =
-                    new ClassPathResource("static/job_Contract.pdf").getInputStream();
+                    new ClassPathResource("static/job_Contract_New.pdf").getInputStream();
 
             ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
 
@@ -43,12 +43,12 @@ public class ContractImageGenerationService {
                CONTRACT INFORMATION
             ----------------------------*/
             if (contract.getContractNo() != null) {
-                canvas.setTextMatrix(200, 715); // Adjust X,Y
+                canvas.setTextMatrix(160, 638); // Adjust X,Y
                 canvas.showText(contract.getContractNo().toString());
             }
 
             if (contract.getContractDate() != null) {
-                canvas.setTextMatrix(460, 715); 
+                canvas.setTextMatrix(480, 638); 
                 canvas.showText(contract.getContractDate().toString());
             }
 
@@ -56,22 +56,22 @@ public class ContractImageGenerationService {
                PARTIES
             ----------------------------*/
             if (contract.getWeaverName() != null) {
-                canvas.setTextMatrix(200, 680);
+                canvas.setTextMatrix(140, 600);
                 canvas.showText(contract.getWeaverName());
             }
 
             if (contract.getTraderName() != null) {
-                canvas.setTextMatrix(200, 655);
+                canvas.setTextMatrix(140, 560);
                 canvas.showText(contract.getTraderName());
             }
 
             if (contract.getBrokerName() != null) {
-                canvas.setTextMatrix(200, 630);
+                canvas.setTextMatrix(140, 520);
                 canvas.showText(contract.getBrokerName());
             }
 
             if (contract.getQuality() != null) {
-                canvas.setTextMatrix(200, 605);
+                canvas.setTextMatrix(140, 483);
                 canvas.showText(contract.getQuality());
             }
 
@@ -80,54 +80,58 @@ public class ContractImageGenerationService {
             ----------------------------*/
             // Left Column (Quantity, Rate, Schedule, Remark)
             if (contract.getQuantityMeters() != null) {
-                canvas.setTextMatrix(200, 560);
+                canvas.setTextMatrix(140, 447);
                 canvas.showText(contract.getQuantityMeters().toString());
             }
-
-            if (contract.getJobRate() != null) {
-                canvas.setTextMatrix(200, 535);
-                canvas.showText(contract.getJobRate().toString());
+            
+            if (contract.getSizingfabric()!= null) {
+                canvas.setTextMatrix(180, 447);
+                canvas.showText(contract.getSizingfabric().toString());
             }
-
-            if (contract.getProductionSchedule() != null) {
-                canvas.setTextMatrix(200, 510);
-                canvas.showText(contract.getProductionSchedule());
-            }
-
-            if (contract.getRemark() != null) {
-                canvas.setTextMatrix(200, 485);
-                canvas.showText(contract.getRemark());
-            }
-
-            // Right Column (Beams, Payment Days, Machines)
+            
             if (contract.getBeams() != null) {
-                canvas.setTextMatrix(450, 560);
+                canvas.setTextMatrix(450, 447);
                 canvas.showText(contract.getBeams().toString());
             }
 
+            if (contract.getJobRate() != null) {
+                canvas.setTextMatrix(140, 405);
+                canvas.showText(contract.getJobRate().toString());
+            }
+            
             if (contract.getPaymentDays() != null) {
-                canvas.setTextMatrix(450, 535);
+                canvas.setTextMatrix(480, 405);
                 canvas.showText(contract.getPaymentDays().toString());
             }
 
+            if (contract.getProductionSchedule() != null) {
+                canvas.setTextMatrix(250, 370);
+                canvas.showText(contract.getProductionSchedule());
+            }
+            
             if (contract.getNoOfMachines() != null) {
-                canvas.setTextMatrix(450, 510);
+                canvas.setTextMatrix(550, 370);
                 canvas.showText(contract.getNoOfMachines().toString());
             }
 
-            // Bottom Section (Cut length, delivery, folding)
+            if (contract.getRemark() != null) {
+                canvas.setTextMatrix(140, 330);
+                canvas.showText(contract.getRemark());
+            }
+
+            
             if (contract.getCutLength() != null) {
-                canvas.setTextMatrix(100, 420);
+                canvas.setTextMatrix(140, 295);
                 canvas.showText(contract.getCutLength());
             }
 
             if (contract.getMinimumDelivery() != null) {
-                canvas.setTextMatrix(280, 420);
+                canvas.setTextMatrix(365, 295);
                 canvas.showText(contract.getMinimumDelivery());
             }
 
             if (contract.getRollingFolding() != null) {
-                canvas.setTextMatrix(450, 420);
+                canvas.setTextMatrix(400, 295);
                 canvas.showText(contract.getRollingFolding());
             }
 
