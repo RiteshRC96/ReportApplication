@@ -319,7 +319,7 @@
 
     <!-- LOGO HEADER -->
     <div style="text-align: center; margin-bottom: 15px; border-bottom: 3px solid #000; padding-bottom: 10px;">
-        <div style="font-size: 12px; font-weight: bold; color: #008080;">|| SHREE GANESH ||</div>
+        <div style="font-size: 12px; font-weight: bold; color: #F94449;">|| SHREE GANESH ||</div>
         <h3 style="margin: 8px 0; font-size: 24px; font-weight: bold;">Airjet Loom Owner's Association,</h3>
         <h4 style="margin: 5px 0; font-size: 18px; font-weight: bold;">Ichalkaranji</h4>
         <div style="margin-top: 8px; font-size: 12px;">
@@ -357,7 +357,7 @@
                                     th:text="${w.name}"
                                     th:selected="${job?.weaverName == w.name}"></option>
                         </select>
-                        <button type="button" class="btn btn-sm btn-success" data-bs-toggle="modal" data-bs-target="#addWeaverModal" style="fontSize: 12px;">+</button>
+                        <button type="button" class="btn btn-sm btn-success" data-bs-toggle="modal" data-bs-target="#addWeaverModal" style="font-size: 12px;">+</button>
                     </div>
                 </td>
             </tr>
@@ -374,7 +374,7 @@
                                     th:text="${t.name}"
                                     th:selected="${job?.traderName == t.name}"></option>
                         </select>
-                        <button type="button" class="btn btn-sm btn-success" data-bs-toggle="modal" data-bs-target="#addTraderModal" style="fontSize: 12px;">+</button>
+                        <button type="button" class="btn btn-sm btn-success" data-bs-toggle="modal" data-bs-target="#addTraderModal" style="font-size: 12px;">+</button>
                     </div>
                 </td>
             </tr>
@@ -399,7 +399,7 @@
                                     th:text="${q.qualityName}"
                                     th:selected="${job?.quality == q.qualityName}"></option>
                         </select>
-                        <button type="button" class="btn btn-sm btn-success" data-bs-toggle="modal" data-bs-target="#addQualityModal" style="fontSize: 12px;">+</button>
+                        <button type="button" class="btn btn-sm btn-success" data-bs-toggle="modal" data-bs-target="#addQualityModal" style="font-size: 12px;">+</button>
                     </div>
                 </td>
             </tr>
@@ -694,48 +694,72 @@ document.addEventListener("DOMContentLoaded", function() {
             return;
         }
 
+        // Ask the user for the format
+        Swal.fire({
+            title: "Generate Contract",
+            text: "Which format would you like to generate?",
+            icon: "question",
+            showCancelButton: true,
+            showDenyButton: true,
+            confirmButtonText: '<i class="bi bi-file-earmark-pdf"></i> PDF Format',
+            denyButtonText: '<i class="bi bi-image"></i> Image Format (JPG)',
+            cancelButtonText: 'Cancel'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                // PDF Selected
+                processContractGeneration(userId, contractNo, 'PDF');
+            } else if (result.isDenied) {
+                // Image Selected
+                processContractGeneration(userId, contractNo, 'IMAGE');
+            }
+        });
+    }
+
+    function processContractGeneration(userId, contractNo, format) {
         // Show loading
         document.getElementById('loadingOverlay').style.display = 'flex';
         
-        // Let's directly fetch the PDF using fetch to create a file object for sharing,
-        // and also allow user to choose between downloading or sharing.
+        const apiUrl = format === 'PDF' 
+            ? `/api/download-contract-pdf/${userId}/${contractNo}`
+            : `/api/download-contract-image/${userId}/${contractNo}`;
         
-        const pdfUrl = `/api/download-contract-pdf/${userId}/${contractNo}`;
+        const fileExtension = format === 'PDF' ? 'pdf' : 'jpg';
+        const contentType = format === 'PDF' ? 'application/pdf' : 'image/jpeg';
         
-        fetch(pdfUrl)
+        fetch(apiUrl)
             .then(res => {
-                if (!res.ok) throw new Error("Could not generate PDF");
+                if (!res.ok) throw new Error(`Could not generate ${format}`);
                 return res.blob();
             })
             .then(blob => {
                 document.getElementById('loadingOverlay').style.display = 'none';
                 
-                const file = new File([blob], `Contract_${contractNo}.pdf`, { type: 'application/pdf' });
+                const file = new File([blob], `Contract_${contractNo}.${fileExtension}`, { type: contentType });
                 const shareText = `Job Contract - Contract No: ${contractNo}`;
                 
                 // Show a dialog asking the user whether they want to Download or Share
                 Swal.fire({
-                    title: "Contract Generated!",
-                    text: "What would you like to do with the contract?",
+                    title: `${format} Generated!`,
+                    text: `What would you like to do with the ${format}?`,
                     icon: "success",
                     showCancelButton: true,
                     showDenyButton: true,
                     confirmButtonText: '<i class="bi bi-download"></i> Download',
                     denyButtonText: '<i class="bi bi-share"></i> Share',
                     cancelButtonText: 'Cancel'
-                }).then((result) => {
-                    if (result.isConfirmed) {
+                }).then((shareResult) => {
+                    if (shareResult.isConfirmed) {
                         // User clicked Download
                         const objectUrl = URL.createObjectURL(blob);
                         const link = document.createElement('a');
                         link.href = objectUrl;
-                        link.download = `Contract_${contractNo}.pdf`;
+                        link.download = `Contract_${contractNo}.${fileExtension}`;
                         document.body.appendChild(link);
                         link.click();
                         document.body.removeChild(link);
                         setTimeout(() => URL.revokeObjectURL(objectUrl), 1000);
-                        Swal.fire("Success", "Contract downloaded successfully!", "success");
-                    } else if (result.isDenied) {
+                        Swal.fire("Success", `${format} downloaded successfully!`, "success");
+                    } else if (shareResult.isDenied) {
                         // User clicked Share
                         if (navigator.share) {
                             navigator.share({
@@ -747,7 +771,7 @@ document.addEventListener("DOMContentLoaded", function() {
                             }).catch(error => {
                                 console.error('Share error:', error);
                                 if (error.name !== "AbortError") {
-                                    Swal.fire("Info", "Sharing via your browser's share dialog is not supported for PDFs. Please download it first.", "info");
+                                    Swal.fire("Info", "Sharing via your browser's share dialog is not supported for this format. Please download it first.", "info");
                                 }
                             });
                         } else {
@@ -756,8 +780,8 @@ document.addEventListener("DOMContentLoaded", function() {
                             Swal.fire({
                                 title: "Share Contract",
                                 html: `
-                                    <p>Your browser doesn't natively support direct PDF sharing.</p>
-                                    <p>Please <b>download</b> the PDF first, or share this message link:</p>
+                                    <p>Your browser doesn't natively support direct ${format} sharing.</p>
+                                    <p>Please <b>download</b> the file first, or share this message link:</p>
                                     <a href="${whatsappUrl}" target="_blank" class="btn btn-success btn-sm" style="margin: 5px;">
                                         <i class="bi bi-whatsapp"></i> Share on WhatsApp
                                     </a>
@@ -772,9 +796,10 @@ document.addEventListener("DOMContentLoaded", function() {
             .catch(err => {
                 document.getElementById('loadingOverlay').style.display = 'none';
                 console.error(err);
-                Swal.fire("Error", "Failed to generate PDF: " + err.message, "error");
+                Swal.fire("Error", `Failed to generate ${format}: ` + err.message, "error");
             });
     }
+
 
     // Show Generate Contract button only for existing contracts
     document.addEventListener('DOMContentLoaded', function() {

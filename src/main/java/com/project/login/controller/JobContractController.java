@@ -20,7 +20,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
-import java.io.IOException;
+
 import java.time.LocalDate;
 
 @Controller
@@ -186,7 +186,9 @@ public class JobContractController {
             bill.setBrokerageMtrAmt(brokerage_mtr_amt);
 
             // 🔄 Same service handles save or update
-            jobContractService.saveOrUpdate(bill, user);
+            gen_bill savedBill = jobContractService.saveOrUpdate(bill, user);
+            
+            return ResponseEntity.ok("SUCCESS:" + userDetails.getId() + ":" + savedBill.getContractNo());
 
         } catch (Exception e) {
             e.printStackTrace();
@@ -195,7 +197,6 @@ public class JobContractController {
             return ResponseEntity.internalServerError().body(errorMsg);
         }
 
-        return ResponseEntity.ok("SUCCESS");
     }
 
     /*
@@ -447,6 +448,58 @@ public class JobContractController {
                     .body("Failed to download contract PDF");
         }
     }
+
+    /*
+     * =====================
+     * DOWNLOAD CONTRACT IMAGE
+     * =====================
+     */
+    @GetMapping("/api/download-contract-image/{userId}/{contractNo}")
+    public ResponseEntity<?> downloadContractImage(
+            @PathVariable Long userId,
+            @PathVariable Integer contractNo,
+            Authentication authentication) {
+
+        try {
+            CustomUserDetails userDetails = (CustomUserDetails) authentication.getPrincipal();
+
+            // Security check
+            if (!userDetails.getId().equals(userId)) {
+                return ResponseEntity.status(403).body("Access Denied");
+            }
+
+            // Fetch contract
+            gen_bill contract = jobContractService.getByUserIdAndContractNo(userId, contractNo);
+
+            if (contract == null) {
+                return ResponseEntity.status(404).body("Contract not found");
+            }
+
+            // Generate Image
+            byte[] imageBytes = contractImageGenerationService.generateContractImage(contract);
+
+            // Prepare download response
+            HttpHeaders headers = new HttpHeaders();
+            headers.setContentType(MediaType.IMAGE_JPEG);
+
+            String filename = "Contract_" + contract.getContractNo() + "_" +
+                    contract.getWeaverName() + ".jpg";
+
+            headers.setContentDispositionFormData("attachment", filename);
+            headers.setContentLength(imageBytes.length);
+
+            return ResponseEntity.ok()
+                    .headers(headers)
+                    .body(imageBytes);
+
+        } catch (Exception e) {
+            System.err.println("Error downloading contract image: " + e.getMessage());
+            e.printStackTrace();
+            return ResponseEntity.internalServerError()
+                    .body("Failed to download contract image");
+        }
+    }
+
 
     /*
      * =====================

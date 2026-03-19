@@ -207,27 +207,26 @@ form.addEventListener("submit", function (e) {
                             if (document.querySelector('input[name="contractNo"]')) {
                                 document.querySelector('input[name="contractNo"]').value = contractNo;
                             }
-                        } else if (parts.length === 2) {
-                            contractNo = parts[1];
-                            if (document.querySelector('input[name="contractNo"]')) {
-                                document.querySelector('input[name="contractNo"]').value = contractNo;
-                            }
                         }
                     }
 
-                    // Show the Generate Contract button instead of redirecting
+                    // Stay on the same contract page instead of redirecting
                     if (userId && contractNo) {
+                        // Change URL to edit mode without reloading the page
+                        window.history.replaceState({}, '', `/gen-bill/edit/${userId}/${contractNo}`);
+                        
+                        // Show the Generate Contract button so user can click it when they want
                         const generateBtn = document.getElementById('generateContractBtn');
                         if (generateBtn) {
                             generateBtn.style.display = 'inline-block';
                         }
-                        
-                        // Change URL to edit mode without reloading the page
-                        window.history.replaceState({}, '', `/gen-bill/edit/${userId}/${contractNo}`);
                     } else {
-                        // Fallback if we still don't have IDs
-                        window.location.href = "/dashboard";
+                        // If we still don't have IDs, something is wrong, but stay on page
+                        console.error("Could not find userId or contractNo after save");
+                        Swal.fire("Warning", "Contract saved, but could not identify the contract number for generation. Please check the 'Report' page.", "warning");
                     }
+
+
                 });
         } else {
             Swal.fire("Error", "Failed to save contract: " + data, "error");
