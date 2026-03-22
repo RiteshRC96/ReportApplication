@@ -12,7 +12,6 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import jakarta.servlet.http.HttpSession;
 
 import java.time.LocalDate;
-import java.util.List;
 
 @Controller
 @RequestMapping("/admin")
@@ -63,17 +62,52 @@ public class AdminController {
      * Show admin dashboard
      */
     @GetMapping("/dashboard")
-    public String showAdminDashboard(HttpSession session, Model model) {
+    public String showAdminDashboard(
+            @RequestParam(defaultValue = "0") int page,
+            HttpSession session, 
+            Model model) {
         // Check if admin is logged in
         if (session.getAttribute("adminId") == null) {
             return "redirect:/admin/login";
         }
 
-        List<Payment> payments = paymentService.getAllPayments();
-        model.addAttribute("payments", payments);
+        org.springframework.data.domain.Page<Payment> paymentPage = paymentService.getPaginatedPayments(page, 5);
+        model.addAttribute("payments", paymentPage.getContent());
+        model.addAttribute("currentPage", page);
+        model.addAttribute("totalPages", paymentPage.getTotalPages());
         model.addAttribute("adminName", session.getAttribute("adminName"));
+
+        // Default 1yr Subscription dates
+        LocalDate today = LocalDate.now();
+        model.addAttribute("defaultStartDate", today);
+        model.addAttribute("defaultEndDate", today.plusYears(1));
         
         return "admin_dashboard";
+    }
+
+    /**
+     * AJAX Endpoint for pagination
+     */
+    @GetMapping("/dashboard/page")
+    public String getPaymentPage(
+            @RequestParam(defaultValue = "0") int page,
+            HttpSession session,
+            Model model) {
+        if (session.getAttribute("adminId") == null) {
+            return "redirect:/admin/login";
+        }
+
+        org.springframework.data.domain.Page<Payment> paymentPage = paymentService.getPaginatedPayments(page, 5);
+        model.addAttribute("payments", paymentPage.getContent());
+        model.addAttribute("currentPage", page);
+        model.addAttribute("totalPages", paymentPage.getTotalPages());
+
+        // Default dates needed for modals inside the fragment
+        LocalDate today = LocalDate.now();
+        model.addAttribute("defaultStartDate", today);
+        model.addAttribute("defaultEndDate", today.plusYears(1));
+
+        return "admin_dashboard :: #payments-table-container";
     }
 
     /**

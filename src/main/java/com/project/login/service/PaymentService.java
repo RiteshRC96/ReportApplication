@@ -20,20 +20,27 @@ public class PaymentService {
      * Save payment details
      */
     public Payment savePayment(String email, String userName,
-                               String mobileNumber, String utrNumber) {
+                               String mobileNumber, String utrNumber, Double amount) {
 
         Payment payment = new Payment();
         payment.setEmail(email.trim().toLowerCase());
         payment.setUserName(userName);
         payment.setMobileNumber(mobileNumber);
         payment.setUtrNumber(utrNumber.trim().toUpperCase());
+        payment.setAmount(amount);
         payment.setPaymentDate(LocalDateTime.now());
         payment.setStatus(PaymentStatus.PENDING);
 
         return paymentRepository.save(payment);
     }
     public List<Payment> getAllPayments() {
-        return paymentRepository.findAll();
+        return paymentRepository.findAllByOrderByPaymentDateDesc();
+    }
+
+    public org.springframework.data.domain.Page<Payment> getPaginatedPayments(int page, int size) {
+        org.springframework.data.domain.Pageable pageable = 
+            org.springframework.data.domain.PageRequest.of(page, size, org.springframework.data.domain.Sort.by("paymentDate").descending());
+        return paymentRepository.findAll(pageable);
     }
 
     public List<Payment> getAllPaymentsOrderByPaymentDate() {
@@ -43,6 +50,12 @@ public class PaymentService {
     public boolean isUtrExists(String utr) {
         return paymentRepository.existsByUtrNumber(utr.trim().toUpperCase());
     }
+
+    @Autowired
+    private WalletService walletService;
+
+    @Autowired
+    private UserService userService;
 
     /**
      * Get latest payment by email
@@ -78,7 +91,16 @@ public class PaymentService {
         payment.setSubscriptionEndDate(endDate);
         payment.setApprovalDate(LocalDateTime.now());
 
-        return paymentRepository.save(payment);
+        Payment savedPayment = paymentRepository.save(payment);
+
+        // ✅ Add funds to wallet if amount exists
+        if (savedPayment.getAmount() != null && savedPayment.getAmount() > 0) {
+            userService.findByEmail(savedPayment.getEmail()).ifPresent(user -> {
+                walletService.addFunds(user, savedPayment.getAmount(), "Payment approved for UTR: " + savedPayment.getUtrNumber());
+            });
+        }
+
+        return savedPayment;
     }
 
     /**

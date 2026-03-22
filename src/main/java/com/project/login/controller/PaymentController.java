@@ -28,7 +28,12 @@ public class PaymentController {
      * Display payment page
      */
     @GetMapping
-    public String showPaymentPage() {
+    public String showPaymentPage(Model model, org.springframework.security.core.Authentication authentication) {
+        if (authentication != null && authentication.getPrincipal() instanceof com.project.security.CustomUserDetails) {
+            com.project.security.CustomUserDetails userDetails = (com.project.security.CustomUserDetails) authentication.getPrincipal();
+            model.addAttribute("userName", userDetails.getName());
+            model.addAttribute("email", userDetails.getUsername());
+        }
         return "payment";
     }
 
@@ -41,6 +46,7 @@ public class PaymentController {
             @RequestParam String userName,
             @RequestParam String mobileNumber,
             @RequestParam String utrNumber,
+            @RequestParam Double amount,
             RedirectAttributes redirectAttributes) {
 
         try {
@@ -64,6 +70,9 @@ public class PaymentController {
             if (utrNumber.isEmpty())
                 return errorRedirect("UTR number is required", redirectAttributes);
 
+            if (amount == null || amount <= 0)
+                return errorRedirect("Amount must be greater than 0", redirectAttributes);
+
             // -------- Format Validation --------
             if (!EMAIL_PATTERN.matcher(email).matches())
                 return errorRedirect("Invalid email format", redirectAttributes);
@@ -77,7 +86,7 @@ public class PaymentController {
 
             // -------- Save Payment --------
             Payment payment = paymentService.savePayment(
-                    email, userName, mobileNumber, utrNumber
+                    email, userName, mobileNumber, utrNumber, amount
             );
 
             redirectAttributes.addFlashAttribute(

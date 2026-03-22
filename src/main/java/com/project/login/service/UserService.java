@@ -18,13 +18,25 @@ public class UserService {
     @Autowired
     private PasswordEncoder passwordEncoder;
 
+    @Autowired
+    private WalletService walletService;
+
     public void saveUser(User user) {
     	System.out.println("saveuser method hit");
     	String password = passwordEncoder.encode(user.getPassword());
     	user.setPassword(password);
-    	repo.save(user);
+    	User savedUser = repo.save(user);
+
+        // ✅ Create wallet automatically
+        if (savedUser != null && savedUser.getId() != null) {
+            walletService.createWallet(savedUser);
+        }
     }
     public Optional<User> findByEmail(String email) {
         return repo.findByEmail(email);
+    }
+    
+    public User findById(Long id) {
+        return repo.findById(id).orElse(null);
     }
 }

@@ -164,81 +164,81 @@ public class ContractImageGenerationService {
             float scaleX = image.getWidth() / 595f;
             float scaleY = image.getHeight() / 842f;
 
-            /* ---------------------------
+            /* ---------------------------	
                CONTRACT INFORMATION
             ----------------------------*/
             if (contract.getContractNo() != null) {
-                drawText(g2d, contract.getContractNo().toString(), 160, 638, scaleX, scaleY);
+                drawText(g2d, contract.getContractNo().toString(), 160, 684, scaleX, scaleY);
             }
 
             if (contract.getContractDate() != null) {
-                drawText(g2d, contract.getContractDate().toString(), 480, 638, scaleX, scaleY);
+                drawText(g2d, contract.getContractDate().toString(), 480, 684, scaleX, scaleY);
             }
 
             /* ---------------------------
                PARTIES
             ----------------------------*/
             if (contract.getWeaverName() != null) {
-                drawText(g2d, contract.getWeaverName(), 140, 600, scaleX, scaleY);
+                drawText(g2d, contract.getWeaverName(), 140, 642, scaleX, scaleY);
             }
 
             if (contract.getTraderName() != null) {
-                drawText(g2d, contract.getTraderName(), 140, 560, scaleX, scaleY);
+                drawText(g2d, contract.getTraderName(), 140, 597, scaleX, scaleY);
             }
 
             if (contract.getBrokerName() != null) {
-                drawText(g2d, contract.getBrokerName(), 140, 520, scaleX, scaleY);
+                drawText(g2d, contract.getBrokerName(), 140, 551, scaleX, scaleY);
             }
 
             if (contract.getQuality() != null) {
-                drawText(g2d, contract.getQuality(), 140, 483, scaleX, scaleY);
+                drawText(g2d, contract.getQuality(), 140, 515, scaleX, scaleY);
             }
 
             /* ---------------------------
                JOB DETAILS
             ----------------------------*/
             if (contract.getQuantityMeters() != null) {
-                drawText(g2d, contract.getQuantityMeters().toString(), 140, 447, scaleX, scaleY);
+                drawText(g2d, contract.getQuantityMeters().toString(), 140, 473, scaleX, scaleY);
             }
             
             if (contract.getSizingfabric() != null) {
-                drawText(g2d, contract.getSizingfabric(), 180, 447, scaleX, scaleY);
+                drawText(g2d, contract.getSizingfabric(), 180, 473, scaleX, scaleY);
             }
             
             if (contract.getBeams() != null) {
-                drawText(g2d, contract.getBeams().toString(), 450, 447, scaleX, scaleY);
+                drawText(g2d, contract.getBeams().toString(), 450, 473, scaleX, scaleY);
             }
 
             if (contract.getJobRate() != null) {
-                drawText(g2d, contract.getJobRate().toString(), 140, 405, scaleX, scaleY);
+                drawText(g2d, contract.getJobRate().toString(), 140, 430, scaleX, scaleY);
             }
             
             if (contract.getPaymentDays() != null) {
-                drawText(g2d, contract.getPaymentDays().toString(), 480, 405, scaleX, scaleY);
+                drawText(g2d, contract.getPaymentDays().toString(), 474, 430, scaleX, scaleY);
             }
 
             if (contract.getProductionSchedule() != null) {
-                drawText(g2d, contract.getProductionSchedule(), 250, 370, scaleX, scaleY);
+                drawText(g2d, contract.getProductionSchedule(), 250, 390, scaleX, scaleY);
             }
             
             if (contract.getNoOfMachines() != null) {
-                drawText(g2d, contract.getNoOfMachines().toString(), 550, 370, scaleX, scaleY);
+                drawText(g2d, contract.getNoOfMachines().toString(), 545, 390, scaleX, scaleY);
             }
 
             if (contract.getRemark() != null) {
-                drawText(g2d, contract.getRemark(), 140, 330, scaleX, scaleY);
+                drawText(g2d, contract.getRemark(), 140, 350, scaleX, scaleY);
             }
 
             if (contract.getCutLength() != null) {
-                drawText(g2d, contract.getCutLength(), 140, 295, scaleX, scaleY);
+                drawText(g2d, contract.getCutLength(), 140, 310, scaleX, scaleY);
             }
 
             if (contract.getMinimumDelivery() != null) {
-                drawText(g2d, contract.getMinimumDelivery(), 365, 295, scaleX, scaleY);
+                drawText(g2d, contract.getMinimumDelivery(), 365, 310, scaleX, scaleY);
             }
 
             if (contract.getRollingFolding() != null) {
-                drawText(g2d, contract.getRollingFolding(), 400, 295, scaleX, scaleY);
+                drawText(g2d, contract.getRollingFolding(), 390, 310, scaleX, scaleY);
             }
 
             g2d.dispose();

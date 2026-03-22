@@ -8,8 +8,10 @@ import com.project.login.service.JobContractService;
 import com.project.login.service.QualityMasterService;
 import com.project.login.service.WeaverTraderService;
 import com.project.login.service.ContractImageGenerationService;
+import com.project.login.service.WalletService;
 import com.project.security.CustomUserDetails;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
@@ -31,14 +33,19 @@ public class JobContractController {
     private final WeaverTraderService weaverTraderService;
     private final ContractImageGenerationService contractImageGenerationService;
 
+    @Autowired
+    private WalletService walletService;
+
     public JobContractController(JobContractService jobContractService,
             WeaverTraderService weaverTraderService,
             QualityMasterService qulitymasterMasterService,
-            ContractImageGenerationService contractImageGenerationService) {
+            ContractImageGenerationService contractImageGenerationService,
+            WalletService walletService) {
         this.qulitymasterMasterService = qulitymasterMasterService;
         this.jobContractService = jobContractService;
         this.weaverTraderService = weaverTraderService;
         this.contractImageGenerationService = contractImageGenerationService;
+        this.walletService = walletService;
     }
 
     /*
@@ -160,6 +167,16 @@ public class JobContractController {
                 bill.setContractNo(contractNo); // ✅ FIXED
             }
 
+            // ✅ WALLET CHECK (Only for NEW contracts, not updates)
+            boolean isUpdate = (contractNo != null && jobContractService.existsByUserIdAndContractNo(user.getId(), contractNo));
+            
+            if (!isUpdate) {
+                Double balance = walletService.getBalance(user.getId());
+                if (balance < 10) {
+                    return ResponseEntity.ok("ERROR:Insufficient wallet balance. Please recharge your wallet.");
+                }
+            }
+
             bill.setUserId(user.getId()); // ✅ FIXED
             bill.setContractDate(contract_date);
             bill.setWeaverName(weaver_name);
@@ -188,6 +205,11 @@ public class JobContractController {
             // 🔄 Same service handles save or update
             gen_bill savedBill = jobContractService.saveOrUpdate(bill, user);
             
+            // ✅ DEDUCT WALLET (Only for NEW contracts)
+            if (!isUpdate) {
+                walletService.deduct(user, 10.0, "Contract Creation: " + savedBill.getContractNo());
+            }
+
             return ResponseEntity.ok("SUCCESS:" + userDetails.getId() + ":" + savedBill.getContractNo());
 
         } catch (Exception e) {

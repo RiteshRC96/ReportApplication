@@ -24,6 +24,9 @@ public class AuthController {
     @Autowired
     private PaymentService paymentService;
 
+    @Autowired
+    private com.project.login.service.WalletService walletService;
+
     @GetMapping("/")
     public String loginPage() {
         return "login";
@@ -84,6 +87,7 @@ public class AuthController {
         }
 
         model.addAttribute("username", username);
+        model.addAttribute("walletBalance", walletService.getBalance(userDetails.getId()));
         return "dashboard";
     }
 }

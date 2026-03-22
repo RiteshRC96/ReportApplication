@@ -33,13 +33,16 @@ public class ReportController {
 
     private final JobContractService jobContractService;
     private final JobContractPdfService jobContractPdfService;
+    private final com.project.login.service.WalletService walletService;
 
     public ReportController(
             JobContractService jobContractService,
-            JobContractPdfService jobContractPdfService
+            JobContractPdfService jobContractPdfService,
+            com.project.login.service.WalletService walletService
     ) {
         this.jobContractService = jobContractService;
         this.jobContractPdfService = jobContractPdfService;
+        this.walletService = walletService;
     }
 
     /* ==========================
@@ -78,6 +81,7 @@ public class ReportController {
                 (CustomUserDetails) authentication.getPrincipal();
 
         String userName = userDetails.getName();
+        Long userId = userDetails.getId();
 
         List<gen_bill> allReports = jobContractService.searchReportsByUser(
                 userName,
@@ -87,13 +91,17 @@ public class ReportController {
                 toDate
         );
 
-        // Pagination logic with 7 records per page
+        // ... (pagination logic) ...
         int pageSize = 7;
         int start = page * pageSize;
         int end = Math.min(start + pageSize, allReports.size());
         
         List<gen_bill> paginatedReports = allReports.subList(start, end);
         int totalPages = (int) Math.ceil((double) allReports.size() / pageSize);
+
+        // ✅ Add Wallet Balance
+        Double walletBalance = walletService.getBalance(userId);
+        model.addAttribute("walletBalance", walletBalance);
 
         model.addAttribute("reports", paginatedReports);
         model.addAttribute("weaverName", weaverName);

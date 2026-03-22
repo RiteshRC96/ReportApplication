@@ -36,7 +36,7 @@ public interface JobContractRepository extends JpaRepository<gen_bill, Long> {
        ========================== */
     Optional<gen_bill> findByUserIdAndContractNo(
             Long userId,
-            Long contractNo
+            Integer contractNo
     );
 
     /* ==========================
@@ -44,7 +44,7 @@ public interface JobContractRepository extends JpaRepository<gen_bill, Long> {
        ========================== */
     boolean existsByUserIdAndContractNo(
             Long userId,
-            Long contractNo
+            Integer contractNo
     );
 
     /* ==========================
@@ -68,9 +68,5 @@ public interface JobContractRepository extends JpaRepository<gen_bill, Long> {
             @Param("userId") Long userId
     );
     
-    Optional<gen_bill> findByUserIdAndContractNo(
-            Long userId,
-            Integer contractNo   // ✅ must be Integer
-    );
 
 }

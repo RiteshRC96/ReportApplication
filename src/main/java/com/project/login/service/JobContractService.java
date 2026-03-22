@@ -19,6 +19,10 @@ public class JobContractService {
         this.jobContractRepository = jobContractRepository;
     }
 
+    public boolean existsByUserIdAndContractNo(Long userId, Integer contractNo) {
+        return jobContractRepository.existsByUserIdAndContractNo(userId, contractNo);
+    }
+
     /* ==========================
        FIND (EDIT / DELETE)
        ========================== */

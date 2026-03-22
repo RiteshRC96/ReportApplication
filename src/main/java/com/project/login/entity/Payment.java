@@ -42,6 +42,9 @@ public class Payment {
     private String adminNotes;
 
     @Column(nullable = true)
+    private Double amount;
+
+    @Column(nullable = true)
     private LocalDateTime approvalDate;
 
     /* ========= CONSTRUCTORS ========= */
@@ -136,6 +139,14 @@ public class Payment {
 
     public void setAdminNotes(String adminNotes) {
         this.adminNotes = adminNotes;
+    }
+
+    public Double getAmount() {
+        return amount;
+    }
+
+    public void setAmount(Double amount) {
+        this.amount = amount;
     }
 
     public LocalDateTime getApprovalDate() {
