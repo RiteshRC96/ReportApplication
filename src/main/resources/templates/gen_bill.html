@@ -503,14 +503,12 @@
 
         <!-- ACTION BUTTONS -->
         <div style="text-align: center; margin-top: 25px; margin-bottom: 20px;">
-            <button type="submit" id="submitBtn" class="btn btn-secondary" style="padding: 10px 40px; font-weight: bold; font-size: 14px;">SUBMIT</button>
-            <button type="reset" class="btn btn-warning" style="padding: 10px 40px; font-weight: bold; margin-left: 15px; font-size: 14px;">RESET</button>
-            
-            <!-- Generate Contract Button (Only for existing contracts) -->
-            <button type="button" id="generateContractBtn" class="btn btn-success" style="padding: 10px 40px; font-weight: bold; margin-left: 15px; font-size: 14px; display: none;" onclick="generateContractImage()">
+            <!-- Single Generate Contract Button which saves and then asks to generate -->
+            <button type="submit" id="generateContractBtn" class="btn btn-success" style="padding: 10px 40px; font-weight: bold; font-size: 14px;">
                 <i class="bi bi-image"></i> GENERATE CONTRACT
             </button>
-            
+
+            <button type="reset" class="btn btn-warning" style="padding: 10px 40px; font-weight: bold; margin-left: 15px; font-size: 14px;">RESET</button>
             <a href="/dashboard" class="btn btn-danger" style="padding: 10px 40px; font-weight: bold; margin-left: 15px; font-size: 14px;">CANCEL</a>
         </div>
 
@@ -700,9 +698,9 @@ document.addEventListener("DOMContentLoaded", function() {
 
         // Ask the user for the format
         Swal.fire({
-            title: "Generate Contract",
+            title: "Job contract saved successfully",
             text: "Which format would you like to generate?",
-            icon: "question",
+            icon: "success",
             showCancelButton: true,
             showDenyButton: true,
             confirmButtonText: '<i class="bi bi-file-earmark-pdf"></i> PDF Format',
@@ -805,14 +803,13 @@ document.addEventListener("DOMContentLoaded", function() {
     }
 
 
-    // Show Generate Contract button only for existing contracts
+    // Logic for Generate Contract button
     document.addEventListener('DOMContentLoaded', function() {
         const contractNoInput = document.querySelector('input[name="contractNo"]');
         const generateBtn = document.getElementById('generateContractBtn');
-        const editModeInput = document.querySelector('input[value="true"]'); // Check if in edit mode
 
-        // Show button if contract number exists (i.e., contract is saved)
-        if (contractNoInput && contractNoInput.value) {
+        // Always show the button since it's now our main submit button
+        if (generateBtn) {
             generateBtn.style.display = 'inline-block';
         }
     });
@@ -827,7 +824,7 @@ document.addEventListener("DOMContentLoaded", function() {
 
 <!-- FOOTER -->
 <footer>
-    © All Rights Reserved Shree Guru Soft Sol.
+   © All Rights Reserved ShreeGuru Software Solution.V:1.1
 </footer>
 
 </body>

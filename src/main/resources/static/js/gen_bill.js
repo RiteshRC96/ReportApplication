@@ -14,7 +14,7 @@ document.addEventListener("DOMContentLoaded", function () {
 // DOM Elements
 const form = document.getElementById("billForm");
 const loader = document.getElementById("loadingOverlay");
-const submitBtn = document.getElementById("submitBtn");
+const submitBtn = document.getElementById("generateContractBtn"); // Changed from submitBtn to match HTML ID
 
 // Initialize Select2 and event listeners
 $(document).ready(function() {
@@ -187,47 +187,43 @@ form.addEventListener("submit", function (e) {
         submitBtn.disabled = false;
         
         if (data === "SUCCESS" || data.startsWith("SUCCESS:")) {
-            Swal.fire("Success", "Job contract saved successfully", "success")
-                .then(() => {
-                    // Get the userId and contractNo from form
-                    let userId = document.querySelector('input[name="userId"]')?.value;
-                    let contractNo = document.querySelector('input[name="contractNo"]')?.value;
+            // Get the userId and contractNo from form
+            let userId = document.querySelector('input[name="userId"]')?.value;
+            let contractNo = document.querySelector('input[name="contractNo"]')?.value;
+            
+            // If backend returned the ids
+            if (data.startsWith("SUCCESS:")) {
+                const parts = data.split(":");
+                if (parts.length >= 3) {
+                    userId = parts[1];
+                    contractNo = parts[2];
                     
-                    // If backend returned the ids
-                    if (data.startsWith("SUCCESS:")) {
-                        const parts = data.split(":");
-                        if (parts.length >= 3) {
-                            userId = parts[1];
-                            contractNo = parts[2];
-                            
-                            // populate hidden inputs if missing
-                            if (document.querySelector('input[name="userId"]')) {
-                                document.querySelector('input[name="userId"]').value = userId;
-                            }
-                            if (document.querySelector('input[name="contractNo"]')) {
-                                document.querySelector('input[name="contractNo"]').value = contractNo;
-                            }
-                        }
+                    // populate hidden inputs if missing
+                    if (document.querySelector('input[name="userId"]')) {
+                        document.querySelector('input[name="userId"]').value = userId;
                     }
-
-                    // Stay on the same contract page instead of redirecting
-                    if (userId && contractNo) {
-                        // Change URL to edit mode without reloading the page
-                        window.history.replaceState({}, '', `/gen-bill/edit/${userId}/${contractNo}`);
-                        
-                        // Show the Generate Contract button so user can click it when they want
-                        const generateBtn = document.getElementById('generateContractBtn');
-                        if (generateBtn) {
-                            generateBtn.style.display = 'inline-block';
-                        }
-                    } else {
-                        // If we still don't have IDs, something is wrong, but stay on page
-                        console.error("Could not find userId or contractNo after save");
-                        Swal.fire("Warning", "Contract saved, but could not identify the contract number for generation. Please check the 'Report' page.", "warning");
+                    if (document.querySelector('input[name="contractNo"]')) {
+                        document.querySelector('input[name="contractNo"]').value = contractNo;
                     }
+                }
+            }
 
-
-                });
+            // Stay on the same contract page instead of redirecting
+            if (userId && contractNo) {
+                // Change URL to edit mode without reloading the page
+                window.history.replaceState({}, '', `/gen-bill/edit/${userId}/${contractNo}`);
+                
+                // CALL THE GENERATION FUNCTION DIRECTLY WITHOUT INTERMEDIATE POPUP
+                if (typeof generateContractImage === "function") {
+                    generateContractImage();
+                } else {
+                    console.error("generateContractImage function not found");
+                }
+            } else {
+                // If we still don't have IDs, something is wrong, but stay on page
+                console.error("Could not find userId or contractNo after save");
+                Swal.fire("Warning", "Contract saved, but could not identify the contract number for generation. Please check the 'Report' page.", "warning");
+            }
         } else {
             Swal.fire("Error", "Failed to save contract: " + data, "error");
             console.error("Server response:", data);
