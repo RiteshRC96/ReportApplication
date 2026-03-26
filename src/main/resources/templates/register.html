@@ -1,6 +1,8 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Register</title>
 
 <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
@@ -9,7 +11,7 @@
 /* ---------- GLOBAL ---------- */
 body {
   margin: 0;
-  height: 100vh;
+  min-height: 100vh;
   font-family: 'Segoe UI', sans-serif;
   display: flex;
   align-items: center;
@@ -19,6 +21,7 @@ body {
     url("https://t4.ftcdn.net/jpg/17/42/93/47/240_F_1742934729_zZy9JHoPHwI1G7xBOGUdAE47A9N6zarS.jpg");
   background-size: cover;
   background-position: center;
+  padding: 20px;
 }
 
 /* ---------- WRAPPER ---------- */
@@ -26,6 +29,7 @@ body {
   display: flex;
   flex-direction: column;
   align-items: center;
+  width: 100%;
 }
 
 /* ---------- TITLE ---------- */
@@ -34,12 +38,14 @@ body {
   font-size: 26px;
   font-weight: 600;
   margin-bottom: 18px;
+  text-align: center;
 }
 
 /* ---------- CARD ---------- */
 .login-card {
-  width: 420px;
-  padding: 36px 34px;
+  width: 100%;
+  max-width: 420px;
+  padding: 30px 25px;
   border-radius: 14px;
   background: rgba(255,255,255,0.92);
   backdrop-filter: blur(8px);
@@ -106,16 +112,25 @@ body {
   display: flex;
   justify-content: space-between;
   margin-bottom: 14px;
+  gap: 5px;
 }
 
 .otp-boxes input {
-  width: 48px;
+  width: 100%;
+  max-width: 48px;
   height: 48px;
   text-align: center;
   font-size: 18px;
   border-radius: 8px;
   border: 1px solid #ced4da;
   transition: all 0.2s ease;
+}
+
+@media (max-width: 380px) {
+  .otp-boxes input {
+    height: 40px;
+    font-size: 16px;
+  }
 }
 
 .otp-boxes input:focus {

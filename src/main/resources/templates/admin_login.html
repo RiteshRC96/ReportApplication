@@ -1,6 +1,8 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Admin Login</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
     
@@ -8,12 +10,13 @@
         /* ---------- GLOBAL ---------- */
         body {
             margin: 0;
-            height: 100vh;
+            min-height: 100vh;
             font-family: 'Segoe UI', sans-serif;
             display: flex;
             align-items: center;
             justify-content: center;
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            padding: 20px;
         }
 
         /* ---------- LOGIN WRAPPER ---------- */
@@ -22,7 +25,7 @@
             flex-direction: column;
             align-items: center;
             width: 100%;
-            padding: 20px;
+            max-width: 100%;
         }
 
         /* ---------- ADMIN ICON ---------- */
@@ -38,19 +41,21 @@
             font-size: 28px;
             font-weight: 700;
             margin-bottom: 10px;
+            text-align: center;
         }
 
         .admin-subtitle {
             color: rgba(255,255,255,0.9);
             font-size: 14px;
             margin-bottom: 30px;
+            text-align: center;
         }
 
         /* ---------- LOGIN CARD ---------- */
         .admin-login-card {
             width: 100%;
             max-width: 400px;
-            padding: 40px;
+            padding: 30px;
             border-radius: 16px;
             background: rgba(255,255,255,0.95);
             backdrop-filter: blur(10px);
