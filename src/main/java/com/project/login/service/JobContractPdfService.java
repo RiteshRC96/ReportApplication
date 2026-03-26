@@ -25,123 +25,136 @@ import java.util.List;
 @Service
 public class JobContractPdfService {
 
-    public ByteArrayInputStream export(List<gen_bill> list) {
+        public ByteArrayInputStream export(List<gen_bill> list) {
 
-        ByteArrayOutputStream out = new ByteArrayOutputStream();
+                ByteArrayOutputStream out = new ByteArrayOutputStream();
 
-        try {
+                try {
 
-            PdfWriter writer = new PdfWriter(out);
-            PdfDocument pdfDocument = new PdfDocument(writer);
+                        PdfWriter writer = new PdfWriter(out);
+                        PdfDocument pdfDocument = new PdfDocument(writer);
 
-            // Landscape A4
-            Document document = new Document(pdfDocument, PageSize.A4.rotate());
-            document.setMargins(20, 20, 20, 20);
+                        // Landscape A4
+                        Document document = new Document(pdfDocument, PageSize.A4.rotate());
+                        document.setMargins(20, 20, 20, 20);
 
-            PdfFont boldFont = PdfFontFactory.createFont(StandardFonts.HELVETICA_BOLD);
-            PdfFont normalFont = PdfFontFactory.createFont(StandardFonts.HELVETICA);
+                        PdfFont boldFont = PdfFontFactory.createFont(StandardFonts.HELVETICA_BOLD);
+                        PdfFont normalFont = PdfFontFactory.createFont(StandardFonts.HELVETICA);
 
-            // ===== Title =====
-            Paragraph title = new Paragraph("JOB CONTRACT REPORT")
-                    .setFont(boldFont)
-                    .setFontSize(12)
-                    .setTextAlignment(TextAlignment.CENTER);
-
-            document.add(title);
-            document.add(new Paragraph(" "));
-
-            Table table = new Table(UnitValue.createPercentArray(21));
-            table.setWidth(UnitValue.createPercentValue(100));
-            table.setAutoLayout();
-
-            // ===== Header Row =====
-            String[] headers = {
-                    "Contract No", "Contract Date", "Weaver", "Trader", "Quality",
-                    "Quantity","Sizing/Fabric", "Beams", "Job Rate", "Pick", "Rate", "Amount",
-                    "Brokerage % Amt", "Brokerage Mtr Amt", "Payment Days",
-                    "Production Schedule", "Machines", "Remark",
-                    "Cut Length", "Minimum Delivery", "Rolling/Folding", "Created At"
-            };
-
-            for (String header : headers) {
-                table.addHeaderCell(
-                        new Cell()
-                                .add(new Paragraph(header)
+                        // ===== Title =====
+                        Paragraph title = new Paragraph("JOB CONTRACT REPORT")
                                         .setFont(boldFont)
-                                        .setFontSize(8))
-                                .setTextAlignment(TextAlignment.CENTER)
-                                .setVerticalAlignment(VerticalAlignment.MIDDLE)
-                );
-            }
+                                        .setFontSize(12)
+                                        .setTextAlignment(TextAlignment.CENTER);
 
-            DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("dd-MM-yyyy");
-            DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("dd-MM-yyyy HH:mm");
+                        document.add(title);
+                        document.add(new Paragraph(" "));
 
-            // ===== Data Rows =====
-            for (gen_bill bill : list) {
+                        Table table = new Table(UnitValue.createPercentArray(20));
+                        table.setWidth(UnitValue.createPercentValue(100));
+                        table.setAutoLayout();
 
-                Integer qty = bill.getQuantityMeters();
-                Double rate = bill.getJobRate();
+                        // ===== Header Row =====
+                        String[] headers = {
+                                        "Contract No", "Contract Date", "Weaver\nTrader", "Quality",
+                                        "Quantity", "Sizing/Fabric", "Beams", "Job Rate", "Pick", "Rate", "Amount",
+                                        "Brokerage % Amt", "Brokerage Mtr Amt", "Payment Days",
+                                        "Production Schedule", "Machines", "Remark",
+                                        "Cut Length", "Minimum Delivery", "Rolling/Folding"
+                        };
 
-                table.addCell(getCell(String.valueOf(bill.getContractNo()), normalFont));
+                        for (String header : headers) {
+                                table.addHeaderCell(
+                                                new Cell()
+                                                                .add(new Paragraph(header)
+                                                                                .setFont(boldFont)
+                                                                                .setFontSize(8))
+                                                                .setTextAlignment(TextAlignment.CENTER)
+                                                                .setVerticalAlignment(VerticalAlignment.MIDDLE));
+                        }
 
-                table.addCell(getCell(
-                        bill.getContractDate() != null
-                                ? bill.getContractDate().format(dateFormatter)
-                                : "-", normalFont));
+                        DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("dd-MM-yyyy");
+                        // DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("dd-MM-yyyy
+                        // HH:mm");
 
-                table.addCell(getCell(bill.getWeaverName(), normalFont));
-                table.addCell(getCell(bill.getTraderName(), normalFont));
-                table.addCell(getCell(bill.getQuality(), normalFont));
-                table.addCell(getCell(bill.getSizingfabric(), normalFont));
-                table.addCell(getCell(qty != null ? qty.toString() : "0", normalFont));
-                table.addCell(getCell(bill.getBeams() != null ? bill.getBeams().toString() : "0", normalFont));
-                table.addCell(getCell(rate != null ? rate.toString() : "0", normalFont));
-                
-                // New calculation columns
-                table.addCell(getCell(bill.getPick() != null ? String.format("%.2f", bill.getPick()) : "0.00", normalFont));
-                table.addCell(getCell(bill.getRate() != null ? String.format("%.2f", bill.getRate()) : "0.00", normalFont));
-                table.addCell(getCell(bill.getAmount() != null ? String.format("%.2f", bill.getAmount()) : "0.00", normalFont));
-                table.addCell(getCell(bill.getBrokeragePercentAmt() != null ? String.format("%.2f", bill.getBrokeragePercentAmt()) : "0.00", normalFont));
-                table.addCell(getCell(bill.getBrokerageMtrAmt() != null ? String.format("%.2f", bill.getBrokerageMtrAmt()) : "0.00", normalFont));
-                
-                table.addCell(getCell(bill.getPaymentDays() != null ? bill.getPaymentDays().toString() : "-", normalFont));
+                        // ===== Data Rows =====
+                        for (gen_bill bill : list) {
 
-                // ✅ Production Schedule
-                table.addCell(getCell(bill.getProductionSchedule(), normalFont));
+                                Integer qty = bill.getQuantityMeters();
+                                Double rate = bill.getJobRate();
 
-                // ✅ Machines (THIS WAS MISSING)
-                table.addCell(getCell(
-                        bill.getNoOfMachines() != null ? bill.getNoOfMachines().toString() : "-", normalFont));
+                                table.addCell(getCell(String.valueOf(bill.getContractNo()), normalFont));
 
-                // ✅ Remark
-                table.addCell(getCell(bill.getRemark(), normalFont));
+                                table.addCell(getCell(
+                                                bill.getContractDate() != null
+                                                                ? bill.getContractDate().format(dateFormatter)
+                                                                : "-",
+                                                normalFont));
 
-                table.addCell(getCell(bill.getCutLength(), normalFont));
-                table.addCell(getCell(bill.getMinimumDelivery(), normalFont));
-                table.addCell(getCell(bill.getRollingFolding(), normalFont));
+                                // Combine Weaver and Trader
+                                String weaver = bill.getWeaverName() != null ? bill.getWeaverName() : "-";
+                                String trader = bill.getTraderName() != null ? bill.getTraderName() : "-";
+                                table.addCell(getCell(weaver + "\n" + trader, normalFont));
 
-                table.addCell(getCell(
-                        bill.getCreatedAt() != null
-                                ? bill.getCreatedAt().format(dateTimeFormatter)
-                                : "-", normalFont));
-            }
+                                table.addCell(getCell(bill.getQuality(), normalFont));
+                                table.addCell(getCell(qty != null ? qty.toString() : "0", normalFont));
+                                table.addCell(getCell(bill.getSizingfabric(), normalFont));
+                                table.addCell(getCell(bill.getBeams() != null ? bill.getBeams().toString() : "0",
+                                                normalFont));
+                                table.addCell(getCell(rate != null ? rate.toString() : "0", normalFont));
 
-            document.add(table);
-            document.close();
+                                // New calculation columns
+                                table.addCell(getCell(
+                                                bill.getPick() != null ? String.format("%.2f", bill.getPick()) : "0.00",
+                                                normalFont));
+                                table.addCell(getCell(
+                                                bill.getRate() != null ? String.format("%.2f", bill.getRate()) : "0.00",
+                                                normalFont));
+                                table.addCell(getCell(bill.getAmount() != null ? String.format("%.2f", bill.getAmount())
+                                                : "0.00", normalFont));
+                                table.addCell(getCell(bill.getBrokeragePercentAmt() != null
+                                                ? String.format("%.2f", bill.getBrokeragePercentAmt())
+                                                : "0.00", normalFont));
+                                table.addCell(getCell(bill.getBrokerageMtrAmt() != null
+                                                ? String.format("%.2f", bill.getBrokerageMtrAmt())
+                                                : "0.00", normalFont));
 
-        } catch (Exception e) {
-            e.printStackTrace();
+                                table.addCell(getCell(
+                                                bill.getPaymentDays() != null ? bill.getPaymentDays().toString() : "-",
+                                                normalFont));
+
+                                // ✅ Production Schedule
+                                table.addCell(getCell(bill.getProductionSchedule(), normalFont));
+
+                                // ✅ Machines
+                                table.addCell(getCell(
+                                                bill.getNoOfMachines() != null ? bill.getNoOfMachines().toString()
+                                                                : "-",
+                                                normalFont));
+
+                                // ✅ Remark
+                                table.addCell(getCell(bill.getRemark(), normalFont));
+
+                                table.addCell(getCell(bill.getCutLength(), normalFont));
+                                table.addCell(getCell(bill.getMinimumDelivery(), normalFont));
+                                table.addCell(getCell(bill.getRollingFolding(), normalFont));
+                        }
+
+                        document.add(table);
+                        document.close();
+
+                } catch (Exception e) {
+                        e.printStackTrace();
+                }
+
+                return new ByteArrayInputStream(out.toByteArray());
         }
 
-        return new ByteArrayInputStream(out.toByteArray());
-    }
-
-    private Cell getCell(String text, PdfFont font) {
-        return new Cell()
-                .add(new Paragraph(text != null ? text : "-")
-                        .setFont(font)
-                        .setFontSize(7))
-                .setTextAlignment(TextAlignment.LEFT);
-    }
+        private Cell getCell(String text, PdfFont font) {
+                return new Cell()
+                                .add(new Paragraph(text != null ? text : "-")
+                                                .setFont(font)
+                                                .setFontSize(7))
+                                .setTextAlignment(TextAlignment.LEFT);
+        }
 }

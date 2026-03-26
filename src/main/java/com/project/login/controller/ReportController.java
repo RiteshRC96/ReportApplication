@@ -25,228 +25,214 @@ import org.springframework.web.bind.annotation.*;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 
 @Controller
 @RequestMapping("/report")
 public class ReportController {
 
-    private final JobContractService jobContractService;
-    private final JobContractPdfService jobContractPdfService;
-    private final com.project.login.service.WalletService walletService;
+        private final JobContractService jobContractService;
+        private final JobContractPdfService jobContractPdfService;
+        private final com.project.login.service.WalletService walletService;
 
-    public ReportController(
-            JobContractService jobContractService,
-            JobContractPdfService jobContractPdfService,
-            com.project.login.service.WalletService walletService
-    ) {
-        this.jobContractService = jobContractService;
-        this.jobContractPdfService = jobContractPdfService;
-        this.walletService = walletService;
-    }
-
-    /* ==========================
-       DELETE
-       ========================== */
-    @PostMapping("/delete/{userId}/{contractNo}")
-    public String deleteJobContract(
-            @PathVariable Long userId,
-            @PathVariable int contractNo
-    ) {
-        jobContractService.deleteByUserIdAndContractNo(userId, contractNo);
-        return "redirect:/report";
-    }
-
-    /* ==========================
-       REPORT PAGE
-       ========================== */
-    @GetMapping
-    public String reportPage(
-            @RequestParam(required = false) String weaverName,
-            @RequestParam(required = false) String traderName,
-            @RequestParam(required = false)
-            @DateTimeFormat(iso = DateTimeFormat.ISO.DATE)
-            LocalDate fromDate,
-            @RequestParam(required = false)
-            @DateTimeFormat(iso = DateTimeFormat.ISO.DATE)
-            LocalDate toDate,
-            @RequestParam(defaultValue = "0") int page,
-            Model model
-    ) {
-
-        Authentication authentication =
-                SecurityContextHolder.getContext().getAuthentication();
-
-        CustomUserDetails userDetails =
-                (CustomUserDetails) authentication.getPrincipal();
-
-        String userName = userDetails.getName();
-        Long userId = userDetails.getId();
-
-        List<gen_bill> allReports = jobContractService.searchReportsByUser(
-                userName,
-                weaverName,
-                traderName,
-                fromDate,
-                toDate
-        );
-
-        // ... (pagination logic) ...
-        int pageSize = 7;
-        int start = page * pageSize;
-        int end = Math.min(start + pageSize, allReports.size());
-        
-        List<gen_bill> paginatedReports = allReports.subList(start, end);
-        int totalPages = (int) Math.ceil((double) allReports.size() / pageSize);
-
-        // ✅ Add Wallet Balance
-        Double walletBalance = walletService.getBalance(userId);
-        model.addAttribute("walletBalance", walletBalance);
-
-        model.addAttribute("reports", paginatedReports);
-        model.addAttribute("weaverName", weaverName);
-        model.addAttribute("traderName", traderName);
-        model.addAttribute("fromDate", fromDate);
-        model.addAttribute("toDate", toDate);
-        model.addAttribute("currentPage", page);
-        model.addAttribute("totalPages", totalPages);
-
-        return "report";
-    }
-
-    /* ==========================
-       EXCEL EXPORT
-       ========================== */
-    @GetMapping("/excel")
-    public void exportExcel(
-            @RequestParam(required = false) String weaverName,
-            @RequestParam(required = false) String traderName,
-            @RequestParam(required = false)
-            @DateTimeFormat(iso = DateTimeFormat.ISO.DATE)
-            LocalDate fromDate,
-            @RequestParam(required = false)
-            @DateTimeFormat(iso = DateTimeFormat.ISO.DATE)
-            LocalDate toDate,
-            HttpServletResponse response
-    ) throws IOException {
-
-        Authentication authentication =
-                SecurityContextHolder.getContext().getAuthentication();
-
-        CustomUserDetails userDetails =
-                (CustomUserDetails) authentication.getPrincipal();
-
-        String userName = userDetails.getName();
-
-        List<gen_bill> data = jobContractService.searchReportsByUser(
-                userName,
-                weaverName,
-                traderName,
-                fromDate,
-                toDate
-        );
-
-        Workbook workbook = new XSSFWorkbook();
-        Sheet sheet = workbook.createSheet("Job Contract Report");
-
-        Row header = sheet.createRow(0);
-        String[] columns = {
-                "Contract No", "Contract Date", "Weaver", "Trader", "Quality",
-                "Quantity","Sizing/Fabric", "Beams", "Job Rate", "Pick", "Rate", "Amount",
-                "Brokerage % Amt", "Brokerage Mtr Amt", "Payment Days",
-                "Production Schedule", "Machines", "Remark",
-                "Cut Length", "Minimum Delivery", "Rolling/Folding", "Created At"
-        };
-
-        for (int i = 0; i < columns.length; i++) {
-            header.createCell(i).setCellValue(columns[i]);
+        public ReportController(
+                        JobContractService jobContractService,
+                        JobContractPdfService jobContractPdfService,
+                        com.project.login.service.WalletService walletService) {
+                this.jobContractService = jobContractService;
+                this.jobContractPdfService = jobContractPdfService;
+                this.walletService = walletService;
         }
 
-        int rowNum = 1;
-        for (gen_bill g : data) {
-            Row row = sheet.createRow(rowNum++);
-            row.createCell(0).setCellValue(g.getContractNo());
-            row.createCell(1).setCellValue(String.valueOf(g.getContractDate()));
-            row.createCell(2).setCellValue(g.getWeaverName());
-            row.createCell(3).setCellValue(g.getTraderName());
-            row.createCell(4).setCellValue(g.getQuality());
-            row.createCell(5).setCellValue(g.getQuantityMeters());
-            row.createCell(6).setCellValue(g.getSizingfabric());
-            row.createCell(7).setCellValue(g.getBeams());
-            row.createCell(8).setCellValue(g.getJobRate());
-            row.createCell(9).setCellValue(g.getPick() != null ? g.getPick() : 0.0);
-            row.createCell(10).setCellValue(g.getRate() != null ? g.getRate() : 0.0);
-            row.createCell(11).setCellValue(g.getAmount() != null ? g.getAmount() : 0.0);
-            row.createCell(12).setCellValue(g.getBrokeragePercentAmt() != null ? g.getBrokeragePercentAmt() : 0.0);
-            row.createCell(13).setCellValue(g.getBrokerageMtrAmt() != null ? g.getBrokerageMtrAmt() : 0.0);
-            row.createCell(14).setCellValue(g.getPaymentDays());
-            row.createCell(15).setCellValue(g.getProductionSchedule());
-            row.createCell(16).setCellValue(g.getNoOfMachines());
-            row.createCell(17).setCellValue(g.getRemark());
-            row.createCell(18).setCellValue(g.getCutLength());
-            row.createCell(19).setCellValue(g.getMinimumDelivery());
-            row.createCell(20).setCellValue(g.getRollingFolding());
-            row.createCell(21).setCellValue(String.valueOf(g.getCreatedAt()));
+        /*
+         * ==========================
+         * DELETE
+         * ==========================
+         */
+        @PostMapping("/delete/{userId}/{contractNo}")
+        public String deleteJobContract(
+                        @PathVariable Long userId,
+                        @PathVariable int contractNo) {
+                jobContractService.deleteByUserIdAndContractNo(userId, contractNo);
+                return "redirect:/report";
         }
 
-        response.setContentType(
-                "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
-        );
-        response.setHeader(
-                "Content-Disposition",
-                "attachment; filename=job_contract_report.xlsx"
-        );
+        /*
+         * ==========================
+         * REPORT PAGE
+         * ==========================
+         */
+        @GetMapping
+        public String reportPage(
+                        @RequestParam(required = false) String weaverName,
+                        @RequestParam(required = false) String traderName,
+                        @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate fromDate,
+                        @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate toDate,
+                        @RequestParam(defaultValue = "0") int page,
+                        Model model) {
 
-        workbook.write(response.getOutputStream());
-        workbook.close();
-    }
+                Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 
-    /* ==========================
-       PDF EXPORT
-       ========================== */
-    @GetMapping("/pdf")
-    public ResponseEntity<InputStreamResource> exportPdf(
-            @RequestParam(required = false) String weaverName,
-            @RequestParam(required = false) String traderName,
-            @RequestParam(required = false)
-            @DateTimeFormat(iso = DateTimeFormat.ISO.DATE)
-            LocalDate fromDate,
-            @RequestParam(required = false)
-            @DateTimeFormat(iso = DateTimeFormat.ISO.DATE)
-            LocalDate toDate
-    ) {
+                CustomUserDetails userDetails = (CustomUserDetails) authentication.getPrincipal();
 
-        Authentication authentication =
-                SecurityContextHolder.getContext().getAuthentication();
+                String userName = userDetails.getName();
+                Long userId = userDetails.getId();
 
-        CustomUserDetails userDetails =
-                (CustomUserDetails) authentication.getPrincipal();
+                List<gen_bill> allReports = jobContractService.searchReportsByUser(
+                                userName,
+                                weaverName,
+                                traderName,
+                                fromDate,
+                                toDate);
 
-        String userName = userDetails.getName();
+                // ... (pagination logic) ...
+                int pageSize = 7;
+                int start = page * pageSize;
+                int end = Math.min(start + pageSize, allReports.size());
 
-        List<gen_bill> data = jobContractService.searchReportsByUser(
-                userName,
-                weaverName,
-                traderName,
-                fromDate,
-                toDate
-        );
+                List<gen_bill> paginatedReports = allReports.subList(start, end);
+                int totalPages = (int) Math.ceil((double) allReports.size() / pageSize);
 
-        ByteArrayInputStream pdf =
-                jobContractPdfService.export(data);
+                // ✅ Add Wallet Balance
+                Double walletBalance = walletService.getBalance(userId);
+                model.addAttribute("walletBalance", walletBalance);
 
-        HttpHeaders headers = new HttpHeaders();
-        headers.add(
-                "Content-Disposition",
-                "attachment; filename=job_contract_report.pdf"
-        );
+                model.addAttribute("reports", paginatedReports);
+                model.addAttribute("weaverName", weaverName);
+                model.addAttribute("traderName", traderName);
+                model.addAttribute("fromDate", fromDate);
+                model.addAttribute("toDate", toDate);
+                model.addAttribute("currentPage", page);
+                model.addAttribute("totalPages", totalPages);
 
-        @SuppressWarnings("null")
-        ResponseEntity<InputStreamResource> response = ResponseEntity.ok()
-                .headers(headers)
-                .contentType(MediaType.APPLICATION_PDF)
-                .body(new InputStreamResource(pdf));
-        
-        return response;
-    }
+                return "report";
+        }
+
+        /*
+         * ==========================
+         * EXCEL EXPORT
+         * ==========================
+         */
+        @GetMapping("/excel")
+        public void exportExcel(
+                        @RequestParam(required = false) String weaverName,
+                        @RequestParam(required = false) String traderName,
+                        @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate fromDate,
+                        @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate toDate,
+                        HttpServletResponse response) throws IOException {
+
+                Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+
+                CustomUserDetails userDetails = (CustomUserDetails) authentication.getPrincipal();
+
+                String userName = userDetails.getName();
+
+                List<gen_bill> data = jobContractService.searchReportsByUser(
+                                userName,
+                                weaverName,
+                                traderName,
+                                fromDate,
+                                toDate);
+
+                Workbook workbook = new XSSFWorkbook();
+                Sheet sheet = workbook.createSheet("Job Contract Report");
+
+                Row header = sheet.createRow(0);
+                String[] columns = {
+                                "Contract No", "Contract Date", "Weaver", "Trader", "Quality",
+                                "Quantity", "Sizing/Fabric", "Beams", "Job Rate", "Pick", "Rate", "Amount",
+                                "Brokerage % Amt", "Brokerage Mtr Amt", "Payment Days",
+                                "Production Schedule", "Machines", "Remark",
+                                "Cut Length", "Minimum Delivery", "Rolling/Folding", "Created At"
+                };
+
+                for (int i = 0; i < columns.length; i++) {
+                        header.createCell(i).setCellValue(columns[i]);
+                }
+
+                int rowNum = 1;
+                for (gen_bill g : data) {
+                        Row row = sheet.createRow(rowNum++);
+                        row.createCell(0).setCellValue(g.getContractNo());
+                        row.createCell(1).setCellValue(String.valueOf(g.getContractDate()));
+                        row.createCell(2).setCellValue(g.getWeaverName());
+                        row.createCell(3).setCellValue(g.getTraderName());
+                        row.createCell(4).setCellValue(g.getQuality());
+                        row.createCell(5).setCellValue(g.getQuantityMeters());
+                        row.createCell(6).setCellValue(g.getSizingfabric());
+                        row.createCell(7).setCellValue(g.getBeams());
+                        row.createCell(8).setCellValue(g.getJobRate());
+                        row.createCell(9).setCellValue(g.getPick() != null ? g.getPick() : 0.0);
+                        row.createCell(10).setCellValue(g.getRate() != null ? g.getRate() : 0.0);
+                        row.createCell(11).setCellValue(g.getAmount() != null ? g.getAmount() : 0.0);
+                        row.createCell(12).setCellValue(
+                                        g.getBrokeragePercentAmt() != null ? g.getBrokeragePercentAmt() : 0.0);
+                        row.createCell(13).setCellValue(g.getBrokerageMtrAmt() != null ? g.getBrokerageMtrAmt() : 0.0);
+                        row.createCell(14).setCellValue(g.getPaymentDays());
+                        row.createCell(15).setCellValue(g.getProductionSchedule());
+                        row.createCell(16).setCellValue(g.getNoOfMachines());
+                        row.createCell(17).setCellValue(g.getRemark());
+                        row.createCell(18).setCellValue(g.getCutLength());
+                        row.createCell(19).setCellValue(g.getMinimumDelivery());
+                        row.createCell(20).setCellValue(g.getRollingFolding());
+                        row.createCell(21).setCellValue(String.valueOf(g.getCreatedAt()));
+                }
+
+                response.setContentType(
+                                "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet");
+                String dateStr = LocalDate.now().format(DateTimeFormatter.ofPattern("ddMMyyyy"));
+                String fileName = "job_contract_report_" + dateStr + ".xlsx";
+
+                response.setHeader(
+                                "Content-Disposition",
+                                "attachment; filename=" + fileName);
+
+                workbook.write(response.getOutputStream());
+                workbook.close();
+        }
+
+        /*
+         * ==========================
+         * PDF EXPORT
+         * ==========================
+         */
+        @GetMapping("/pdf")
+        public ResponseEntity<InputStreamResource> exportPdf(
+                        @RequestParam(required = false) String weaverName,
+                        @RequestParam(required = false) String traderName,
+                        @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate fromDate,
+                        @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate toDate) {
+
+                Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+
+                CustomUserDetails userDetails = (CustomUserDetails) authentication.getPrincipal();
+
+                String userName = userDetails.getName();
+
+                List<gen_bill> data = jobContractService.searchReportsByUser(
+                                userName,
+                                weaverName,
+                                traderName,
+                                fromDate,
+                                toDate);
+
+                ByteArrayInputStream pdf = jobContractPdfService.export(data);
+
+                HttpHeaders headers = new HttpHeaders();
+                String dateStr = LocalDate.now().format(DateTimeFormatter.ofPattern("dd.MM.yyyy"));
+                String fileName = "job_contract_report_" + dateStr + ".pdf";
+
+                headers.add(
+                                "Content-Disposition",
+                                "attachment; filename=" + fileName);
+
+                @SuppressWarnings("null")
+                ResponseEntity<InputStreamResource> response = ResponseEntity.ok()
+                                .headers(headers)
+                                .contentType(MediaType.APPLICATION_PDF)
+                                .body(new InputStreamResource(pdf));
+
+                return response;
+        }
 }
