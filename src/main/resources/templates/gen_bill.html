@@ -1,6 +1,8 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Generate Job Contract</title>
 
     <!-- Bootstrap -->
@@ -30,6 +32,7 @@
 
     main {
         flex: 1;
+        padding: 15px 10px;
     }
 
     .navbar {
@@ -40,8 +43,7 @@
 
     .navbar-brand {
         font-weight: 600;
-        font-size: 20px;
-        white-space: nowrap;
+        font-size: 18px;
         white-space: nowrap;
     }
 
@@ -57,7 +59,7 @@
 
     .nav-link {
         padding: 0.4rem 10px !important;
-        font-size: 15px;
+        font-size: 14px;
         font-weight: 600;
         color: #ffffff !important;
         position: relative;
@@ -107,7 +109,7 @@
     .btn-logout {
         border-radius: 20px;
         padding: 5px 15px;
-        font-size: 14px;
+        font-size: 13px;
         font-weight: 600;
         transition: all 0.3s ease;
     }
@@ -121,22 +123,23 @@
     footer {
         color: #888;
         text-align: center;
-        padding: 25px 1rem;
+        padding: 20px 1rem;
         margin-top: auto;
         font-size: 12px;
         font-weight: 500;
         border-top: 1px solid #e0e0e0;
-        background: rgba(255,255,255,0.5);
+        background: rgba(255,255,255,0.7);
         letter-spacing: 0.3px;
     }
 
     .bill-card {
         background: white;
         border-radius: 0;
-        padding: 0;
+        padding: 20px;
+        width: 100%;
         max-width: 900px;
-        margin: 20px auto;
-        box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        margin: 10px auto;
+        box-shadow: 0 4px 15px rgba(0,0,0,0.2);
         font-family: Arial, sans-serif;
     }
 
@@ -269,7 +272,7 @@
 <nav class="navbar navbar-dark navbar-expand-lg px-3">
     <div class="container-fluid px-0">
         <span class="navbar-brand d-flex align-items-center">
-    		<img src="/logo.png" alt="Logo" 
+    		<img th:src="@{/logo.png}" alt="Logo" 
          		style="height: 35px; width: 35px; object-fit: contain; margin-right: 8px;">
          		ShreeGuru Software Solutions
 		</span>
@@ -319,7 +322,7 @@
 </div>
 
 <!-- FORM -->
-<div class="bill-card" style="max-width: 900px; margin: 0 auto; padding: 30px; background: white; border: 2px solid #000;">
+<div class="bill-card" style="width: 100%; max-width: 900px; margin: 0 auto; padding: 20px; background: white; border: 2px solid #000;">
 
     <!-- LOGO HEADER -->
     <div style="text-align: center; margin-bottom: 15px; border-bottom: 3px solid #000; padding-bottom: 10px;">
@@ -333,14 +336,14 @@
 
     <form id="billForm">
         <!-- CONTRACT NO & DATE -->
-        <div style="display: flex; justify-content: space-between; margin-bottom: 15px; gap: 20px;">
-            <div>
+        <div style="display: flex; justify-content: space-between; flex-wrap: wrap; margin-bottom: 15px; gap: 15px;">
+            <div style="flex: 1; min-width: 200px;">
                 <strong>Contract No :</strong>
-                <input type="text" name="contractNo" th:value="${job?.contractNo}" style="width: 150px; border: none; border-bottom: 1px solid #000; padding: 3px;">
+                <input type="text" name="contractNo" th:value="${job?.contractNo}" style="width: 100%; max-width: 150px; border: none; border-bottom: 1px solid #000; padding: 3px;">
             </div>
-            <div>
+            <div style="flex: 1; min-width: 200px; text-align: right;">
                 <strong style="margin-right: 20px;">Date :</strong>
-                <input type="date" class="form-control" id="contractDate" name="contract_date" th:value="${job?.contractDate}" style="width: 120px; border: none; border-bottom: 1px solid #000; padding: 3px; display: inline-block;" required>
+                <input type="date" class="form-control" id="contractDate" name="contract_date" th:value="${job?.contractDate}" style="width: 100%; max-width: 140px; border: none; border-bottom: 1px solid #000; padding: 3px; display: inline-block;" required>
             </div>
         </div>
 
@@ -502,14 +505,14 @@
         </div>
 
         <!-- ACTION BUTTONS -->
-        <div style="text-align: center; margin-top: 25px; margin-bottom: 20px;">
+        <div class="d-flex flex-wrap justify-content-center gap-2 mt-4 mb-3">
             <!-- Single Generate Contract Button which saves and then asks to generate -->
-            <button type="submit" id="generateContractBtn" class="btn btn-success" style="padding: 10px 40px; font-weight: bold; font-size: 14px;">
+            <button type="submit" id="generateContractBtn" class="btn btn-success" style="padding: 10px 30px; font-weight: bold; font-size: 14px;">
                 <i class="bi bi-image"></i> GENERATE CONTRACT
             </button>
 
-            <button type="reset" class="btn btn-warning" style="padding: 10px 40px; font-weight: bold; margin-left: 15px; font-size: 14px;">RESET</button>
-            <a href="/dashboard" class="btn btn-danger" style="padding: 10px 40px; font-weight: bold; margin-left: 15px; font-size: 14px;">CANCEL</a>
+            <button type="reset" class="btn btn-warning" style="padding: 10px 30px; font-weight: bold; font-size: 14px;">RESET</button>
+            <a href="/dashboard" class="btn btn-danger" style="padding: 10px 30px; font-weight: bold; font-size: 14px;">CANCEL</a>
         </div>
 
     </form>

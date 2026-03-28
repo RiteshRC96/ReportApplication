@@ -155,7 +155,7 @@
     <div class="container-fluid">
     	
         <span class="navbar-brand d-flex align-items-center">
-    		<img src="/logo.png" alt="Logo" 
+    		<img th:src="@{/logo.png}" alt="Logo" 
          		style="height: 35px; width: 35px; object-fit: contain; margin-right: 8px;">
          		ShreeGuru Software Solutions
 		</span>
@@ -215,7 +215,7 @@
 
 <!-- TYPEWRITER SCRIPT -->
 <script th:inline="javascript">
-    const username = [[${username}]];
+    const username = "[[${username}]]";
     const text = "Welcome " + username + " 👋";
 
     let i = 0;

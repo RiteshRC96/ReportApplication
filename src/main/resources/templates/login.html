@@ -179,7 +179,10 @@ body {
   </div>
 
   <div class="login-card">
-    <h3>Login</h3>
+    <div class="text-center mb-4">
+      <img th:src="@{/logo.png}" alt="Logo" style="height: 60px; width: 60px; object-fit: contain;">
+      <h3 class="mt-2">Login</h3>
+    </div>
 
     <form th:action="@{/login}" method="post">
 
