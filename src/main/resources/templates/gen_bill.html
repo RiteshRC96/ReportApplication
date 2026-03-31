@@ -418,8 +418,8 @@
                     <input class="form-control" name="quantity_meters" id="quantityMeters" th:value="${job?.quantityMeters}" placeholder="" style="border: none; border-bottom: 1px solid #000; border-radius: 0; text-align: center; width: 90px; display: inline-block;" required>
                     <span style="margin: 0 10px;">METERS</span>
                     <div style="display: inline-block; margin: 0 15px;">
-                        <label style="margin-right: 20px;"><input type="radio" name="sizing_fabric" value="sizing" th:checked="${job?.sizingfabric == 'sizing'}" style="margin-right: 5px;"> sizing</label>
-                        <label><input type="radio" name="sizing_fabric" value="fabric" th:checked="${job?.sizingfabric == 'fabric'}" style="margin-right: 5px;"> fabric</label>
+                        <label style="margin-right: 20px; font-weight: bold;"><input type="radio" name="sizing_fabric" value="SIZING" th:checked="${job?.sizingfabric == 'SIZING' || job?.sizingfabric == 'sizing'}" style="margin-right: 5px;"> SIZING</label>
+                        <label style="font-weight: bold;"><input type="radio" name="sizing_fabric" value="FABRIC" th:checked="${job?.sizingfabric == 'FABRIC' || job?.sizingfabric == 'fabric'}" style="margin-right: 5px;"> FABRIC</label>
                     </div>
                     <input class="form-control" name="beams" th:value="${job?.beams}" placeholder="" style="border: none; border-bottom: 1px solid #000; border-radius: 0; text-align: center; width: 90px; display: inline-block; margin: 0 10px;" required>
                     <span style="margin-left: 5px;">BEAMS.</span>
@@ -427,7 +427,7 @@
             </tr>
             <tr>
                 <td style="padding: 12px; border-bottom: 1px solid #000;">
-                    <strong>6. JOB RATE :-</strong>
+                    <strong>6. JOB RATE(in Paise) :-</strong>
                 </td>
                 <td style="padding: 12px; border-bottom: 1px solid #000; border-left: 1px solid #000;">
                     <input class="form-control" name="job_rate" id="jobRate" th:value="${job?.jobRate}" style="border: none; border-bottom: 1px solid #000; border-radius: 0; text-align: center; width: 70px; display: inline-block;" required>
@@ -533,8 +533,11 @@
                         <input type="text" class="form-control" name="weaver_name" required>
                     </div>
                     <div class="mb-3">
-                        <label>Phone No</label>
-                        <input type="number" class="form-control" name="weaver_phno" required>
+                        <label>Owner Mob Number</label>
+                        <input type="text" class="form-control" name="weaver_phno" required 
+                               pattern="[0-9]{10}" maxlength="10" 
+                               oninput="this.value = this.value.replace(/[^0-9]/g, '')"
+                               placeholder="10 digit mobile number">
                     </div>
                     <div class="mb-3">
                         <label>Brokerage %</label>
@@ -569,17 +572,13 @@
                         <input type="text" class="form-control" name="trader_name" required>
                     </div>
                     <div class="mb-3">
-                        <label>Phone No</label>
-                        <input type="number" class="form-control" name="trader_phno" required>
+                        <label>Owner Mob Number</label>
+                        <input type="text" class="form-control" name="trader_phno" required 
+                               pattern="[0-9]{10}" maxlength="10" 
+                               oninput="this.value = this.value.replace(/[^0-9]/g, '')"
+                               placeholder="10 digit mobile number">
                     </div>
-                    <div class="mb-3">
-                        <label>Brokerage %</label>
-                        <input type="number" class="form-control" name="trader_brokerage_percent" step="0.01" value="0">
-                    </div>
-                    <div class="mb-3">
-                        <label>Brokerage Paisa (₹)</label>
-                        <input type="number" class="form-control" name="trader_brokerage_paisa" step="0.01" value="0">
-                    </div>
+
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>

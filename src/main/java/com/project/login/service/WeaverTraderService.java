@@ -46,4 +46,8 @@ public class WeaverTraderService {
         return repository.findByNameAndUserId(name, userId);
     }
 
+    public Optional<WeaverTrader> findByNameAndPhnoAndTypeAndUser(String name, Long phno, String type, Long userId) {
+        return repository.findByNameAndPhnoAndTypeAndUserId(name, phno, type, userId);
+    }
+
 }

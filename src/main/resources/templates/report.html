@@ -459,7 +459,7 @@
             <tbody>
             <tr th:each="r : ${reports}">
                 <td th:text="${r.contractNo}"></td>
-                <td th:text="${r.contractDate}"></td>
+                <td th:text="${r.contractDate != null ? #temporals.format(r.contractDate, 'dd/MM/yyyy') : '-'}"></td>
                 <td th:text="${r.weaverName}"></td>
                 <td th:text="${r.traderName}"></td>
                 <td th:text="${r.quality}"></td>
@@ -479,7 +479,7 @@
                 <td th:text="${#numbers.formatDecimal(r.amount, 1, 2)}"></td>
                 <td th:text="${#numbers.formatDecimal(r.brokeragePercentAmt, 1, 2)}"></td>
                 <td th:text="${#numbers.formatDecimal(r.brokerageMtrAmt, 1, 2)}"></td>
-                <td th:text="${r.createdAt}"></td>
+                <td th:text="${r.createdAt != null ? #temporals.format(r.createdAt, 'dd/MM/yyyy') : '-'}"></td>
 
                 <!-- ACTION -->
                 <td class="text-center">

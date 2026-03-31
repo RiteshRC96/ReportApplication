@@ -15,6 +15,7 @@ import java.awt.image.BufferedImage;
 import javax.imageio.ImageIO;
 import java.io.ByteArrayOutputStream;
 import java.io.InputStream;
+import java.time.format.DateTimeFormatter;
 
 @Service
 public class ContractImageGenerationService {
@@ -48,9 +49,11 @@ public class ContractImageGenerationService {
                 canvas.showText(contract.getContractNo().toString());
             }
 
+            DateTimeFormatter dtf = DateTimeFormatter.ofPattern("dd/MM/yyyy");
+
             if (contract.getContractDate() != null) {
                 canvas.setTextMatrix(480, 638); 
-                canvas.showText(contract.getContractDate().toString());
+                canvas.showText(contract.getContractDate().format(dtf));
             }
 
             /* ---------------------------
@@ -58,17 +61,17 @@ public class ContractImageGenerationService {
             ----------------------------*/
             if (contract.getWeaverName() != null) {
                 canvas.setTextMatrix(140, 600);
-                canvas.showText(contract.getWeaverName());
+                canvas.showText(capitalizeWords(contract.getWeaverName()));
             }
 
             if (contract.getTraderName() != null) {
                 canvas.setTextMatrix(140, 560);
-                canvas.showText(contract.getTraderName());
+                canvas.showText(capitalizeWords(contract.getTraderName()));
             }
 
             if (contract.getBrokerName() != null) {
                 canvas.setTextMatrix(140, 520);
-                canvas.showText(contract.getBrokerName());
+                canvas.showText(capitalizeWords(contract.getBrokerName()));
             }
 
             if (contract.getQuality() != null) {
@@ -86,7 +89,11 @@ public class ContractImageGenerationService {
             
             if (contract.getSizingfabric()!= null) {
                 canvas.setTextMatrix(180, 447);
-                canvas.showText(contract.getSizingfabric());
+                PdfFont boldFont = PdfFontFactory.createFont(StandardFonts.HELVETICA_BOLD);
+                canvas.setFontAndSize(boldFont, 11);
+                String sf = contract.getSizingfabric().replace(",", "").trim().toUpperCase();
+                canvas.showText(sf);
+                canvas.setFontAndSize(font, 11); // switch back
             }
             
             if (contract.getBeams() != null) {
@@ -156,7 +163,10 @@ public class ContractImageGenerationService {
             g2d.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_ON);
             
             // Set Font and Color
-            Font font = new Font("Arial", Font.BOLD, 22);
+            InputStream is = getClass().getResourceAsStream("/fonts/arial.ttf");
+            Font font = Font.createFont(Font.TRUETYPE_FONT, is).deriveFont(Font.BOLD, 22f);
+            g2d.setFont(font);
+            
             g2d.setFont(font);
             g2d.setColor(Color.BLACK);
 
@@ -171,23 +181,25 @@ public class ContractImageGenerationService {
                 drawText(g2d, contract.getContractNo().toString(), 160, 684, scaleX, scaleY);
             }
 
+            DateTimeFormatter dtf = DateTimeFormatter.ofPattern("dd/MM/yyyy");
+
             if (contract.getContractDate() != null) {
-                drawText(g2d, contract.getContractDate().toString(), 480, 684, scaleX, scaleY);
+                drawText(g2d, contract.getContractDate().format(dtf), 480, 684, scaleX, scaleY);
             }
 
             /* ---------------------------
                PARTIES
             ----------------------------*/
             if (contract.getWeaverName() != null) {
-                drawText(g2d, contract.getWeaverName(), 140, 642, scaleX, scaleY);
+                drawText(g2d, capitalizeWords(contract.getWeaverName()), 140, 642, scaleX, scaleY);
             }
 
             if (contract.getTraderName() != null) {
-                drawText(g2d, contract.getTraderName(), 140, 597, scaleX, scaleY);
+                drawText(g2d, capitalizeWords(contract.getTraderName()), 140, 597, scaleX, scaleY);
             }
 
             if (contract.getBrokerName() != null) {
-                drawText(g2d, contract.getBrokerName(), 140, 551, scaleX, scaleY);
+                drawText(g2d, capitalizeWords(contract.getBrokerName()), 140, 551, scaleX, scaleY);
             }
 
             if (contract.getQuality() != null) {
@@ -202,7 +214,11 @@ public class ContractImageGenerationService {
             }
             
             if (contract.getSizingfabric() != null) {
-                drawText(g2d, contract.getSizingfabric(), 180, 473, scaleX, scaleY);
+                Font boldFont = new Font("Arial", Font.BOLD, 22);
+                g2d.setFont(boldFont);
+                String sf = contract.getSizingfabric().replace(",", "").trim().toUpperCase();
+                drawText(g2d, sf, 180, 473, scaleX, scaleY);
+                g2d.setFont(font); // switch back
             }
             
             if (contract.getBeams() != null) {
@@ -256,5 +272,23 @@ public class ContractImageGenerationService {
         int x = (int) (xPoints * scaleX);
         int y = (int) ((842 - yPoints) * scaleY);
         g2d.drawString(text, x, y);
+    }
+
+    private String capitalizeWords(String str) {
+        if (str == null || str.isEmpty()) return str;
+        StringBuilder sb = new StringBuilder();
+        boolean capitalizeNext = true;
+        for (char c : str.toCharArray()) {
+            if (Character.isWhitespace(c)) {
+                capitalizeNext = true;
+                sb.append(c);
+            } else if (capitalizeNext) {
+                sb.append(Character.toUpperCase(c));
+                capitalizeNext = false;
+            } else {
+                sb.append(Character.toLowerCase(c));
+            }
+        }
+        return sb.toString();
     }
 }

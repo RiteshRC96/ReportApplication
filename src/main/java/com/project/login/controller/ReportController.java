@@ -151,11 +151,12 @@ public class ReportController {
                         header.createCell(i).setCellValue(columns[i]);
                 }
 
+                DateTimeFormatter dtf = DateTimeFormatter.ofPattern("dd/MM/yyyy");
                 int rowNum = 1;
                 for (gen_bill g : data) {
                         Row row = sheet.createRow(rowNum++);
                         row.createCell(0).setCellValue(g.getContractNo());
-                        row.createCell(1).setCellValue(String.valueOf(g.getContractDate()));
+                        row.createCell(1).setCellValue(g.getContractDate() != null ? g.getContractDate().format(dtf) : "-");
                         row.createCell(2).setCellValue(g.getWeaverName());
                         row.createCell(3).setCellValue(g.getTraderName());
                         row.createCell(4).setCellValue(g.getQuality());
@@ -176,7 +177,7 @@ public class ReportController {
                         row.createCell(18).setCellValue(g.getCutLength());
                         row.createCell(19).setCellValue(g.getMinimumDelivery());
                         row.createCell(20).setCellValue(g.getRollingFolding());
-                        row.createCell(21).setCellValue(String.valueOf(g.getCreatedAt()));
+                        row.createCell(21).setCellValue(g.getCreatedAt() != null ? g.getCreatedAt().format(dtf) : "-");
                 }
 
                 response.setContentType(

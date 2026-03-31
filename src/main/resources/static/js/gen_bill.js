@@ -123,12 +123,20 @@ if (brokeragePaisaInput) brokeragePaisaInput.addEventListener("input", calculate
 // =====================================================
 
 function calculateAll() {
+    // Helper to get sanitized value
+    const getVal = (id) => {
+        const el = document.getElementById(id);
+        if (!el) return 0;
+        let v = el.value.replace(/,/g, ''); // Remove commas
+        return parseFloat(v || 0);
+    };
+
     // Get values
-    const jobRate = parseFloat(document.getElementById("jobRate")?.value || 0);
-    const pick = parseFloat(document.getElementById("pick")?.value || 0);
-    const quantityMeters = parseFloat(document.getElementById("quantityMeters")?.value || 0);
-    const brokeragePercent = parseFloat(document.getElementById("weaverBrokeragePercent")?.value || 0);
-    const brokeragePaisa = parseFloat(document.getElementById("weaverBrokeragePaisa")?.value || 0);
+    const jobRate = getVal("jobRate");
+    const pick = getVal("pick");
+    const quantityMeters = getVal("quantityMeters");
+    const brokeragePercent = getVal("weaverBrokeragePercent");
+    const brokeragePaisa = getVal("weaverBrokeragePaisa");
 
     // 1. Rate = ((Job Rate/100) * Pick)
     const rate = (jobRate / 100) * pick;
@@ -313,6 +321,11 @@ document.getElementById("addWeaverForm")?.addEventListener("submit", function(e)
             
             // Select the new weaver
             $("#weaverSelect").val(data.name).trigger("change");
+
+            // Manually set brokerage values and recalculate
+            document.getElementById("weaverBrokeragePercent").value = data.brokeragePercent || 0;
+            document.getElementById("weaverBrokeragePaisa").value = data.brokeragePaisa || 0;
+            calculateAll();
             
             // Close modal and reset form
             bootstrap.Modal.getInstance(document.getElementById("addWeaverModal")).hide();
@@ -337,8 +350,7 @@ document.getElementById("addTraderForm")?.addEventListener("submit", function(e)
     params.append("name", formData.get("trader_name"));
     params.append("phno", formData.get("trader_phno"));
     params.append("type", "TRADER");
-    params.append("brokeragePercent", formData.get("trader_brokerage_percent"));
-    params.append("brokeragePaisa", formData.get("trader_brokerage_paisa"));
+    // Brokerage params removed from form, will default to 0 on server
 
     fetch("/api/add-trader", {
         method: "POST",
@@ -424,6 +436,14 @@ document.getElementById("addQualityForm")?.addEventListener("submit", function(e
             
             // Select the new quality
             $("#qualitySelect").val(data.qualityName).trigger("change");
+            
+            // Explicitly set the pick value as well, as trigger('change') might not 
+            // trigger our custom select2:select handler which fetch from API
+            if (data.pick) {
+                document.getElementById("pick").value = data.pick;
+                console.log("✓ Pick value set from newly added quality:", data.pick);
+                calculateAll();
+            }
             
             // Close modal and reset form
             const modalElement = document.getElementById("addQualityModal");

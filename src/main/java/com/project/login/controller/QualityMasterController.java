@@ -13,9 +13,12 @@ import org.springframework.web.bind.annotation.*;
 public class QualityMasterController {
 
     private final QualityMasterService service;
+    private final com.project.login.repository.JobContractRepository jobContractRepository;
 
-    public QualityMasterController(QualityMasterService service) {
+    public QualityMasterController(QualityMasterService service, 
+                                    com.project.login.repository.JobContractRepository jobContractRepository) {
         this.service = service;
+        this.jobContractRepository = jobContractRepository;
     }
 
     @GetMapping
@@ -42,16 +45,26 @@ public class QualityMasterController {
 
     @PostMapping("/save")
     public String save(@ModelAttribute QualityMasterEntity quality,
-                       Authentication authentication) {
+                       Authentication authentication,
+                       org.springframework.web.servlet.mvc.support.RedirectAttributes redirectAttributes) {
     	System.out.println("Button Clicked: save(quality master)");
 
         CustomUserDetails userDetails =
                 (CustomUserDetails) authentication.getPrincipal();
+        Long userId = userDetails.getId();
+        quality.setUserId(userId);
 
-        quality.setUserId(userDetails.getId());
+        // Check for duplication
+        if (quality.getId() == null) {
+            java.util.Optional<QualityMasterEntity> duplicate = service.findByNameAndUser(quality.getQualityName(), userId);
+            if (duplicate.isPresent()) {
+                redirectAttributes.addFlashAttribute("error", "Quality Name already exists!");
+                return "redirect:/quality/create";
+            }
+        }
 
         service.save(quality);
-
+        redirectAttributes.addFlashAttribute("success", "Quality saved successfully!");
         return "redirect:/quality";
     }
 
@@ -76,15 +89,23 @@ public class QualityMasterController {
 
     @PostMapping("/delete/{id}")
     public String delete(@PathVariable Long id,
-                         Authentication authentication) {
+                         Authentication authentication,
+                         org.springframework.web.servlet.mvc.support.RedirectAttributes redirectAttributes) {
     	System.out.println("Button Clicked: delete(quality master)");
 
         CustomUserDetails userDetails =
                 (CustomUserDetails) authentication.getPrincipal();
-
         Long userId = userDetails.getId();
 
-        service.delete(id, userId);
+        QualityMasterEntity quality = service.findByIdAndUser(id, userId).orElse(null);
+        if (quality != null) {
+            if (jobContractRepository.existsByQualityAndUserId(quality.getQualityName(), userId)) {
+                redirectAttributes.addFlashAttribute("error", "Used in contract form. Cannot delete!");
+                return "redirect:/quality";
+            }
+            service.delete(id, userId);
+            redirectAttributes.addFlashAttribute("success", "Quality deleted successfully!");
+        }
 
         return "redirect:/quality";
     }

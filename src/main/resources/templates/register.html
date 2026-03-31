@@ -183,7 +183,7 @@ body {
     <h3>Register</h3>
 
     <!-- SEND OTP -->
-    <form th:action="@{/send-register-otp}" method="post">
+    <form th:action="@{/send-register-otp}" method="post" th:unless="${otpSent}">
 
       <input class="form-control mb-3" name="name" placeholder="Full Name" required>
 

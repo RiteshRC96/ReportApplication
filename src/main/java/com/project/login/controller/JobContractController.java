@@ -179,9 +179,9 @@ public class JobContractController {
 
             bill.setUserId(user.getId()); // ✅ FIXED
             bill.setContractDate(contract_date);
-            bill.setWeaverName(weaver_name);
-            bill.setTraderName(trader_name);
-            bill.setBrokerName(userDetails.getName());
+            bill.setWeaverName(capitalizeInitialLetters(weaver_name));
+            bill.setTraderName(capitalizeInitialLetters(trader_name));
+            bill.setBrokerName(capitalizeInitialLetters(userDetails.getName()));
             bill.setQuality(quality);
             bill.setQuantityMeters(quantity_meters);
             bill.setJobRate(job_rate);
@@ -193,7 +193,7 @@ public class JobContractController {
             bill.setCutLength(cut_length);
             bill.setMinimumDelivery(minimum_delivery);
             bill.setRollingFolding(rolling_folding);
-            bill.setSizingfabric(sizing_fabric);
+            bill.setSizingfabric(sizing_fabric != null ? sizing_fabric.toUpperCase() : null);
             bill.setPick(pick);
             bill.setWeaverBrokeragePercent(weaver_brokerage_percent);
             bill.setWeaverBrokeragePaisa(weaver_brokerage_paisa);
@@ -309,7 +309,7 @@ public class JobContractController {
             CustomUserDetails userDetails = (CustomUserDetails) authentication.getPrincipal();
 
             com.project.login.entity.WeaverTrader weaver = new com.project.login.entity.WeaverTrader();
-            weaver.setName(name);
+            weaver.setName(capitalizeInitialLetters(name));
             weaver.setphno(phno);
             weaver.setType(type);
             weaver.setWeaverBrokeragePercent(brokeragePercent);
@@ -348,7 +348,7 @@ public class JobContractController {
             CustomUserDetails userDetails = (CustomUserDetails) authentication.getPrincipal();
 
             com.project.login.entity.WeaverTrader trader = new com.project.login.entity.WeaverTrader();
-            trader.setName(name);
+            trader.setName(capitalizeInitialLetters(name));
             trader.setphno(phno);
             trader.setType(type);
             trader.setWeaverBrokeragePercent(brokeragePercent);
@@ -398,7 +398,7 @@ public class JobContractController {
             quality.setReed(reed);
             quality.setWarp(warp);
             quality.setWeft(weft);
-            quality.setWeave(weave);
+            quality.setWeave(capitalizeInitialLetters(weave));
             quality.setUserId(userDetails.getId());
 
             com.project.login.entity.QualityMasterEntity saved = qulitymasterMasterService.save(quality);
@@ -575,5 +575,22 @@ public class JobContractController {
             return ResponseEntity.internalServerError().body(
                     java.util.Map.of("error", "Failed to fetch contract data: " + e.getMessage()));
         }
+    }
+    private String capitalizeInitialLetters(String str) {
+        if (str == null || str.isEmpty()) return str;
+        StringBuilder sb = new StringBuilder();
+        boolean capitalizeNext = true;
+        for (char c : str.toCharArray()) {
+            if (Character.isWhitespace(c)) {
+                capitalizeNext = true;
+                sb.append(c);
+            } else if (capitalizeNext) {
+                sb.append(Character.toUpperCase(c));
+                capitalizeNext = false;
+            } else {
+                sb.append(Character.toLowerCase(c));
+            }
+        }
+        return sb.toString();
     }
 }

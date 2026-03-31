@@ -21,4 +21,6 @@ public interface WeaverTraderRepository extends JpaRepository<WeaverTrader, Long
     @Query("SELECT w FROM WeaverTrader w WHERE w.name = :name AND w.userId = :userId")
     Optional<WeaverTrader> findByNameAndUserId(@Param("name") String name, @Param("userId") Long userId);
 
+    Optional<WeaverTrader> findByNameAndPhnoAndTypeAndUserId(String name, Long phno, String type, Long userId);
+
 }

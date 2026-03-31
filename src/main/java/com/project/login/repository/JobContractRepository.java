@@ -67,6 +67,8 @@ public interface JobContractRepository extends JpaRepository<gen_bill, Long> {
     Integer findMaxSrNoByUser(
             @Param("userId") Long userId
     );
-    
 
+    boolean existsByWeaverNameAndUserId(String weaverName, Long userId);
+    boolean existsByTraderNameAndUserId(String traderName, Long userId);
+    boolean existsByQualityAndUserId(String quality, Long userId);
 }

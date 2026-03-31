@@ -73,7 +73,7 @@ public class JobContractPdfService {
                                                                 .setVerticalAlignment(VerticalAlignment.MIDDLE));
                         }
 
-                        DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("dd-MM-yyyy");
+                        DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
                         // DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("dd-MM-yyyy
                         // HH:mm");
 
@@ -92,13 +92,13 @@ public class JobContractPdfService {
                                                 normalFont));
 
                                 // Combine Weaver and Trader
-                                String weaver = bill.getWeaverName() != null ? bill.getWeaverName() : "-";
-                                String trader = bill.getTraderName() != null ? bill.getTraderName() : "-";
+                                String weaver = bill.getWeaverName() != null ? capitalizeInitialLetters(bill.getWeaverName()) : "-";
+                                String trader = bill.getTraderName() != null ? capitalizeInitialLetters(bill.getTraderName()) : "-";
                                 table.addCell(getCell(weaver + "\n" + trader, normalFont));
 
                                 table.addCell(getCell(bill.getQuality(), normalFont));
                                 table.addCell(getCell(qty != null ? qty.toString() : "0", normalFont));
-                                table.addCell(getCell(bill.getSizingfabric(), normalFont));
+                                table.addCell(getCell(bill.getSizingfabric() != null ? bill.getSizingfabric().toUpperCase() : "-", normalFont));
                                 table.addCell(getCell(bill.getBeams() != null ? bill.getBeams().toString() : "0",
                                                 normalFont));
                                 table.addCell(getCell(rate != null ? rate.toString() : "0", normalFont));
@@ -156,5 +156,22 @@ public class JobContractPdfService {
                                                 .setFont(font)
                                                 .setFontSize(7))
                                 .setTextAlignment(TextAlignment.LEFT);
+        }
+        private String capitalizeInitialLetters(String str) {
+                if (str == null || str.isEmpty()) return str;
+                StringBuilder sb = new StringBuilder();
+                boolean capitalizeNext = true;
+                for (char c : str.toCharArray()) {
+                    if (Character.isWhitespace(c)) {
+                        capitalizeNext = true;
+                        sb.append(c);
+                    } else if (capitalizeNext) {
+                        sb.append(Character.toUpperCase(c));
+                        capitalizeNext = false;
+                    } else {
+                        sb.append(Character.toLowerCase(c));
+                    }
+                }
+                return sb.toString();
         }
 }

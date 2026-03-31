@@ -37,6 +37,7 @@ public class SecurityConfig {
                         "/js/**",
                         "/images/**",
                         "/qr_code.png",
+                        "/logo.png",
                         "/webjars/**"
                 ).permitAll()
                 .anyRequest().authenticated()

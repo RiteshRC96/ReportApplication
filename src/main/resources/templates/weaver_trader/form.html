@@ -476,7 +476,13 @@
 
     <h2 th:text="${wt.id == null ? 'Add Weaver / Trader' : 'Edit Weaver / Trader'}"></h2>
 
-    <form th:action="@{/weaver-trader/save}" method="post" th:object="${wt}">
+    <!-- FLASH MESSAGES -->
+    <div th:if="${error}" class="alert alert-danger alert-dismissible fade show" role="alert">
+        <span th:text="${error}"></span>
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+
+    <form th:action="@{/weaver-trader/save}" method="post" th:object="${wt}" id="weaverTraderForm">
         <input type="hidden" th:field="*{id}" />
 
         <!-- Type Selection (Moved to Top) -->
@@ -496,18 +502,24 @@
 
         <div class="mb-3">
             <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
-                <label class="form-label" style="margin: 0;">Phone No</label>
+                <label class="form-label" style="margin: 0;">Owner Mob No 1</label>
                 <button type="button" class="contact-book-btn" id="contactBookBtn" onclick="selectFromContacts('phno')">📇 Contacts</button>
             </div>
-            <input type="text" class="form-control phone-input" th:field="*{phno}" required>
+            <input type="text" class="form-control phone-input" th:field="*{phno}" 
+                   required pattern="[0-9]{10}" maxlength="10" 
+                   oninput="this.value = this.value.replace(/[^0-9]/g, '')"
+                   placeholder="10 digit mobile number">
         </div>
 
         <div class="mb-3">
             <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
-                <label class="form-label" style="margin: 0;">Owner Mob No</label>
+                <label class="form-label" style="margin: 0;">Owner Mob No 2</label>
                 <button type="button" class="contact-book-btn" id="ownerContactBtn" onclick="selectFromContacts('ownerMobNo')">📇 Contacts</button>
             </div>
-            <input type="text" class="form-control phone-input" th:field="*{ownerMobNo}">
+            <input type="text" class="form-control phone-input" th:field="*{ownerMobNo}"
+                   pattern="[0-9]{10}" maxlength="10" 
+                   oninput="this.value = this.value.replace(/[^0-9]/g, '')"
+                   placeholder="10 digit mobile number">
         </div>
 
         <div class="mb-3">
@@ -515,15 +527,18 @@
                 <label class="form-label" style="margin: 0;">Divanji Mob No</label>
                 <button type="button" class="contact-book-btn" id="divanjContactBtn" onclick="selectFromContacts('divanjMobNo')">📇 Contacts</button>
             </div>
-            <input type="text" class="form-control phone-input" th:field="*{divanjMobNo}">
+            <input type="text" class="form-control phone-input" th:field="*{divanjMobNo}"
+                   pattern="[0-9]{10}" maxlength="10" 
+                   oninput="this.value = this.value.replace(/[^0-9]/g, '')"
+                   placeholder="10 digit mobile number">
         </div>
 
-        <div class="mb-3">
+        <div class="mb-3 brokerage-fields">
             <label class="form-label">Weaver Brokerage %</label>
             <input type="number" class="form-control" th:field="*{weaverBrokeragePercent}" step="0.01" placeholder="e.g., 2.5">
         </div>
 
-        <div class="mb-4">
+        <div class="mb-4 brokerage-fields">
             <label class="form-label">Weaver Brokerage Paisa (₹)</label>
             <input type="number" class="form-control" th:field="*{weaverBrokeragePaisa}" step="0.01" placeholder="e.g., 100.50">
         </div>
@@ -624,6 +639,25 @@
                 btn.style.opacity = '0.6';
                 btn.style.cursor = 'not-allowed';
             });
+        }
+    });
+
+    // Handle conditional fields for Type
+    document.addEventListener('DOMContentLoaded', function() {
+        const typeSelect = document.getElementById('type');
+        const brokerageFields = document.querySelectorAll('.brokerage-fields');
+        
+        function toggleBrokerage() {
+            if (typeSelect.value === 'TRADER') {
+                brokerageFields.forEach(el => el.style.display = 'none');
+            } else {
+                brokerageFields.forEach(el => el.style.display = 'block');
+            }
+        }
+        
+        if (typeSelect) {
+            typeSelect.addEventListener('change', toggleBrokerage);
+            toggleBrokerage(); // Initial call
         }
     });
 </script>
