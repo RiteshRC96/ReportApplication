@@ -163,7 +163,11 @@ public class ContractImageGenerationService {
             g2d.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_ON);
             
             // Set Font and Color
-            InputStream is = getClass().getResourceAsStream("/fonts/ARIAL.TTF");
+            InputStream is = Thread.currentThread().getContextClassLoader().getResourceAsStream("fonts/ARIAL.TTF");
+            if (is == null) {
+                throw new RuntimeException("Font file not found: /fonts/ARIAL.TTF");
+            }
+            
             Font font = Font.createFont(Font.TRUETYPE_FONT, is).deriveFont(Font.BOLD, 22f);
             g2d.setFont(font);
             
