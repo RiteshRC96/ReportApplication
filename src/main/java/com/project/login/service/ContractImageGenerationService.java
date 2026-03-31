@@ -163,7 +163,7 @@ public class ContractImageGenerationService {
             g2d.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_ON);
             
             // Set Font and Color
-            InputStream is = getClass().getResourceAsStream("/fonts/arial.ttf");
+            InputStream is = getClass().getResourceAsStream("/fonts/ARIAL.TTF");
             Font font = Font.createFont(Font.TRUETYPE_FONT, is).deriveFont(Font.BOLD, 22f);
             g2d.setFont(font);
             
