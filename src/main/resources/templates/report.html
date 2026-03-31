@@ -1,12 +1,14 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Job Contract Report</title>
+    <link rel="icon" type="image/png" th:href="@{/favicon.png}">
 
-    <link rel="stylesheet"
-          href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css">
+
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css">
 
     <style>
         body {
@@ -25,7 +27,7 @@
         /* ---------- NAVBAR ---------- */
         .navbar {
             background: linear-gradient(135deg, #1f2a30, #243840);
-            box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
             padding: 0.35rem 1rem !important;
         }
 
@@ -79,7 +81,7 @@
             background: #243840 !important;
             border: 1px solid #39d98a;
             border-radius: 8px;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
         }
 
         .dropdown-item {
@@ -126,16 +128,21 @@
             font-size: 13px;
             border-collapse: collapse;
         }
-        th, td {
+
+        th,
+        td {
             white-space: nowrap;
             padding: 0.5rem !important;
         }
+
         table tbody tr {
             transition: all 0.2s ease;
         }
+
         table tbody tr:hover {
             background-color: rgba(57, 217, 138, 0.08);
         }
+
         .container-report {
             max-width: 1200px;
             margin: 0 auto;
@@ -199,7 +206,8 @@
                 font-size: 11px;
             }
 
-            th, td {
+            th,
+            td {
                 padding: 0.3rem !important;
             }
 
@@ -264,7 +272,8 @@
                 font-size: 12px;
             }
 
-            th, td {
+            th,
+            td {
                 padding: 0.4rem !important;
             }
 
@@ -320,7 +329,8 @@
                 font-size: 13px;
             }
 
-            th, td {
+            th,
+            td {
                 padding: 0.5rem !important;
             }
 
@@ -337,259 +347,244 @@
 
 <body>
 
-<nav class="navbar navbar-dark navbar-expand-lg px-3">
-    <div class="container-fluid px-0">
-        <span class="navbar-brand d-flex align-items-center">
-    		<img th:src="@{/logo.png}" alt="Logo" 
-         		style="height: 35px; width: 35px; object-fit: contain; margin-right: 8px;">
-         		ShreeGuru Software Solutions
-		</span>
-        
-        <!-- Mobile Toggle Button -->
-        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" 
-                data-bs-target="#navbarMenu" aria-controls="navbarMenu" aria-expanded="false" 
-                aria-label="Toggle navigation">
-            <span class="navbar-toggler-icon"></span>
-        </button>
+    <nav class="navbar navbar-dark navbar-expand-lg px-3">
+        <div class="container-fluid px-0">
+            <span class="navbar-brand d-flex align-items-center">
+                <img th:src="@{/logo.png}" alt="Logo"
+                    style="height: 35px; width: 35px; object-fit: contain; margin-right: 8px;">
+                ShreeGuru Software Solutions
+            </span>
 
-        <!-- Collapsible Navigation Menu -->
-        <div class="collapse navbar-collapse" id="navbarMenu">
-            <ul class="navbar-nav ms-auto align-items-center">
-                <li class="nav-item">
-                    <a class="nav-link" href="/dashboard">Dashboard</a>
-                </li>
-                <li class="nav-item dropdown">
-                    <a class="nav-link dropdown-toggle" href="#" id="masterDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">Master</a>
-                    <ul class="dropdown-menu dropdown-menu-dark" aria-labelledby="masterDropdown">
-                        <li><a class="dropdown-item" href="/weaver-trader">Weaver / Trader</a></li>
-                        <li><a class="dropdown-item" href="/quality">Quality</a></li>
-                    </ul>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link" href="/gen-bill">Job Contract</a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link" href="/report">Report</a>
-                </li>
-            </ul>
-
-            <form action="/logout" method="post" class="ms-3">
-                <button class="btn btn-danger btn-logout">Logout</button>
-            </form>
-        </div>
-    </div>
-</nav>
-
-<main>
-<div class="container-report mt-4 mb-4">
-
-    <h3 class="mb-4">Job Contract Report</h3>
-
-
-    <!-- FILTER FORM -->
-    <form th:action="@{/report}" method="get" class="row g-2 g-md-3 mb-4">
-
-        <div class="col-12 col-sm-6 col-md-3">
-            <label class="form-label">Weaver Name</label>
-            <input type="text" name="weaverName"
-                   class="form-control"
-                   th:value="${weaverName}">
-        </div>
-
-        <div class="col-12 col-sm-6 col-md-3">
-            <label class="form-label">Trader Name</label>
-            <input type="text" name="traderName"
-                   class="form-control"
-                   th:value="${traderName}">
-        </div>
-
-        <div class="col-12 col-sm-6 col-md-2">
-            <label class="form-label">From Date</label>
-            <input type="date" name="fromDate"
-                   class="form-control"
-                   th:value="${fromDate != null ? #temporals.format(fromDate,'yyyy-MM-dd') : ''}">
-        </div>
-
-        <div class="col-12 col-sm-6 col-md-2">
-            <label class="form-label">To Date</label>
-            <input type="date" name="toDate"
-                   class="form-control"
-                   th:value="${toDate != null ? #temporals.format(toDate,'yyyy-MM-dd') : ''}">
-        </div>
-
-        <div class="col-12 col-md-2 d-flex align-items-end">
-            <button type="submit" class="btn btn-primary w-100">
-                Search
+            <!-- Mobile Toggle Button -->
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarMenu"
+                aria-controls="navbarMenu" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
             </button>
+
+            <!-- Collapsible Navigation Menu -->
+            <div class="collapse navbar-collapse" id="navbarMenu">
+                <ul class="navbar-nav ms-auto align-items-center">
+                    <li class="nav-item">
+                        <a class="nav-link" href="/dashboard">Dashboard</a>
+                    </li>
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" id="masterDropdown" role="button"
+                            data-bs-toggle="dropdown" aria-expanded="false">Master</a>
+                        <ul class="dropdown-menu dropdown-menu-dark" aria-labelledby="masterDropdown">
+                            <li><a class="dropdown-item" href="/weaver-trader">Weaver / Trader</a></li>
+                            <li><a class="dropdown-item" href="/quality">Quality</a></li>
+                        </ul>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/gen-bill">Job Contract</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/report">Report</a>
+                    </li>
+                </ul>
+
+                <form action="/logout" method="post" class="ms-3">
+                    <button class="btn btn-danger btn-logout">Logout</button>
+                </form>
+            </div>
         </div>
-    </form>
+    </nav>
 
-    <!-- REPORT TABLE -->
-    <div class="table-responsive mt-4">
-        <table class="table table-bordered table-striped">
+    <main>
+        <div class="container-report mt-4 mb-4">
 
-            <thead class="table-dark">
-            <tr>
-                <th>Contract No</th>
-                <th>Contract Date</th>
-                <th>Weaver</th>
-                <th>Trader</th>
-                <th>Quality</th>
-                <th>Qty (Meters)</th>
-                <th>Sizing/Fabric</th>
-                <th>Beams</th>
-                <th>Job Rate</th>
-                <th>Pick</th>
-                <th>Payment Days</th>
-                <th>Production Schedule</th>
-                <th>Machines</th>
-                <th>Remark</th>
-                <th>Cut Length</th>
-                <th>Minimum Delivery</th>
-                <th>Rolling / Folding</th>
-                <th>Rate</th>
-                <th>Amount</th>
-                <th>Brokerage % Amt</th>
-                <th>Brokerage Mtr Amt</th>
-                <th>Created At</th>
-                <th>Action</th>
-            </tr>
-            </thead>
+            <h3 class="mb-4">Job Contract Report</h3>
 
-            <tbody>
-            <tr th:each="r : ${reports}">
-                <td th:text="${r.contractNo}"></td>
-                <td th:text="${r.contractDate != null ? #temporals.format(r.contractDate, 'dd/MM/yyyy') : '-'}"></td>
-                <td th:text="${r.weaverName}"></td>
-                <td th:text="${r.traderName}"></td>
-                <td th:text="${r.quality}"></td>
-                <td th:text="${r.quantityMeters}"></td>
-                <td th:text="${r.sizingfabric}"></td>
-                <td th:text="${r.beams}"></td>
-                <td th:text="${r.jobRate}"></td>
-                <td th:text="${#numbers.formatDecimal(r.pick, 1, 2)}"></td>
-                <td th:text="${r.paymentDays}"></td>
-                <td th:text="${r.productionSchedule}"></td>
-                <td th:text="${r.noOfMachines}"></td>
-                <td th:text="${r.remark}"></td>
-                <td th:text="${r.cutLength}"></td>
-                <td th:text="${r.minimumDelivery}"></td>
-                <td th:text="${r.rollingFolding}"></td>
-                <td th:text="${#numbers.formatDecimal(r.rate, 1, 2)}"></td>
-                <td th:text="${#numbers.formatDecimal(r.amount, 1, 2)}"></td>
-                <td th:text="${#numbers.formatDecimal(r.brokeragePercentAmt, 1, 2)}"></td>
-                <td th:text="${#numbers.formatDecimal(r.brokerageMtrAmt, 1, 2)}"></td>
-                <td th:text="${r.createdAt != null ? #temporals.format(r.createdAt, 'dd/MM/yyyy') : '-'}"></td>
 
-                <!-- ACTION -->
-                <td class="text-center">
+            <!-- FILTER FORM -->
+            <form th:action="@{/report}" method="get" class="row g-2 g-md-3 mb-4">
 
-                    <!-- EDIT -->
-                    <a class="btn btn-warning btn-sm"
-                       th:href="@{/gen-bill/edit/{u}/{c}(
+                <div class="col-12 col-sm-6 col-md-3">
+                    <label class="form-label">Weaver Name</label>
+                    <input type="text" name="weaverName" class="form-control" th:value="${weaverName}">
+                </div>
+
+                <div class="col-12 col-sm-6 col-md-3">
+                    <label class="form-label">Trader Name</label>
+                    <input type="text" name="traderName" class="form-control" th:value="${traderName}">
+                </div>
+
+                <div class="col-12 col-sm-6 col-md-2">
+                    <label class="form-label">From Date</label>
+                    <input type="date" name="fromDate" class="form-control"
+                        th:value="${fromDate != null ? #temporals.format(fromDate,'yyyy-MM-dd') : ''}">
+                </div>
+
+                <div class="col-12 col-sm-6 col-md-2">
+                    <label class="form-label">To Date</label>
+                    <input type="date" name="toDate" class="form-control"
+                        th:value="${toDate != null ? #temporals.format(toDate,'yyyy-MM-dd') : ''}">
+                </div>
+
+                <div class="col-12 col-md-2 d-flex align-items-end">
+                    <button type="submit" class="btn btn-primary w-100">
+                        Search
+                    </button>
+                </div>
+            </form>
+
+            <!-- REPORT TABLE -->
+            <div class="table-responsive mt-4">
+                <table class="table table-bordered table-striped">
+
+                    <thead class="table-dark">
+                        <tr>
+                            <th>Contract No</th>
+                            <th>Contract Date</th>
+                            <th>Weaver</th>
+                            <th>Trader</th>
+                            <th>Quality</th>
+                            <th>Qty (Meters)</th>
+                            <th>Sizing/Fabric</th>
+                            <th>Beams</th>
+                            <th>Job Rate</th>
+                            <th>Pick</th>
+                            <th>Payment Days</th>
+                            <th>Production Schedule</th>
+                            <th>Machines</th>
+                            <th>Remark</th>
+                            <th>Cut Length</th>
+                            <th>Minimum Delivery</th>
+                            <th>Rolling / Folding</th>
+                            <th>Rate</th>
+                            <th>Amount</th>
+                            <th>Brokerage % Amt</th>
+                            <th>Brokerage Mtr Amt</th>
+                            <th>Created At</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+
+                    <tbody>
+                        <tr th:each="r : ${reports}">
+                            <td th:text="${r.contractNo}"></td>
+                            <td
+                                th:text="${r.contractDate != null ? #temporals.format(r.contractDate, 'dd/MM/yyyy') : '-'}">
+                            </td>
+                            <td th:text="${r.weaverName}"></td>
+                            <td th:text="${r.traderName}"></td>
+                            <td th:text="${r.quality}"></td>
+                            <td th:text="${r.quantityMeters}"></td>
+                            <td th:text="${r.sizingfabric}"></td>
+                            <td th:text="${r.beams}"></td>
+                            <td th:text="${r.jobRate}"></td>
+                            <td th:text="${#numbers.formatDecimal(r.pick, 1, 2)}"></td>
+                            <td th:text="${r.paymentDays}"></td>
+                            <td th:text="${r.productionSchedule}"></td>
+                            <td th:text="${r.noOfMachines}"></td>
+                            <td th:text="${r.remark}"></td>
+                            <td th:text="${r.cutLength}"></td>
+                            <td th:text="${r.minimumDelivery}"></td>
+                            <td th:text="${r.rollingFolding}"></td>
+                            <td th:text="${#numbers.formatDecimal(r.rate, 1, 2)}"></td>
+                            <td th:text="${#numbers.formatDecimal(r.amount, 1, 2)}"></td>
+                            <td th:text="${#numbers.formatDecimal(r.brokeragePercentAmt, 1, 2)}"></td>
+                            <td th:text="${#numbers.formatDecimal(r.brokerageMtrAmt, 1, 2)}"></td>
+                            <td th:text="${r.createdAt != null ? #temporals.format(r.createdAt, 'dd/MM/yyyy') : '-'}">
+                            </td>
+
+                            <!-- ACTION -->
+                            <td class="text-center">
+
+                                <!-- EDIT -->
+                                <a class="btn btn-warning btn-sm" th:href="@{/gen-bill/edit/{u}/{c}(
                            u=${r.userId},
                            c=${r.contractNo}
                        )}">
-                        Edit
-                    </a>
+                                    Edit
+                                </a>
 
-                    <!-- DELETE -->
-                    <form th:action="@{/report/delete/{u}/{c}(
+                                <!-- DELETE -->
+                                <form th:action="@{/report/delete/{u}/{c}(
                             u=${r.userId},
                             c=${r.contractNo}
-                        )}"
-                          method="post"
-                          style="display:inline;"
-                          onsubmit="return confirm('Are you sure you want to delete this record?');">
+                        )}" method="post" style="display:inline;"
+                                    onsubmit="return confirm('Are you sure you want to delete this record?');">
 
-                        <button type="submit" style="display:none;" class="btn btn-danger btn-sm">
-                            Delete
-                        </button>
-                    </form>
+                                    <button type="submit" style="display:none;" class="btn btn-danger btn-sm">
+                                        Delete
+                                    </button>
+                                </form>
 
-                </td>
-            </tr>
-            </tbody>
+                            </td>
+                        </tr>
+                    </tbody>
 
-        </table>
-    </div>
+                </table>
+            </div>
 
-    <!-- EXCEL EXPORT -->
-    <div class="d-flex flex-column flex-sm-row gap-2 mb-4">
-        <a class="btn btn-success"
-           th:href="@{/report/excel(
+            <!-- EXCEL EXPORT -->
+            <div class="d-flex flex-column flex-sm-row gap-2 mb-4">
+                <a class="btn btn-success" th:href="@{/report/excel(
                weaverName=${weaverName},
                traderName=${traderName},
                fromDate=${fromDate},
                toDate=${toDate}
            )}">
-            Export to Excel
-        </a>
-        <a class="btn btn-danger"
-           th:href="@{/report/pdf(
+                    Export to Excel
+                </a>
+                <a class="btn btn-danger" th:href="@{/report/pdf(
                weaverName=${weaverName},
                traderName=${traderName},
                fromDate=${fromDate},
                toDate=${toDate}
            )}">
-            Export to PDF
-        </a>
-    </div>
+                    Export to PDF
+                </a>
+            </div>
 
-    <!-- PAGINATION -->
-    <nav th:if="${totalPages > 1}" class="mt-4">
-        <ul class="pagination justify-content-center flex-wrap">
+            <!-- PAGINATION -->
+            <nav th:if="${totalPages > 1}" class="mt-4">
+                <ul class="pagination justify-content-center flex-wrap">
 
-            <li class="page-item"
-                th:classappend="${currentPage == 0} ? 'disabled'">
-                <a class="page-link"
-                   th:href="@{/report(
+                    <li class="page-item" th:classappend="${currentPage == 0} ? 'disabled'">
+                        <a class="page-link" th:href="@{/report(
                        page=${currentPage-1},
                        weaverName=${weaverName},
                        traderName=${traderName},
                        fromDate=${fromDate},
                        toDate=${toDate}
                    )}">
-                    Previous
-                </a>
-            </li>
+                            Previous
+                        </a>
+                    </li>
 
-            <li class="page-item"
-                th:each="i : ${#numbers.sequence(0, totalPages-1)}"
-                th:classappend="${i == currentPage} ? 'active'">
-                <a class="page-link"
-                   th:href="@{/report(
+                    <li class="page-item" th:each="i : ${#numbers.sequence(0, totalPages-1)}"
+                        th:classappend="${i == currentPage} ? 'active'">
+                        <a class="page-link" th:href="@{/report(
                        page=${i},
                        weaverName=${weaverName},
                        traderName=${traderName},
                        fromDate=${fromDate},
                        toDate=${toDate}
-                   )}"
-                   th:text="${i + 1}">
-                </a>
-            </li>
+                   )}" th:text="${i + 1}">
+                        </a>
+                    </li>
 
-            <li class="page-item"
-                th:classappend="${currentPage == totalPages-1} ? 'disabled'">
-                <a class="page-link"
-                   th:href="@{/report(
+                    <li class="page-item" th:classappend="${currentPage == totalPages-1} ? 'disabled'">
+                        <a class="page-link" th:href="@{/report(
                        page=${currentPage+1},
                        weaverName=${weaverName},
                        traderName=${traderName},
                        fromDate=${fromDate},
                        toDate=${toDate}
                    )}">
-                    Next
-                </a>
-            </li>
+                            Next
+                        </a>
+                    </li>
 
-        </ul>
-    </nav>
+                </ul>
+            </nav>
 
-</div>
-</main>
+        </div>
+    </main>
 
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 
 <!-- FOOTER -->

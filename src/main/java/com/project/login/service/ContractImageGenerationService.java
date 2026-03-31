@@ -33,7 +33,7 @@ public class ContractImageGenerationService {
     public byte[] generateContractImage(gen_bill contract) {
         try (PDDocument document = createFilledDocument(contract)) {
             PDFRenderer renderer = new PDFRenderer(document);
-            
+
             // 🚀 Performance Tip: Use 150 DPI instead of 300 for 4x faster rendering
             // 150 DPI is still very clear for a document
             BufferedImage image = renderer.renderImageWithDPI(0, 150);
@@ -57,8 +57,9 @@ public class ContractImageGenerationService {
         PDPage page = document.getPage(0);
 
         // Append to existing page content
-        try (PDPageContentStream contentStream = new PDPageContentStream(document, page, PDPageContentStream.AppendMode.APPEND, true, true)) {
-            
+        try (PDPageContentStream contentStream = new PDPageContentStream(document, page,
+                PDPageContentStream.AppendMode.APPEND, true, true)) {
+
             DateTimeFormatter dtf = DateTimeFormatter.ofPattern("dd/MM/yyyy");
 
             // Define fonts
@@ -67,13 +68,14 @@ public class ContractImageGenerationService {
 
             // Helper to draw text at coordinates
             drawText(contentStream, font, 11, 160, 638, contract.getContractNo());
-            drawText(contentStream, font, 11, 480, 638, contract.getContractDate() != null ? contract.getContractDate().format(dtf) : null);
+            drawText(contentStream, font, 11, 480, 638,
+                    contract.getContractDate() != null ? contract.getContractDate().format(dtf) : null);
             drawText(contentStream, font, 11, 140, 600, capitalizeWords(contract.getWeaverName()));
             drawText(contentStream, font, 11, 140, 560, capitalizeWords(contract.getTraderName()));
             drawText(contentStream, font, 11, 140, 520, capitalizeWords(contract.getBrokerName()));
             drawText(contentStream, font, 11, 140, 483, contract.getQuality());
             drawText(contentStream, font, 11, 140, 447, contract.getQuantityMeters());
-            
+
             if (contract.getSizingfabric() != null) {
                 String sf = contract.getSizingfabric().replace(",", "").trim().toUpperCase();
                 drawText(contentStream, boldFont, 11, 180, 447, sf);
@@ -93,10 +95,13 @@ public class ContractImageGenerationService {
         return document;
     }
 
-    private void drawText(PDPageContentStream contentStream, PDType1Font font, float size, float x, float y, Object value) throws Exception {
-        if (value == null) return;
+    private void drawText(PDPageContentStream contentStream, PDType1Font font, float size, float x, float y,
+            Object value) throws Exception {
+        if (value == null)
+            return;
         String text = value.toString();
-        if (text.isEmpty()) return;
+        if (text.isEmpty())
+            return;
 
         contentStream.beginText();
         contentStream.setFont(font, size);
@@ -104,15 +109,16 @@ public class ContractImageGenerationService {
         try {
             contentStream.showText(text);
         } catch (IllegalArgumentException e) {
-            // Handle characters not supported by the font by stripping them or using a replacement
+            // Handle characters not supported by the font by stripping them or using a
+            // replacement
             contentStream.showText(text.replaceAll("[^\\x00-\\x7F]", "?"));
         }
         contentStream.endText();
     }
 
-
     private String capitalizeWords(String str) {
-        if (str == null || str.isEmpty()) return str;
+        if (str == null || str.isEmpty())
+            return str;
 
         StringBuilder sb = new StringBuilder();
         boolean capitalizeNext = true;

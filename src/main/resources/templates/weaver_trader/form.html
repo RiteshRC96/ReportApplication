@@ -1,12 +1,14 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Weaver / Trader Master</title>
+    <link rel="icon" type="image/png" th:href="@{/favicon.png}">
 
-    <link rel="stylesheet"
-          href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css">
+
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css">
 
     <style>
         body {
@@ -25,7 +27,7 @@
         /* ---------- NAVBAR ---------- */
         .navbar {
             background: linear-gradient(135deg, #1f2a30, #243840);
-            box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
             padding: 0.35rem 1rem !important;
         }
 
@@ -79,7 +81,7 @@
             background: #243840 !important;
             border: 1px solid #39d98a;
             border-radius: 8px;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
         }
 
         .dropdown-item {
@@ -94,6 +96,7 @@
             color: #000 !important;
             transform: translateX(5px);
         }
+
         .btn-logout {
             border-radius: 20px;
             padding: 5px 15px;
@@ -127,7 +130,7 @@
             padding: 35px 40px;
             border-radius: 12px;
             background: rgba(255, 255, 255, 0.95);
-            box-shadow: 0 10px 30px rgba(0,0,0,0.15);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
             animation: fadeUp 0.6s ease;
         }
 
@@ -136,6 +139,7 @@
                 opacity: 0;
                 transform: translateY(20px);
             }
+
             to {
                 opacity: 1;
                 transform: translateY(0);
@@ -166,7 +170,7 @@
         .form-control:focus,
         .form-select:focus {
             border-color: #39d98a;
-            box-shadow: 0 0 0 0.15rem rgba(57,217,138,0.25);
+            box-shadow: 0 0 0 0.15rem rgba(57, 217, 138, 0.25);
         }
 
         .mb-3 {
@@ -426,248 +430,254 @@
 
 <body>
 
-<!-- NAVBAR -->
-<nav class="navbar navbar-dark navbar-expand-lg px-3">
-    <div class="container-fluid px-0">
-        <span class="navbar-brand d-flex align-items-center">
-    		<img th:src="@{/logo.png}" alt="Logo" 
-         		style="height: 35px; width: 35px; object-fit: contain; margin-right: 8px;">
-         		ShreeGuru Software Solutions
-		</span>
-        
-        <!-- Mobile Toggle Button -->
-        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" 
-                data-bs-target="#navbarMenu" aria-controls="navbarMenu" aria-expanded="false" 
-                aria-label="Toggle navigation">
-            <span class="navbar-toggler-icon"></span>
-        </button>
+    <!-- NAVBAR -->
+    <nav class="navbar navbar-dark navbar-expand-lg px-3">
+        <div class="container-fluid px-0">
+            <span class="navbar-brand d-flex align-items-center">
+                <img th:src="@{/logo.png}" alt="Logo"
+                    style="height: 35px; width: 35px; object-fit: contain; margin-right: 8px;">
+                ShreeGuru Software Solutions
+            </span>
 
-        <!-- Collapsible Navigation Menu -->
-        <div class="collapse navbar-collapse" id="navbarMenu">
-            <ul class="navbar-nav ms-auto align-items-center">
-                <li class="nav-item">
-                    <a class="nav-link" href="/dashboard">Dashboard</a>
-                </li>
-                <li class="nav-item dropdown">
-                    <a class="nav-link dropdown-toggle" href="#" id="masterDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">Master</a>
-                    <ul class="dropdown-menu dropdown-menu-dark" aria-labelledby="masterDropdown">
-                        <li><a class="dropdown-item" href="/weaver-trader">Weaver / Trader</a></li>
-                        <li><a class="dropdown-item" href="/quality">Quality</a></li>
-                    </ul>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link" href="/gen-bill">Job Contract</a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link" href="/report">Report</a>
-                </li>
-            </ul>
+            <!-- Mobile Toggle Button -->
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarMenu"
+                aria-controls="navbarMenu" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
 
-            <form action="/logout" method="post" class="ms-3">
-                <button class="btn btn-danger btn-logout">Logout</button>
+            <!-- Collapsible Navigation Menu -->
+            <div class="collapse navbar-collapse" id="navbarMenu">
+                <ul class="navbar-nav ms-auto align-items-center">
+                    <li class="nav-item">
+                        <a class="nav-link" href="/dashboard">Dashboard</a>
+                    </li>
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" id="masterDropdown" role="button"
+                            data-bs-toggle="dropdown" aria-expanded="false">Master</a>
+                        <ul class="dropdown-menu dropdown-menu-dark" aria-labelledby="masterDropdown">
+                            <li><a class="dropdown-item" href="/weaver-trader">Weaver / Trader</a></li>
+                            <li><a class="dropdown-item" href="/quality">Quality</a></li>
+                        </ul>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/gen-bill">Job Contract</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/report">Report</a>
+                    </li>
+                </ul>
+
+                <form action="/logout" method="post" class="ms-3">
+                    <button class="btn btn-danger btn-logout">Logout</button>
+                </form>
+            </div>
+        </div>
+    </nav>
+
+    <main>
+        <!-- FORM -->
+        <div class="form-card">
+
+            <h2 th:text="${wt.id == null ? 'Add Weaver / Trader' : 'Edit Weaver / Trader'}"></h2>
+
+            <!-- FLASH MESSAGES -->
+            <div th:if="${error}" class="alert alert-danger alert-dismissible fade show" role="alert">
+                <span th:text="${error}"></span>
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+
+            <form th:action="@{/weaver-trader/save}" method="post" th:object="${wt}" id="weaverTraderForm">
+                <input type="hidden" th:field="*{id}" />
+
+                <!-- Type Selection (Moved to Top) -->
+                <div class="mb-4">
+                    <label class="form-label">Type</label>
+                    <select class="form-select" th:field="*{type}" required>
+                        <option value="">Select</option>
+                        <option value="WEAVER">WEAVER</option>
+                        <option value="TRADER">TRADER</option>
+                    </select>
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label">Name</label>
+                    <input type="text" class="form-control" th:field="*{name}" required>
+                </div>
+
+                <div class="mb-3">
+                    <div
+                        style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+                        <label class="form-label" style="margin: 0;">Owner Mob No 1</label>
+                        <button type="button" class="contact-book-btn" id="contactBookBtn"
+                            onclick="selectFromContacts('phno')">📇 Contacts</button>
+                    </div>
+                    <input type="text" class="form-control phone-input" th:field="*{phno}" required pattern="[0-9]{10}"
+                        maxlength="10" oninput="this.value = this.value.replace(/[^0-9]/g, '')"
+                        placeholder="10 digit mobile number">
+                </div>
+
+                <div class="mb-3">
+                    <div
+                        style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+                        <label class="form-label" style="margin: 0;">Owner Mob No 2</label>
+                        <button type="button" class="contact-book-btn" id="ownerContactBtn"
+                            onclick="selectFromContacts('ownerMobNo')">📇 Contacts</button>
+                    </div>
+                    <input type="text" class="form-control phone-input" th:field="*{ownerMobNo}" pattern="[0-9]{10}"
+                        maxlength="10" oninput="this.value = this.value.replace(/[^0-9]/g, '')"
+                        placeholder="10 digit mobile number">
+                </div>
+
+                <div class="mb-3">
+                    <div
+                        style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+                        <label class="form-label" style="margin: 0;">Divanji Mob No</label>
+                        <button type="button" class="contact-book-btn" id="divanjContactBtn"
+                            onclick="selectFromContacts('divanjMobNo')">📇 Contacts</button>
+                    </div>
+                    <input type="text" class="form-control phone-input" th:field="*{divanjMobNo}" pattern="[0-9]{10}"
+                        maxlength="10" oninput="this.value = this.value.replace(/[^0-9]/g, '')"
+                        placeholder="10 digit mobile number">
+                </div>
+
+                <div class="mb-3 brokerage-fields">
+                    <label class="form-label">Weaver Brokerage %</label>
+                    <input type="number" class="form-control" th:field="*{weaverBrokeragePercent}" step="0.01"
+                        placeholder="e.g., 2.5">
+                </div>
+
+                <div class="mb-4 brokerage-fields">
+                    <label class="form-label">Weaver Brokerage Paisa (₹)</label>
+                    <input type="number" class="form-control" th:field="*{weaverBrokeragePaisa}" step="0.01"
+                        placeholder="e.g., 100.50">
+                </div>
+
+                <div class="d-flex justify-content-center gap-3">
+                    <button type="submit" class="btn btn-save">Save</button>
+                    <a href="/weaver-trader" class="btn btn-secondary btn-cancel">Cancel</a>
+                </div>
             </form>
-        </div>
-    </div>
-</nav>
 
-<main>
-<!-- FORM -->
-<div class="form-card">
-
-    <h2 th:text="${wt.id == null ? 'Add Weaver / Trader' : 'Edit Weaver / Trader'}"></h2>
-
-    <!-- FLASH MESSAGES -->
-    <div th:if="${error}" class="alert alert-danger alert-dismissible fade show" role="alert">
-        <span th:text="${error}"></span>
-        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-    </div>
-
-    <form th:action="@{/weaver-trader/save}" method="post" th:object="${wt}" id="weaverTraderForm">
-        <input type="hidden" th:field="*{id}" />
-
-        <!-- Type Selection (Moved to Top) -->
-        <div class="mb-4">
-            <label class="form-label">Type</label>
-            <select class="form-select" th:field="*{type}" required>
-                <option value="">Select</option>
-                <option value="WEAVER">WEAVER</option>
-                <option value="TRADER">TRADER</option>
-            </select>
         </div>
 
-        <div class="mb-3">
-            <label class="form-label">Name</label>
-            <input type="text" class="form-control" th:field="*{name}" required>
-        </div>
-
-        <div class="mb-3">
-            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
-                <label class="form-label" style="margin: 0;">Owner Mob No 1</label>
-                <button type="button" class="contact-book-btn" id="contactBookBtn" onclick="selectFromContacts('phno')">📇 Contacts</button>
-            </div>
-            <input type="text" class="form-control phone-input" th:field="*{phno}" 
-                   required pattern="[0-9]{10}" maxlength="10" 
-                   oninput="this.value = this.value.replace(/[^0-9]/g, '')"
-                   placeholder="10 digit mobile number">
-        </div>
-
-        <div class="mb-3">
-            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
-                <label class="form-label" style="margin: 0;">Owner Mob No 2</label>
-                <button type="button" class="contact-book-btn" id="ownerContactBtn" onclick="selectFromContacts('ownerMobNo')">📇 Contacts</button>
-            </div>
-            <input type="text" class="form-control phone-input" th:field="*{ownerMobNo}"
-                   pattern="[0-9]{10}" maxlength="10" 
-                   oninput="this.value = this.value.replace(/[^0-9]/g, '')"
-                   placeholder="10 digit mobile number">
-        </div>
-
-        <div class="mb-3">
-            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
-                <label class="form-label" style="margin: 0;">Divanji Mob No</label>
-                <button type="button" class="contact-book-btn" id="divanjContactBtn" onclick="selectFromContacts('divanjMobNo')">📇 Contacts</button>
-            </div>
-            <input type="text" class="form-control phone-input" th:field="*{divanjMobNo}"
-                   pattern="[0-9]{10}" maxlength="10" 
-                   oninput="this.value = this.value.replace(/[^0-9]/g, '')"
-                   placeholder="10 digit mobile number">
-        </div>
-
-        <div class="mb-3 brokerage-fields">
-            <label class="form-label">Weaver Brokerage %</label>
-            <input type="number" class="form-control" th:field="*{weaverBrokeragePercent}" step="0.01" placeholder="e.g., 2.5">
-        </div>
-
-        <div class="mb-4 brokerage-fields">
-            <label class="form-label">Weaver Brokerage Paisa (₹)</label>
-            <input type="number" class="form-control" th:field="*{weaverBrokeragePaisa}" step="0.01" placeholder="e.g., 100.50">
-        </div>
-
-        <div class="d-flex justify-content-center gap-3">
-            <button type="submit" class="btn btn-save">Save</button>
-            <a href="/weaver-trader" class="btn btn-secondary btn-cancel">Cancel</a>
-        </div>
-    </form>
-
-</div>
-
-<!-- JavaScript for Mobile Contact Book Functionality -->
-<script>
-    // Helper function to detect if device is mobile
-    function isMobileDevice() {
-        const ua = navigator.userAgent || navigator.vendor || window.opera;
-        return /android|webos|iphone|ipad|ipod|blackberry|iemobile|opera mini/i.test(ua.toLowerCase());
-    }
-
-    // Helper function to check if Contact Picker API is supported
-    function isContactPickerSupported() {
-        return 'contacts' in navigator && 'ContactsManager' in window;
-    }
-
-    // Helper function to check if Cordova Contacts API is available
-    function isCordonvaContactsSupported() {
-        return typeof navigator.contacts !== 'undefined' && navigator.contacts;
-    }
-
-    async function selectFromContacts(fieldId) {
-        // Try Contact Picker API first (modern standard)
-        if (isContactPickerSupported()) {
-            try {
-                const props = ['tel'];
-                const contacts = await navigator.contacts.select(props, { multiple: false });
-                if (contacts && contacts.length > 0 && contacts[0].tel && contacts[0].tel.length > 0) {
-                    const phoneNumber = contacts[0].tel[0].replace(/\D/g, '');
-                    document.querySelector(`[name="${fieldId}"]`).value = phoneNumber;
-                    return;
-                }
-            } catch (error) {
-                console.log("Contact Picker API error: " + error);
+        <!-- JavaScript for Mobile Contact Book Functionality -->
+        <script>
+            // Helper function to detect if device is mobile
+            function isMobileDevice() {
+                const ua = navigator.userAgent || navigator.vendor || window.opera;
+                return /android|webos|iphone|ipad|ipod|blackberry|iemobile|opera mini/i.test(ua.toLowerCase());
             }
-        }
 
-        // Fallback to Cordova Contacts API (for apps wrapped in Cordova/PhoneGap)
-        if (isCordonvaContactsSupported()) {
-            try {
-                let options = new ContactFindOptions();
-                options.filter = "";
-                options.multiple = false;
-                options.desiredFields = [navigator.contacts.fieldType.phoneNumbers];
-                
-                navigator.contacts.find(
-                    [navigator.contacts.fieldType.displayName, navigator.contacts.fieldType.phoneNumbers],
-                    function(contacts) {
-                        if (contacts && contacts.length > 0) {
-                            const contact = contacts[0];
-                            if (contact.phoneNumbers && contact.phoneNumbers.length > 0) {
-                                let phoneNumber = contact.phoneNumbers[0].value.replace(/\D/g, '');
-                                document.querySelector(`[name="${fieldId}"]`).value = phoneNumber;
-                            }
+            // Helper function to check if Contact Picker API is supported
+            function isContactPickerSupported() {
+                return 'contacts' in navigator && 'ContactsManager' in window;
+            }
+
+            // Helper function to check if Cordova Contacts API is available
+            function isCordonvaContactsSupported() {
+                return typeof navigator.contacts !== 'undefined' && navigator.contacts;
+            }
+
+            async function selectFromContacts(fieldId) {
+                // Try Contact Picker API first (modern standard)
+                if (isContactPickerSupported()) {
+                    try {
+                        const props = ['tel'];
+                        const contacts = await navigator.contacts.select(props, { multiple: false });
+                        if (contacts && contacts.length > 0 && contacts[0].tel && contacts[0].tel.length > 0) {
+                            const phoneNumber = contacts[0].tel[0].replace(/\D/g, '');
+                            document.querySelector(`[name="${fieldId}"]`).value = phoneNumber;
+                            return;
                         }
-                    },
-                    function(error) {
-                        console.log("Cordova Contact error: " + error);
+                    } catch (error) {
+                        console.log("Contact Picker API error: " + error);
                     }
-                );
-                return;
-            } catch (error) {
-                console.log("Cordova Contacts error: " + error);
+                }
+
+                // Fallback to Cordova Contacts API (for apps wrapped in Cordova/PhoneGap)
+                if (isCordonvaContactsSupported()) {
+                    try {
+                        let options = new ContactFindOptions();
+                        options.filter = "";
+                        options.multiple = false;
+                        options.desiredFields = [navigator.contacts.fieldType.phoneNumbers];
+
+                        navigator.contacts.find(
+                            [navigator.contacts.fieldType.displayName, navigator.contacts.fieldType.phoneNumbers],
+                            function (contacts) {
+                                if (contacts && contacts.length > 0) {
+                                    const contact = contacts[0];
+                                    if (contact.phoneNumbers && contact.phoneNumbers.length > 0) {
+                                        let phoneNumber = contact.phoneNumbers[0].value.replace(/\D/g, '');
+                                        document.querySelector(`[name="${fieldId}"]`).value = phoneNumber;
+                                    }
+                                }
+                            },
+                            function (error) {
+                                console.log("Cordova Contact error: " + error);
+                            }
+                        );
+                        return;
+                    } catch (error) {
+                        console.log("Cordova Contacts error: " + error);
+                    }
+                }
+
+                // If no contact APIs available, show a message
+                if (isMobileDevice()) {
+                    alert("Your mobile browser doesn't support the contact picker feature. Please enter the phone number manually.\n\nNote: This feature works best with Android native apps or certain mobile browsers with permission granted.");
+                } else {
+                    alert("Contact book feature is available on mobile devices only. Please enter the phone number manually.");
+                }
             }
-        }
 
-        // If no contact APIs available, show a message
-        if (isMobileDevice()) {
-            alert("Your mobile browser doesn't support the contact picker feature. Please enter the phone number manually.\n\nNote: This feature works best with Android native apps or certain mobile browsers with permission granted.");
-        } else {
-            alert("Contact book feature is available on mobile devices only. Please enter the phone number manually.");
-        }
-    }
+            // Initialize contact buttons visibility based on device capability
+            document.addEventListener('DOMContentLoaded', function () {
+                const hasContactSupport = isContactPickerSupported() || isCordonvaContactsSupported();
+                const contactButtons = document.querySelectorAll('.contact-book-btn');
 
-    // Initialize contact buttons visibility based on device capability
-    document.addEventListener('DOMContentLoaded', function() {
-        const hasContactSupport = isContactPickerSupported() || isCordonvaContactsSupported();
-        const contactButtons = document.querySelectorAll('.contact-book-btn');
-        
-        if (!hasContactSupport && !isMobileDevice()) {
-            // Hide contact buttons on non-mobile desktop browsers
-            contactButtons.forEach(btn => {
-                btn.style.display = 'none';
+                if (!hasContactSupport && !isMobileDevice()) {
+                    // Hide contact buttons on non-mobile desktop browsers
+                    contactButtons.forEach(btn => {
+                        btn.style.display = 'none';
+                    });
+                } else if (!hasContactSupport && isMobileDevice()) {
+                    // Show contact buttons on mobile but with a disabled/muted appearance
+                    contactButtons.forEach(btn => {
+                        btn.title = 'Contact picker not available in this browser';
+                        btn.style.opacity = '0.6';
+                        btn.style.cursor = 'not-allowed';
+                    });
+                }
             });
-        } else if (!hasContactSupport && isMobileDevice()) {
-            // Show contact buttons on mobile but with a disabled/muted appearance
-            contactButtons.forEach(btn => {
-                btn.title = 'Contact picker not available in this browser';
-                btn.style.opacity = '0.6';
-                btn.style.cursor = 'not-allowed';
+
+            // Handle conditional fields for Type
+            document.addEventListener('DOMContentLoaded', function () {
+                const typeSelect = document.getElementById('type');
+                const brokerageFields = document.querySelectorAll('.brokerage-fields');
+
+                function toggleBrokerage() {
+                    if (typeSelect.value === 'TRADER') {
+                        brokerageFields.forEach(el => el.style.display = 'none');
+                    } else {
+                        brokerageFields.forEach(el => el.style.display = 'block');
+                    }
+                }
+
+                if (typeSelect) {
+                    typeSelect.addEventListener('change', toggleBrokerage);
+                    toggleBrokerage(); // Initial call
+                }
             });
-        }
-    });
+        </script>
 
-    // Handle conditional fields for Type
-    document.addEventListener('DOMContentLoaded', function() {
-        const typeSelect = document.getElementById('type');
-        const brokerageFields = document.querySelectorAll('.brokerage-fields');
-        
-        function toggleBrokerage() {
-            if (typeSelect.value === 'TRADER') {
-                brokerageFields.forEach(el => el.style.display = 'none');
-            } else {
-                brokerageFields.forEach(el => el.style.display = 'block');
-            }
-        }
-        
-        if (typeSelect) {
-            typeSelect.addEventListener('change', toggleBrokerage);
-            toggleBrokerage(); // Initial call
-        }
-    });
-</script>
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
 
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
-
-<!-- FOOTER -->
-<footer>
-   © All Rights Reserved ShreeGuru Software Solution.V:1.1
-</footer>
+        <!-- FOOTER -->
+        <footer>
+            © All Rights Reserved ShreeGuru Software Solution.V:1.1
+        </footer>
 
 </body>
+
 </html>
