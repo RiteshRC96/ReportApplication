@@ -20,6 +20,7 @@ import java.time.format.DateTimeFormatter;
 @Service
 public class ContractImageGenerationService {
 
+    // ---------------- PDF GENERATION (NO CHANGE NEEDED) ----------------
     public byte[] generateContract(gen_bill contract) {
         try {
             InputStream templateStream =
@@ -31,9 +32,7 @@ public class ContractImageGenerationService {
             PdfWriter writer = new PdfWriter(outputStream);
 
             PdfDocument pdfDoc = new PdfDocument(reader, writer);
-
             PdfPage page = pdfDoc.getFirstPage();
-
             PdfCanvas canvas = new PdfCanvas(page);
 
             PdfFont font = PdfFontFactory.createFont(StandardFonts.HELVETICA);
@@ -41,24 +40,18 @@ public class ContractImageGenerationService {
             canvas.beginText();
             canvas.setFontAndSize(font, 11);
 
-            /* ---------------------------
-               CONTRACT INFORMATION
-            ----------------------------*/
             if (contract.getContractNo() != null) {
-                canvas.setTextMatrix(160, 638); // Adjust X,Y
+                canvas.setTextMatrix(160, 638);
                 canvas.showText(contract.getContractNo().toString());
             }
 
             DateTimeFormatter dtf = DateTimeFormatter.ofPattern("dd/MM/yyyy");
 
             if (contract.getContractDate() != null) {
-                canvas.setTextMatrix(480, 638); 
+                canvas.setTextMatrix(480, 638);
                 canvas.showText(contract.getContractDate().format(dtf));
             }
 
-            /* ---------------------------
-               PARTIES
-            ----------------------------*/
             if (contract.getWeaverName() != null) {
                 canvas.setTextMatrix(140, 600);
                 canvas.showText(capitalizeWords(contract.getWeaverName()));
@@ -79,23 +72,20 @@ public class ContractImageGenerationService {
                 canvas.showText(contract.getQuality());
             }
 
-            /* ---------------------------
-               JOB DETAILS
-            ----------------------------*/
             if (contract.getQuantityMeters() != null) {
                 canvas.setTextMatrix(140, 447);
                 canvas.showText(contract.getQuantityMeters().toString());
             }
-            
+
             if (contract.getSizingfabric()!= null) {
                 canvas.setTextMatrix(180, 447);
                 PdfFont boldFont = PdfFontFactory.createFont(StandardFonts.HELVETICA_BOLD);
                 canvas.setFontAndSize(boldFont, 11);
                 String sf = contract.getSizingfabric().replace(",", "").trim().toUpperCase();
                 canvas.showText(sf);
-                canvas.setFontAndSize(font, 11); // switch back
+                canvas.setFontAndSize(font, 11);
             }
-            
+
             if (contract.getBeams() != null) {
                 canvas.setTextMatrix(450, 447);
                 canvas.showText(contract.getBeams().toString());
@@ -105,7 +95,7 @@ public class ContractImageGenerationService {
                 canvas.setTextMatrix(140, 405);
                 canvas.showText(contract.getJobRate().toString());
             }
-            
+
             if (contract.getPaymentDays() != null) {
                 canvas.setTextMatrix(480, 405);
                 canvas.showText(contract.getPaymentDays().toString());
@@ -115,7 +105,7 @@ public class ContractImageGenerationService {
                 canvas.setTextMatrix(250, 370);
                 canvas.showText(contract.getProductionSchedule());
             }
-            
+
             if (contract.getNoOfMachines() != null) {
                 canvas.setTextMatrix(550, 370);
                 canvas.showText(contract.getNoOfMachines().toString());
@@ -125,7 +115,7 @@ public class ContractImageGenerationService {
                 canvas.setTextMatrix(140, 330);
                 canvas.showText(contract.getRemark());
             }
-            
+
             if (contract.getCutLength() != null) {
                 canvas.setTextMatrix(140, 295);
                 canvas.showText(contract.getCutLength());
@@ -151,49 +141,48 @@ public class ContractImageGenerationService {
         }
     }
 
+    // ---------------- FIXED IMAGE GENERATION ----------------
     public byte[] generateContractImage(gen_bill contract) {
         try {
-            // Load template image
-            InputStream templateStream = 
+            InputStream templateStream =
                     new ClassPathResource("static/job_Contract.jpeg").getInputStream();
+
             BufferedImage image = ImageIO.read(templateStream);
             Graphics2D g2d = image.createGraphics();
 
-            // Enable anti-aliasing for text
-            g2d.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_ON);
-            
-            // Set Font and Color
-            InputStream is = Thread.currentThread().getContextClassLoader().getResourceAsStream("fonts/ARIAL.TTF");
-            if (is == null) {
-                throw new RuntimeException("Font file not found: /fonts/ARIAL.TTF");
+            g2d.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING,
+                    RenderingHints.VALUE_TEXT_ANTIALIAS_ON);
+
+            // ✅ SAFE FONT LOADING
+            Font font;
+            try {
+                InputStream fontStream =
+                        new ClassPathResource("fonts/ARIAL.TTF").getInputStream();
+
+                font = Font.createFont(Font.TRUETYPE_FONT, fontStream)
+                        .deriveFont(Font.BOLD, 22f);
+
+            } catch (Exception e) {
+                // fallback (Railway safe)
+                font = new Font(Font.SANS_SERIF, Font.BOLD, 22);
             }
-            
-            Font font = Font.createFont(Font.TRUETYPE_FONT, is).deriveFont(Font.BOLD, 22f);
-            g2d.setFont(font);
-            
+
             g2d.setFont(font);
             g2d.setColor(Color.BLACK);
 
-            // PDF points to Image pixels scale factor
             float scaleX = image.getWidth() / 595f;
             float scaleY = image.getHeight() / 842f;
 
-            /* ---------------------------	
-               CONTRACT INFORMATION
-            ----------------------------*/
+            DateTimeFormatter dtf = DateTimeFormatter.ofPattern("dd/MM/yyyy");
+
             if (contract.getContractNo() != null) {
                 drawText(g2d, contract.getContractNo().toString(), 160, 684, scaleX, scaleY);
             }
-
-            DateTimeFormatter dtf = DateTimeFormatter.ofPattern("dd/MM/yyyy");
 
             if (contract.getContractDate() != null) {
                 drawText(g2d, contract.getContractDate().format(dtf), 480, 684, scaleX, scaleY);
             }
 
-            /* ---------------------------
-               PARTIES
-            ----------------------------*/
             if (contract.getWeaverName() != null) {
                 drawText(g2d, capitalizeWords(contract.getWeaverName()), 140, 642, scaleX, scaleY);
             }
@@ -210,21 +199,15 @@ public class ContractImageGenerationService {
                 drawText(g2d, contract.getQuality(), 140, 515, scaleX, scaleY);
             }
 
-            /* ---------------------------
-               JOB DETAILS
-            ----------------------------*/
             if (contract.getQuantityMeters() != null) {
                 drawText(g2d, contract.getQuantityMeters().toString(), 140, 473, scaleX, scaleY);
             }
-            
+
             if (contract.getSizingfabric() != null) {
-                Font boldFont = new Font("Arial", Font.BOLD, 22);
-                g2d.setFont(boldFont);
                 String sf = contract.getSizingfabric().replace(",", "").trim().toUpperCase();
                 drawText(g2d, sf, 180, 473, scaleX, scaleY);
-                g2d.setFont(font); // switch back
             }
-            
+
             if (contract.getBeams() != null) {
                 drawText(g2d, contract.getBeams().toString(), 450, 473, scaleX, scaleY);
             }
@@ -232,7 +215,7 @@ public class ContractImageGenerationService {
             if (contract.getJobRate() != null) {
                 drawText(g2d, contract.getJobRate().toString(), 140, 430, scaleX, scaleY);
             }
-            
+
             if (contract.getPaymentDays() != null) {
                 drawText(g2d, contract.getPaymentDays().toString(), 474, 430, scaleX, scaleY);
             }
@@ -240,7 +223,7 @@ public class ContractImageGenerationService {
             if (contract.getProductionSchedule() != null) {
                 drawText(g2d, contract.getProductionSchedule(), 250, 390, scaleX, scaleY);
             }
-            
+
             if (contract.getNoOfMachines() != null) {
                 drawText(g2d, contract.getNoOfMachines().toString(), 545, 390, scaleX, scaleY);
             }
@@ -265,6 +248,7 @@ public class ContractImageGenerationService {
 
             ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
             ImageIO.write(image, "jpeg", outputStream);
+
             return outputStream.toByteArray();
 
         } catch (Exception e) {
@@ -280,8 +264,10 @@ public class ContractImageGenerationService {
 
     private String capitalizeWords(String str) {
         if (str == null || str.isEmpty()) return str;
+
         StringBuilder sb = new StringBuilder();
         boolean capitalizeNext = true;
+
         for (char c : str.toCharArray()) {
             if (Character.isWhitespace(c)) {
                 capitalizeNext = true;
