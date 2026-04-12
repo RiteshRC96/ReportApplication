@@ -1,0 +1,905 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Generate Job Contract</title>
+    <link rel="icon" type="image/png" th:href="@{/favicon.png}">
+
+
+    <!-- Bootstrap -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+
+    <!-- Bootstrap Icons -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css" rel="stylesheet">
+
+    <!-- Select2 CSS (SEARCH DROPDOWN) -->
+    <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+
+    <!-- SweetAlert -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+    <style>
+        body {
+            font-family: "Times New Roman", serif;
+            background: linear-gradient(rgba(0, 0, 0, 0.55), rgba(0, 0, 0, 0.55)),
+                url("https://t3.ftcdn.net/jpg/16/23/08/86/240_F_1623088639_VM4EkuCvXjWV7qfyzIBr4e6GDzCeY3rA.jpg");
+            background-size: cover;
+            background-position: center;
+            min-height: 100vh;
+            margin: 0;
+            display: flex;
+            flex-direction: column;
+        }
+
+        main {
+            flex: 1;
+            padding: 15px 10px;
+        }
+
+        .navbar {
+            background: linear-gradient(135deg, #1f2a30, #243840);
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+            padding: 0.35rem 1rem !important;
+        }
+
+        .navbar-brand {
+            font-weight: 600;
+            font-size: 18px;
+            white-space: nowrap;
+        }
+
+        .navbar-toggler {
+            order: -1;
+            margin-right: 10px;
+        }
+
+        .navbar-toggler:focus {
+            box-shadow: none;
+            border-color: transparent;
+        }
+
+        .nav-link {
+            padding: 0.4rem 10px !important;
+            font-size: 14px;
+            font-weight: 600;
+            color: #ffffff !important;
+            position: relative;
+            transition: 0.3s ease;
+        }
+
+        .nav-link::after {
+            content: "";
+            position: absolute;
+            left: 0;
+            bottom: -6px;
+            width: 0%;
+            height: 2px;
+            background: #39d98a;
+            transition: width 0.3s ease;
+        }
+
+        .nav-link:hover::after {
+            width: 100%;
+        }
+
+        .nav-link:hover {
+            transform: translateY(-2px);
+        }
+
+        /* ---------- DROPDOWN MENU ---------- */
+        .dropdown-menu {
+            background: #243840 !important;
+            border: 1px solid #39d98a;
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+        }
+
+        .dropdown-item {
+            color: #ffffff !important;
+            font-weight: 600;
+            padding: 0.6rem 1rem !important;
+            transition: 0.3s ease;
+        }
+
+        .dropdown-item:hover {
+            background: #39d98a !important;
+            color: #000 !important;
+            transform: translateX(5px);
+        }
+
+        .btn-logout {
+            border-radius: 20px;
+            padding: 5px 15px;
+            font-size: 13px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+
+        .btn-logout:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(220, 53, 69, 0.3);
+        }
+
+        /* ---------- FOOTER ---------- */
+        footer {
+            color: #888;
+            text-align: center;
+            padding: 20px 1rem;
+            margin-top: auto;
+            font-size: 12px;
+            font-weight: 500;
+            border-top: 1px solid #e0e0e0;
+            background: rgba(255, 255, 255, 0.7);
+            letter-spacing: 0.3px;
+        }
+
+        .bill-card {
+            background: white;
+            border-radius: 0;
+            padding: 20px;
+            width: 100%;
+            max-width: 900px;
+            margin: 10px auto;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+            font-family: Arial, sans-serif;
+        }
+
+        /* PRINT STYLES */
+        @media print {
+            .bill-card {
+                max-width: 100%;
+                margin: 0;
+                padding: 0;
+                box-shadow: none;
+                page-break-after: always;
+            }
+
+            body {
+                background: white !important;
+            }
+
+            .navbar,
+            footer,
+            .btn,
+            #loadingOverlay {
+                display: none !important;
+            }
+
+            .modal,
+            .d-flex button {
+                display: none !important;
+            }
+
+            input,
+            select {
+                border: none !important;
+                background: transparent !important;
+            }
+        }
+
+        label {
+            font-weight: 600;
+            font-size: 0.9rem;
+            margin: 0;
+        }
+
+        .form-control {
+            border: none;
+            border-bottom: 1px solid #000;
+            border-radius: 0;
+            background: transparent;
+            padding: 4px 2px;
+            font-size: 0.9rem;
+            transition: all 0.3s ease;
+            color: #000;
+        }
+
+        .form-control:focus {
+            border-bottom: 2px solid #39d98a;
+            background-color: transparent;
+            box-shadow: none;
+        }
+
+        .form-control:disabled,
+        .form-control[readonly] {
+            background-color: transparent;
+            color: #000;
+        }
+
+        /* SELECT2 STYLING */
+        .select2-container--default .select2-selection--single {
+            border: none !important;
+            border-bottom: 1px solid #000 !important;
+            border-radius: 0 !important;
+            background: transparent !important;
+            height: 32px !important;
+        }
+
+        .select2-container--default.select2-container--focus .select2-selection--single {
+            border-bottom: 2px solid #39d98a !important;
+        }
+
+        #loadingOverlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(255, 255, 255, 0.9);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 9999;
+        }
+
+        /* Select2 full width */
+        .select2-container {
+            width: 100% !important;
+        }
+
+        /* Button styles */
+        .btn-secondary {
+            background-color: #7a7a7a;
+            border: none;
+            color: white;
+        }
+
+        .btn-warning {
+            background-color: #ff9800;
+            border: none;
+            color: white;
+        }
+
+        .btn-danger {
+            background-color: #d32f2f;
+            border: none;
+            color: white;
+        }
+
+        .btn-secondary:hover,
+        .btn-warning:hover,
+        .btn-danger:hover {
+            opacity: 0.9;
+        }
+
+        /* Print styles */
+        @media print {
+
+            .navbar,
+            #loadingOverlay {
+                display: none !important;
+            }
+
+            .bill-card {
+                max-width: 100%;
+                margin: 0;
+                padding: 0;
+                box-shadow: none;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- NAVBAR -->
+    <nav class="navbar navbar-dark navbar-expand-lg px-3">
+        <div class="container-fluid px-0">
+            <span class="navbar-brand d-flex align-items-center">
+                <img th:src="@{/logo.png}" alt="Logo"
+                    style="height: 35px; width: 35px; object-fit: contain; margin-right: 8px;">
+                ShreeGuru Software Solutions
+            </span>
+
+            <!-- Mobile Toggle Button -->
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarMenu"
+                aria-controls="navbarMenu" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+
+            <!-- Collapsible Navigation Menu -->
+            <div class="collapse navbar-collapse" id="navbarMenu">
+                <ul class="navbar-nav ms-auto align-items-center">
+                    <li class="nav-item">
+                        <a class="nav-link" href="/dashboard">Dashboard</a>
+                    </li>
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" id="masterDropdown" role="button"
+                            data-bs-toggle="dropdown" aria-expanded="false">Master</a>
+                        <ul class="dropdown-menu dropdown-menu-dark" aria-labelledby="masterDropdown">
+                            <li><a class="dropdown-item" href="/weaver-trader">Weaver / Trader</a></li>
+                            <li><a class="dropdown-item" href="/quality">Quality</a></li>
+                        </ul>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/gen-bill">Job Contract</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/report">Report</a>
+                    </li>
+                </ul>
+
+                <form action="/logout" method="post" class="ms-3">
+                    <button class="btn btn-danger btn-logout">Logout</button>
+                </form>
+            </div>
+        </div>
+    </nav>
+
+    <main>
+        <!-- LOADER -->
+        <div id="loadingOverlay">
+            <div class="text-center">
+                <div class="spinner-border text-dark" style="width:4rem;height:4rem"></div>
+                <div class="mt-2 fw-bold">Processing...</div>
+            </div>
+        </div>
+
+        <!-- FORM -->
+        <div class="bill-card"
+            style="width: 100%; max-width: 900px; margin: 0 auto; padding: 20px; background: white; border: 2px solid #000;">
+
+            <!-- LOGO HEADER -->
+            <div style="text-align: center; margin-bottom: 15px; border-bottom: 3px solid #000; padding-bottom: 10px;">
+                <div style="font-size: 12px; font-weight: bold; color: #F94449;">|| SHREE GANESH ||</div>
+                <h3 style="margin: 8px 0; font-size: 24px; font-weight: bold;">Airjet Loom Owner's Association,</h3>
+                <h4 style="margin: 5px 0; font-size: 18px; font-weight: bold;">Ichalkaranji</h4>
+                <div style="margin-top: 8px; font-size: 12px;">
+                    <strong>Email :</strong> <span th:text="${#authentication.principal.username}"></span>
+                </div>
+            </div>
+
+            <form id="billForm">
+                <!-- CONTRACT NO & DATE -->
+                <div
+                    style="display: flex; justify-content: space-between; flex-wrap: wrap; margin-bottom: 15px; gap: 15px;">
+                    <div style="flex: 1; min-width: 200px;">
+                        <strong>Contract No :</strong>
+                        <input type="text" name="contractNo" th:value="${job?.contractNo}"
+                            style="width: 100%; max-width: 150px; border: none; border-bottom: 1px solid #000; padding: 3px;">
+                    </div>
+                    <div style="flex: 1; min-width: 200px; text-align: right;">
+                        <strong style="margin-right: 20px;">Date :</strong>
+                        <input type="date" class="form-control" id="contractDate" name="contract_date"
+                            th:value="${job?.contractDate}"
+                            style="width: 100%; max-width: 140px; border: none; border-bottom: 1px solid #000; padding: 3px; display: inline-block;"
+                            required>
+                    </div>
+                </div>
+
+                <input type="hidden" name="userId" th:value="${job?.userId}">
+
+                <!-- SECTION: 10 CONTRACT ITEMS -->
+                <table style="width: 100%; border: 2px solid #000; margin-bottom: 15px;">
+                    <tr>
+                        <td style="padding: 12px; border-bottom: 1px solid #000;">
+                            <strong>1. WEAVER :-</strong>
+                        </td>
+                        <td style="padding: 12px; border-bottom: 1px solid #000; border-left: 1px solid #000;">
+                            <div class="d-flex gap-2">
+                                <select class="form-control searchable" name="weaver_name" id="weaverSelect"
+                                    style="flex:1; border: none; border-bottom: 1px solid #000; border-radius: 0;"
+                                    required>
+                                    <option value="">Select Weaver</option>
+                                    <option th:each="w : ${weavers}" th:value="${w.name}" th:text="${w.name}"
+                                        th:selected="${job?.weaverName == w.name}"></option>
+                                </select>
+                                <button type="button" class="btn btn-sm btn-success" data-bs-toggle="modal"
+                                    data-bs-target="#addWeaverModal" style="font-size: 12px;">+</button>
+                            </div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td style="padding: 12px; border-bottom: 1px solid #000;">
+                            <strong>2. TRADER :-</strong>
+                        </td>
+                        <td style="padding: 12px; border-bottom: 1px solid #000; border-left: 1px solid #000;">
+                            <div class="d-flex gap-2">
+                                <select class="form-control searchable" name="trader_name" id="traderSelect"
+                                    style="flex:1; border: none; border-bottom: 1px solid #000; border-radius: 0;"
+                                    required>
+                                    <option value="">Select Trader</option>
+                                    <option th:each="t : ${traders}" th:value="${t.name}" th:text="${t.name}"
+                                        th:selected="${job?.traderName == t.name}"></option>
+                                </select>
+                                <button type="button" class="btn btn-sm btn-success" data-bs-toggle="modal"
+                                    data-bs-target="#addTraderModal" style="font-size: 12px;">+</button>
+                            </div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td style="padding: 12px; border-bottom: 1px solid #000;">
+                            <strong>3. BROKER :-</strong>
+                        </td>
+                        <td style="padding: 12px; border-bottom: 1px solid #000; border-left: 1px solid #000;">
+                            <span th:text="${#authentication.principal.name}"></span>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td style="padding: 12px; border-bottom: 1px solid #000;">
+                            <strong>4. QUALITY :-</strong>
+                        </td>
+                        <td style="padding: 12px; border-bottom: 1px solid #000; border-left: 1px solid #000;">
+                            <div class="d-flex gap-2">
+                                <select class="form-control searchable" name="quality" id="qualitySelect"
+                                    style="flex:1; border: none; border-bottom: 1px solid #000; border-radius: 0;"
+                                    required>
+                                    <option value="">Select Quality</option>
+                                    <option th:each="q : ${quality}" th:value="${q.qualityName}"
+                                        th:text="${q.qualityName}" th:selected="${job?.quality == q.qualityName}">
+                                    </option>
+                                </select>
+                                <button type="button" class="btn btn-sm btn-success" data-bs-toggle="modal"
+                                    data-bs-target="#addQualityModal" style="font-size: 12px;">+</button>
+                            </div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td style="padding: 12px; border-bottom: 1px solid #000;">
+                            <strong>5. QUANTITY :-</strong>
+                        </td>
+                        <td style="padding: 12px; border-bottom: 1px solid #000; border-left: 1px solid #000;">
+                            <input class="form-control" name="quantity_meters" id="quantityMeters"
+                                th:value="${job?.quantityMeters}" placeholder=""
+                                style="border: none; border-bottom: 1px solid #000; border-radius: 0; text-align: center; width: 90px; display: inline-block;"
+                                required>
+                            <span style="margin: 0 10px;">METERS</span>
+                            <div style="display: inline-block; margin: 0 15px;">
+                                <label style="margin-right: 20px; font-weight: bold;"><input type="radio"
+                                        name="sizing_fabric" value="SIZING"
+                                        th:checked="${job?.sizingfabric == 'SIZING' || job?.sizingfabric == 'sizing'}"
+                                        style="margin-right: 5px;"> SIZING</label>
+                                <label style="font-weight: bold;"><input type="radio" name="sizing_fabric"
+                                        value="FABRIC"
+                                        th:checked="${job?.sizingfabric == 'FABRIC' || job?.sizingfabric == 'fabric'}"
+                                        style="margin-right: 5px;"> FABRIC</label>
+                            </div>
+                            <input class="form-control" name="beams" th:value="${job?.beams}" placeholder=""
+                                style="border: none; border-bottom: 1px solid #000; border-radius: 0; text-align: center; width: 90px; display: inline-block; margin: 0 10px;"
+                                required>
+                            <span style="margin-left: 5px;">BEAMS.</span>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td style="padding: 12px; border-bottom: 1px solid #000;">
+                            <strong>6. JOB RATE(in Paise) :-</strong>
+                        </td>
+                        <td style="padding: 12px; border-bottom: 1px solid #000; border-left: 1px solid #000;">
+                            <input class="form-control" name="job_rate" id="jobRate" th:value="${job?.jobRate}"
+                                style="border: none; border-bottom: 1px solid #000; border-radius: 0; text-align: center; width: 70px; display: inline-block;"
+                                required>
+                            <span style="margin: 0 30px; font-weight: bold;">7. PAYMENT WITHIN</span>
+                            <input class="form-control" name="payment_days" th:value="${job?.paymentDays}"
+                                style="border: none; border-bottom: 1px solid #000; border-radius: 0; text-align: center; width: 60px; display: inline-block;"
+                                required>
+                            <span style="margin-left: 10px;">DAYS.</span>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td style="padding: 12px; border-bottom: 1px solid #000;">
+                            <strong>8. PRODUCTION SCHEDULE :-</strong>
+                        </td>
+                        <td style="padding: 12px; border-bottom: 1px solid #000; border-left: 1px solid #000;">
+                            <input class="form-control" name="production_schedule" th:value="${job?.productionSchedule}"
+                                placeholder=""
+                                style="border: none; border-bottom: 1px solid #000; border-radius: 0; width: 45%; display: inline-block;"
+                                required>
+                            <span style="margin: 0 20px; font-weight: bold;">9. NO OF MACHINES :-</span>
+                            <input class="form-control" name="no_of_machines" th:value="${job?.noOfMachines}"
+                                placeholder=""
+                                style="border: none; border-bottom: 1px solid #000; border-radius: 0; text-align: center; width: 70px; display: inline-block;"
+                                required>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td style="padding: 12px;">
+                            <strong>10. REMARK :-</strong>
+                        </td>
+                        <td style="padding: 12px; border-left: 1px solid #000;">
+                            <input class="form-control" name="remark" th:value="${job?.remark}"
+                                style="border: none; border-bottom: 1px solid #000; border-radius: 0; width: 100%;"
+                                required>
+                        </td>
+                    </tr>
+                </table>
+
+                <!-- CUT LENGTH, MINIMUM DELIVERY, ROLLING/FOLDING -->
+                <table style="width: 100%; border: 2px solid #000; margin-bottom: 15px;">
+                    <tr>
+                        <td style="padding: 12px; width: 33%; border-right: 1px solid #000;">
+                            <strong>CUT LENGTH :-</strong>
+                            <input class="form-control" name="cut_length" th:value="${job?.cutLength}"
+                                style="border: none; border-bottom: 1px solid #000; border-radius: 0; margin-top: 5px;"
+                                required>
+                        </td>
+                        <td
+                            style="padding: 12px; width: 33%; border-right: 1px solid #000; border-left: 1px solid #000;">
+                            <strong>MINIMUM DELIVERY :-</strong>
+                            <input class="form-control" name="minimum_delivery" th:value="${job?.minimumDelivery}"
+                                style="border: none; border-bottom: 1px solid #000; border-radius: 0; margin-top: 5px;"
+                                required>
+                        </td>
+                        <td style="padding: 12px; width: 34%; border-left: 1px solid #000;">
+                            <strong>ROLLING / FOLDING.</strong>
+                            <div style="font-size: 13px; margin-top: 5px;">
+                                <label><input type="radio" name="rolling_folding" value="Rolling"
+                                        th:checked="${job?.rollingFolding == 'Rolling'}"> Rolling</label>
+                                <label style="margin-left: 15px;"><input type="radio" name="rolling_folding"
+                                        value="Folding" th:checked="${job?.rollingFolding == 'Folding'}">
+                                    Folding</label>
+                            </div>
+                        </td>
+                    </tr>
+                </table>
+
+                <!-- TERMS & CONDITIONS -->
+                <div style="border: 2px solid #000; padding: 15px; margin-bottom: 15px; background: #f9f9f9;">
+                    <h4 style="margin: 0 0 10px 0; color: #c2185b; font-weight: bold;">TERMS & CONDITIONS :</h4>
+                    <ol style="margin: 0; padding-left: 20px; font-size: 12px; line-height: 1.6;">
+                        <li>Payment must be within due date, interest @ 15% will be applicable after due date and
+                            interest is not an excuse to delaypayment.</li>
+                        <li>Weft wastage @ 5% minimum will be applicable.</li>
+                        <li>Checking of fabric in weavers premises is final.</li>
+                        <li>BITRA and DKTE test reports are only approved.</li>
+                        <li>Weaver is not responsible for any damage in fabric due to quality of sizing, warp, weft,
+                            etc.</li>
+                        <li>Re-knotting, reed change or any production disturbance are chargeable.</li>
+                        <li>Complaint regarding yarn consumption should be reported within 7 days from the statement
+                            received date, it will not be entertained at the time of payments.</li>
+                        <li>Brokerage@ 1% will be applicable. 9. Subject to Ichalkaranji Jurisdiction.</li>
+                    </ol>
+                </div>
+
+                <!-- HIDDEN CALCULATED FIELDS (for database) -->
+                <div style="display: none;">
+                    <input type="hidden" name="pick" id="pick" th:value="${job?.pick}">
+                    <input type="hidden" name="weaver_brokerage_percent" id="weaverBrokeragePercent"
+                        th:value="${job?.weaverBrokeragePercent}">
+                    <input type="hidden" name="weaver_brokerage_paisa" id="weaverBrokeragePaisa"
+                        th:value="${job?.weaverBrokeragePaisa}">
+                    <input type="hidden" name="sizing_fabric" id="sizingFabric" th:value="${job?.sizingfabric}">
+                    <input type="hidden" name="rate" id="rate" th:value="${job?.rate}">
+                    <input type="hidden" name="amount" id="amount" th:value="${job?.amount}">
+                    <input type="hidden" name="brokerage_percent_amt" id="brokeragePercentAmt"
+                        th:value="${job?.brokeragePercentAmt}">
+                    <input type="hidden" name="brokerage_mtr_amt" id="brokerageMtrAmt"
+                        th:value="${job?.brokerageMtrAmt}">
+                </div>
+
+                <!-- ACTION BUTTONS -->
+                <div class="d-flex flex-wrap justify-content-center gap-2 mt-4 mb-3">
+                    <!-- Single Generate Contract Button which saves and then asks to generate -->
+                    <button type="submit" id="generateContractBtn" class="btn btn-success"
+                        style="padding: 10px 30px; font-weight: bold; font-size: 14px;">
+                        <i class="bi bi-image"></i> GENERATE CONTRACT
+                    </button>
+
+                    <button type="reset" class="btn btn-warning"
+                        style="padding: 10px 30px; font-weight: bold; font-size: 14px;">RESET</button>
+                    <a href="/dashboard" class="btn btn-danger"
+                        style="padding: 10px 30px; font-weight: bold; font-size: 14px;">CANCEL</a>
+                </div>
+
+            </form>
+        </div>
+
+        <!-- MODAL: ADD WEAVER -->
+        <div class="modal fade" id="addWeaverModal" tabindex="-1">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title">Add New Weaver</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                    </div>
+                    <form id="addWeaverForm">
+                        <div class="modal-body">
+                            <div class="mb-3">
+                                <label>Weaver Name</label>
+                                <input type="text" class="form-control" name="weaver_name" required>
+                            </div>
+                            <div class="mb-3">
+                                <label>Owner Mob Number</label>
+                                <input type="text" class="form-control" name="weaver_phno" required pattern="[0-9]{10}"
+                                    maxlength="10" oninput="this.value = this.value.replace(/[^0-9]/g, '')"
+                                    placeholder="10 digit mobile number">
+                            </div>
+                            <div class="mb-3">
+                                <label>Brokerage %</label>
+                                <input type="number" class="form-control" name="weaver_brokerage_percent" step="0.01"
+                                    value="0">
+                            </div>
+                            <div class="mb-3">
+                                <label>Brokerage Paisa (₹)</label>
+                                <input type="number" class="form-control" name="weaver_brokerage_paisa" step="0.01"
+                                    value="0">
+                            </div>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                            <button type="submit" class="btn btn-primary">Add Weaver</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <!-- MODAL: ADD TRADER -->
+        <div class="modal fade" id="addTraderModal" tabindex="-1">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title">Add New Trader</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                    </div>
+                    <form id="addTraderForm">
+                        <div class="modal-body">
+                            <div class="mb-3">
+                                <label>Trader Name</label>
+                                <input type="text" class="form-control" name="trader_name" required>
+                            </div>
+                            <div class="mb-3">
+                                <label>Owner Mob Number</label>
+                                <input type="text" class="form-control" name="trader_phno" required pattern="[0-9]{10}"
+                                    maxlength="10" oninput="this.value = this.value.replace(/[^0-9]/g, '')"
+                                    placeholder="10 digit mobile number">
+                            </div>
+
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                            <button type="submit" class="btn btn-primary">Add Trader</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <!-- MODAL: ADD QUALITY -->
+        <div class="modal fade" id="addQualityModal" tabindex="-1">
+            <div class="modal-dialog modal-lg">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title">Add New Quality</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                    </div>
+                    <form id="addQualityForm">
+                        <div class="modal-body">
+                            <div class="row g-2">
+                                <div class="col-md-6">
+                                    <label>Width</label>
+                                    <input type="text" class="form-control quality-input" name="quality_width"
+                                        id="qual_width">
+                                </div>
+                                <div class="col-md-6">
+                                    <label>Reed</label>
+                                    <input type="text" class="form-control quality-input" name="quality_reed"
+                                        id="qual_reed">
+                                </div>
+                                <div class="col-md-6">
+                                    <label>Pick</label>
+                                    <input type="text" class="form-control quality-input" name="quality_pick"
+                                        id="qual_pick">
+                                </div>
+                                <div class="col-md-6">
+                                    <label>Warp</label>
+                                    <input type="text" class="form-control quality-input" name="quality_warp"
+                                        id="qual_warp">
+                                </div>
+                                <div class="col-md-6">
+                                    <label>Weft</label>
+                                    <input type="text" class="form-control quality-input" name="quality_weft"
+                                        id="qual_weft">
+                                </div>
+                                <div class="col-md-6">
+                                    <label>Weave</label>
+                                    <input type="text" class="form-control quality-input" name="quality_weave"
+                                        id="qual_weave">
+                                </div>
+                            </div>
+                            <hr>
+                            <div class="mb-3">
+                                <label>Quality Name</label>
+                                <input type="text" class="form-control" name="quality_name" id="qual_name" readonly
+                                    style="background-color: #fff3cd;">
+                            </div>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                            <button type="submit" class="btn btn-primary">Add Quality</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+
+
+        <!-- JS LIBRARIES -->
+        <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+        <!-- Select2 -->
+        <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+
+        <!-- FIELD VALIDATION -->
+        <script>
+            document.addEventListener("DOMContentLoaded", function () {
+                const form = document.getElementById("billForm");
+
+                // Store original submit handler
+                const originalSubmitHandler = form.onsubmit;
+
+                // Override form submission to validate radio buttons first
+                form.addEventListener("submit", function (e) {
+                    // Check if sizing_fabric is selected
+                    const sizingFabricSelected = document.querySelector('input[name="sizing_fabric"]:checked');
+                    if (!sizingFabricSelected) {
+                        e.preventDefault();
+                        Swal.fire("Validation Error", "Please select either 'sizing' or 'fabric' for Quantity field", "error");
+                        return false;
+                    }
+
+                    // Check if rolling_folding is selected
+                    const rollingFoldingSelected = document.querySelector('input[name="rolling_folding"]:checked');
+                    if (!rollingFoldingSelected) {
+                        e.preventDefault();
+                        Swal.fire("Validation Error", "Please select either 'Rolling' or 'Folding'", "error");
+                        return false;
+                    }
+
+                    // Validation passed, allow form submission to continue
+                    return true;
+                }, true); // Use capture phase to run before other listeners
+            });
+        </script>
+
+        <!-- CONTRACT IMAGE GENERATION FUNCTIONS -->
+        <script>
+            // Get user ID and contract number from the form
+            function getUserIdAndContractNo() {
+                const contractNoInput = document.querySelector('input[name="contractNo"]');
+                const contractNo = contractNoInput ? contractNoInput.value : null;
+                const userId = document.querySelector('input[name="userId"]')?.value;
+                return { userId, contractNo };
+            }
+
+            function generateContractImage() {
+                const { userId, contractNo } = getUserIdAndContractNo();
+
+                if (!userId || !contractNo) {
+                    Swal.fire("Error", "Contract must be saved first before generating contract", "error");
+                    return;
+                }
+
+                // Ask the user for the format
+                Swal.fire({
+                    title: "Job contract saved successfully",
+                    text: "Which format would you like to generate?",
+                    icon: "success",
+                    showCancelButton: true,
+                    showDenyButton: true,
+                    confirmButtonText: '<i class="bi bi-file-earmark-pdf"></i> PDF Format',
+                    denyButtonText: '<i class="bi bi-image"></i> Image Format (JPG)',
+                    cancelButtonText: 'Cancel'
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        // PDF Selected
+                        processContractGeneration(userId, contractNo, 'PDF');
+                    } else if (result.isDenied) {
+                        // Image Selected
+                        processContractGeneration(userId, contractNo, 'IMAGE');
+                    }
+                });
+            }
+
+            function processContractGeneration(userId, contractNo, format) {
+                // Show loading
+                document.getElementById('loadingOverlay').style.display = 'flex';
+
+                const apiUrl = format === 'PDF'
+                    ? `/api/download-contract-pdf/${userId}/${contractNo}`
+                    : `/api/download-contract-image/${userId}/${contractNo}`;
+
+                const fileExtension = format === 'PDF' ? 'pdf' : 'jpg';
+                const contentType = format === 'PDF' ? 'application/pdf' : 'image/jpeg';
+
+                fetch(apiUrl)
+                    .then(res => {
+                        if (!res.ok) throw new Error(`Could not generate ${format}`);
+                        return res.blob();
+                    })
+                    .then(blob => {
+                        document.getElementById('loadingOverlay').style.display = 'none';
+
+                        const file = new File([blob], `Contract_${contractNo}.${fileExtension}`, { type: contentType });
+                        const shareText = `Job Contract - Contract No: ${contractNo}`;
+
+                        // Show a dialog asking the user whether they want to Download or Share
+                        Swal.fire({
+                            title: `${format} Generated!`,
+                            text: `What would you like to do with the ${format}?`,
+                            icon: "success",
+                            showCancelButton: true,
+                            showDenyButton: true,
+                            confirmButtonText: '<i class="bi bi-download"></i> Download',
+                            denyButtonText: '<i class="bi bi-share"></i> Share',
+                            cancelButtonText: 'Cancel'
+                        }).then((shareResult) => {
+                            if (shareResult.isConfirmed) {
+                                // User clicked Download
+                                const objectUrl = URL.createObjectURL(blob);
+                                const link = document.createElement('a');
+                                link.href = objectUrl;
+                                link.download = `Contract_${contractNo}.${fileExtension}`;
+                                document.body.appendChild(link);
+                                link.click();
+                                document.body.removeChild(link);
+                                setTimeout(() => URL.revokeObjectURL(objectUrl), 1000);
+                                Swal.fire("Success", `${format} downloaded successfully!`, "success");
+                            } else if (shareResult.isDenied) {
+                                // User clicked Share
+                                if (navigator.share) {
+                                    navigator.share({
+                                        title: 'Job Contract',
+                                        text: shareText,
+                                        files: [file]
+                                    }).then(() => {
+                                        Swal.fire("Success", "Contract shared successfully!", "success");
+                                    }).catch(error => {
+                                        console.error('Share error:', error);
+                                        if (error.name !== "AbortError") {
+                                            Swal.fire("Info", "Sharing via your browser's share dialog is not supported for this format. Please download it first.", "info");
+                                        }
+                                    });
+                                } else {
+                                    // Fallback
+                                    const whatsappUrl = `https://wa.me/?text=${encodeURIComponent(shareText)}`;
+                                    Swal.fire({
+                                        title: "Share Contract",
+                                        html: `
+                                    <p>Your browser doesn't natively support direct ${format} sharing.</p>
+                                    <p>Please <b>download</b> the file first, or share this message link:</p>
+                                    <a href="${whatsappUrl}" target="_blank" class="btn btn-success btn-sm" style="margin: 5px;">
+                                        <i class="bi bi-whatsapp"></i> Share on WhatsApp
+                                    </a>
+                                `,
+                                        icon: "info",
+                                        confirmButtonText: "Close"
+                                    });
+                                }
+                            }
+                        });
+                    })
+                    .catch(err => {
+                        document.getElementById('loadingOverlay').style.display = 'none';
+                        console.error(err);
+                        Swal.fire("Error", `Failed to generate ${format}: ` + err.message, "error");
+                    });
+            }
+
+
+            // Logic for Generate Contract button
+            document.addEventListener('DOMContentLoaded', function () {
+                const contractNoInput = document.querySelector('input[name="contractNo"]');
+                const generateBtn = document.getElementById('generateContractBtn');
+
+                // Always show the button since it's now our main submit button
+                if (generateBtn) {
+                    generateBtn.style.display = 'inline-block';
+                }
+            });
+        </script>
+
+        <!-- Job Contract Module -->
+        <script src="/js/gen_bill.js"></script>
+
+    </main>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+
+    <!-- FOOTER -->
+    <footer>
+        © All Rights Reserved ShreeGuru Software Solution.V:1.1
+    </footer>
+
+</body>
+
+</html>
