@@ -3,6 +3,5 @@
 .settings/
 .project
 .classpath
-target/
 .project
 .env
