@@ -94,7 +94,7 @@ public class PaymentController {
                     "Payment received! Your subscription is under review. UTR: "
                             + payment.getUtrNumber()
             );
-
+            System.out.println("Received payment");
             return "redirect:/payment";
 
         } catch (Exception e) {
