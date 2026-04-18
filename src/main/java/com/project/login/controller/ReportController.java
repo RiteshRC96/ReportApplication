@@ -76,11 +76,11 @@ public class ReportController {
 
                 CustomUserDetails userDetails = (CustomUserDetails) authentication.getPrincipal();
 
-                String userName = userDetails.getName();
+
                 Long userId = userDetails.getId();
 
                 List<gen_bill> allReports = jobContractService.searchReportsByUser(
-                                userName,
+                                userId,
                                 weaverName,
                                 traderName,
                                 fromDate,
@@ -126,10 +126,10 @@ public class ReportController {
 
                 CustomUserDetails userDetails = (CustomUserDetails) authentication.getPrincipal();
 
-                String userName = userDetails.getName();
+                Long userId = userDetails.getId();
 
                 List<gen_bill> data = jobContractService.searchReportsByUser(
-                                userName,
+                                userId,
                                 weaverName,
                                 traderName,
                                 fromDate,
@@ -209,10 +209,10 @@ public class ReportController {
 
                 CustomUserDetails userDetails = (CustomUserDetails) authentication.getPrincipal();
 
-                String userName = userDetails.getName();
+                Long userId = userDetails.getId();
 
                 List<gen_bill> data = jobContractService.searchReportsByUser(
-                                userName,
+                                userId,
                                 weaverName,
                                 traderName,
                                 fromDate,

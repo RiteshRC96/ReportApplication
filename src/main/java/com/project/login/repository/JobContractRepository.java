@@ -16,15 +16,15 @@ public interface JobContractRepository extends JpaRepository<gen_bill, Long> {
        ========================== */
     @Query("""
         SELECT j FROM gen_bill j
-        WHERE j.brokerName = :brokerName
-          AND (:weaverName IS NULL OR j.weaverName LIKE :weaverName)
-          AND (:traderName IS NULL OR j.traderName LIKE :traderName)
+        WHERE j.userId = :userId
+          AND (:weaverName IS NULL OR j.weaverName ILIKE :weaverName)
+          AND (:traderName IS NULL OR j.traderName ILIKE :traderName)
           AND (:fromDate IS NULL OR j.contractDate >= :fromDate)
           AND (:toDate IS NULL OR j.contractDate <= :toDate)
         ORDER BY j.contractNo  DESC
     """)
     List<gen_bill> searchReports(
-            @Param("brokerName") String brokerName,
+            @Param("userId") Long userId,
             @Param("weaverName") String weaverName,
             @Param("traderName") String traderName,
             @Param("fromDate") LocalDate fromDate,

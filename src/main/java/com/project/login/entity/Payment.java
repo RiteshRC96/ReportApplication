@@ -28,7 +28,6 @@ public class Payment {
     @Column(nullable = false)
     private LocalDateTime paymentDate;
 
-    @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     private PaymentStatus status = PaymentStatus.PENDING;
 

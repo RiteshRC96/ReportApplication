@@ -111,7 +111,7 @@ public class JobContractService {
        REPORT + EXCEL SEARCH
        ========================== */
     public List<gen_bill> searchReportsByUser(
-            String userName,
+            Long userId,
             String weaverName,
             String traderName,
             LocalDate fromDate,
@@ -119,7 +119,7 @@ public class JobContractService {
     ) {
 
         return jobContractRepository.searchReports(
-                userName,
+                userId,
 
                 (weaverName == null || weaverName.isBlank())
                         ? null : "%" + weaverName + "%",
