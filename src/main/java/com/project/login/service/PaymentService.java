@@ -12,6 +12,7 @@ import java.util.List;
 
 @Service
 public class PaymentService {
+    // Author:-ritesh CHougule
 
     @Autowired
     private PaymentRepository paymentRepository;
@@ -20,7 +21,7 @@ public class PaymentService {
      * Save payment details
      */
     public Payment savePayment(String email, String userName,
-                               String mobileNumber, String utrNumber, Double amount) {
+            String mobileNumber, String utrNumber, Double amount) {
 
         Payment payment = new Payment();
         payment.setEmail(email.trim().toLowerCase());
@@ -33,13 +34,14 @@ public class PaymentService {
 
         return paymentRepository.save(payment);
     }
+
     public List<Payment> getAllPayments() {
         return paymentRepository.findAllByOrderByPaymentDateDesc();
     }
 
     public org.springframework.data.domain.Page<Payment> getPaginatedPayments(int page, int size) {
-        org.springframework.data.domain.Pageable pageable = 
-            org.springframework.data.domain.PageRequest.of(page, size, org.springframework.data.domain.Sort.by("paymentDate").descending());
+        org.springframework.data.domain.Pageable pageable = org.springframework.data.domain.PageRequest.of(page, size,
+                org.springframework.data.domain.Sort.by("paymentDate").descending());
         return paymentRepository.findAll(pageable);
     }
 
@@ -65,8 +67,7 @@ public class PaymentService {
             return null;
         }
 
-        List<Payment> payments =
-                paymentRepository.findByEmailIgnoreCaseOrderByPaymentDateDesc(email.trim());
+        List<Payment> payments = paymentRepository.findByEmailIgnoreCaseOrderByPaymentDateDesc(email.trim());
 
         if (payments == null || payments.isEmpty()) {
             return null;
@@ -79,12 +80,13 @@ public class PaymentService {
      * Approve payment
      */
     public Payment approvePayment(Long paymentId,
-                                  LocalDate startDate,
-                                  LocalDate endDate) {
+            LocalDate startDate,
+            LocalDate endDate) {
 
         Payment payment = paymentRepository.findById(paymentId).orElse(null);
 
-        if (payment == null) return null;
+        if (payment == null)
+            return null;
 
         payment.setStatus(PaymentStatus.APPROVED);
         payment.setSubscriptionStartDate(startDate);
@@ -96,7 +98,8 @@ public class PaymentService {
         // ✅ Add funds to wallet if amount exists
         if (savedPayment.getAmount() != null && savedPayment.getAmount() > 0) {
             userService.findByEmail(savedPayment.getEmail()).ifPresent(user -> {
-                walletService.addFunds(user, savedPayment.getAmount(), "Payment approved for UTR: " + savedPayment.getUtrNumber());
+                walletService.addFunds(user, savedPayment.getAmount(),
+                        "Payment approved for UTR: " + savedPayment.getUtrNumber());
             });
         }
 
@@ -110,7 +113,8 @@ public class PaymentService {
 
         Payment payment = paymentRepository.findById(paymentId).orElse(null);
 
-        if (payment == null) return null;
+        if (payment == null)
+            return null;
 
         payment.setStatus(PaymentStatus.REJECTED);
         payment.setAdminNotes(notes);
@@ -123,21 +127,7 @@ public class PaymentService {
      * Check if subscription is valid
      */
     public boolean hasValidSubscription(String email) {
-
-        Payment payment = getLatestPaymentByEmail(email);
-
-        if (payment == null) return false;
-
-        if (payment.getStatus() != PaymentStatus.APPROVED) return false;
-
-        LocalDate today = LocalDate.now();
-
-        if (payment.getSubscriptionEndDate() != null &&
-                today.isAfter(payment.getSubscriptionEndDate())) {
-            return false;
-        }
-
-        return true;
+        return getPaymentStatus(email) == PaymentStatus.APPROVED;
     }
 
     /**
@@ -148,7 +138,23 @@ public class PaymentService {
         Payment payment = getLatestPaymentByEmail(email);
 
         if (payment == null) {
-            return PaymentStatus.NOT_FOUND; // <-- Add this enum
+            return PaymentStatus.NOT_FOUND;
+        }
+
+        // If it's already approved, we must still check if the current date is within
+        // the valid range
+        if (payment.getStatus() == PaymentStatus.APPROVED) {
+            LocalDate today = LocalDate.now();
+
+            // Check if subscription has not started yet
+            if (payment.getSubscriptionStartDate() != null && today.isBefore(payment.getSubscriptionStartDate())) {
+                return PaymentStatus.NOT_STARTED;
+            }
+
+            // Check if subscription has expired
+            if (payment.getSubscriptionEndDate() != null && today.isAfter(payment.getSubscriptionEndDate())) {
+                return PaymentStatus.EXPIRED;
+            }
         }
 
         return payment.getStatus();

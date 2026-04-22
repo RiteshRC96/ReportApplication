@@ -197,11 +197,24 @@
         </p>
     </div>
 
-    <!-- NOT FOUND / EXPIRED -->
+    <!-- NOT FOUND -->
     <div th:if="${status.name() == 'NOT_FOUND'}" class="subscription-message">
-        <p>Your subscription status is
-            <span class="message-highlight">not active</span> or expired.</p>
-        <p>Contact the administrator to activate or renew your subscription.</p>
+        <p>No subscription payment found for your account.</p>
+        <p>Please submit your payment details to activate your account.</p>
+    </div>
+
+    <!-- EXPIRED -->
+    <div th:if="${status.name() == 'EXPIRED'}" class="subscription-message">
+        <p>Your subscription has
+            <span class="message-highlight">EXPIRED</span>.</p>
+        <p>Please renew your subscription to continue using the application.</p>
+    </div>
+
+    <!-- NOT_STARTED -->
+    <div th:if="${status.name() == 'NOT_STARTED'}" class="subscription-message">
+        <p>Your subscription has
+            <span class="message-highlight">NOT STARTED</span> yet.</p>
+        <p>Wait for your subscription start date to access the dashboard.</p>
     </div>
 
     <div class="info-box">
@@ -227,12 +240,26 @@
             <li>Once approved, you'll have full access</li>
             <li>Contact support if you have any questions</li>
         </ul>
+
+        <ul th:if="${status.name() == 'EXPIRED'}">
+            <li>Your previous subscription period has ended</li>
+            <li>Submit a new payment to renew</li>
+            <li>Contact admin for renewal options</li>
+        </ul>
+
+        <ul th:if="${status.name() == 'NOT_STARTED'}">
+            <li>Your subscription is approved but not yet active</li>
+            <li>Check your subscription start date</li>
+            <li>Try logging in again once the start date arrives</li>
+        </ul>
     </div>
 
     <div class="button-group">
         <a href="/logout" class="btn-primary-custom">Logout</a>
         <a href="/payment" class="btn-secondary-custom"
-           th:if="${status.name() == 'REJECTED'}">Re-submit Payment</a>
+           th:if="${status.name() == 'REJECTED' || status.name() == 'EXPIRED' || status.name() == 'NOT_FOUND'}">
+            [[${status.name() == 'EXPIRED' ? 'Renew Subscription' : (status.name() == 'NOT_FOUND' ? 'Submit Payment' : 'Re-submit Payment')}]]
+        </a>
         <a href="/admin/login" class="btn-secondary-custom">Contact Admin</a>
     </div>
 

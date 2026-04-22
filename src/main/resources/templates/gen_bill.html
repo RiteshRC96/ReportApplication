@@ -8,11 +8,7 @@
     <link rel="icon" type="image/png" th:href="@{/favicon.png}">
 
 
-    <!-- Bootstrap -->
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
-
-    <!-- Bootstrap Icons -->
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css" rel="stylesheet">
+    <link th:replace="~{fragments :: header-assets}">
 
     <!-- Select2 CSS (SEARCH DROPDOWN) -->
     <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
@@ -38,102 +34,7 @@
             padding: 15px 10px;
         }
 
-        .navbar {
-            background: linear-gradient(135deg, #1f2a30, #243840);
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
-            padding: 0.35rem 1rem !important;
-        }
 
-        .navbar-brand {
-            font-weight: 600;
-            font-size: 18px;
-            white-space: nowrap;
-        }
-
-        .navbar-toggler {
-            order: -1;
-            margin-right: 10px;
-        }
-
-        .navbar-toggler:focus {
-            box-shadow: none;
-            border-color: transparent;
-        }
-
-        .nav-link {
-            padding: 0.4rem 10px !important;
-            font-size: 14px;
-            font-weight: 600;
-            color: #ffffff !important;
-            position: relative;
-            transition: 0.3s ease;
-        }
-
-        .nav-link::after {
-            content: "";
-            position: absolute;
-            left: 0;
-            bottom: -6px;
-            width: 0%;
-            height: 2px;
-            background: #39d98a;
-            transition: width 0.3s ease;
-        }
-
-        .nav-link:hover::after {
-            width: 100%;
-        }
-
-        .nav-link:hover {
-            transform: translateY(-2px);
-        }
-
-        /* ---------- DROPDOWN MENU ---------- */
-        .dropdown-menu {
-            background: #243840 !important;
-            border: 1px solid #39d98a;
-            border-radius: 8px;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
-        }
-
-        .dropdown-item {
-            color: #ffffff !important;
-            font-weight: 600;
-            padding: 0.6rem 1rem !important;
-            transition: 0.3s ease;
-        }
-
-        .dropdown-item:hover {
-            background: #39d98a !important;
-            color: #000 !important;
-            transform: translateX(5px);
-        }
-
-        .btn-logout {
-            border-radius: 20px;
-            padding: 5px 15px;
-            font-size: 13px;
-            font-weight: 600;
-            transition: all 0.3s ease;
-        }
-
-        .btn-logout:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 4px 12px rgba(220, 53, 69, 0.3);
-        }
-
-        /* ---------- FOOTER ---------- */
-        footer {
-            color: #888;
-            text-align: center;
-            padding: 20px 1rem;
-            margin-top: auto;
-            font-size: 12px;
-            font-weight: 500;
-            border-top: 1px solid #e0e0e0;
-            background: rgba(255, 255, 255, 0.7);
-            letter-spacing: 0.3px;
-        }
 
         .bill-card {
             background: white;
@@ -231,99 +132,110 @@
             z-index: 9999;
         }
 
-        /* Select2 full width */
-        .select2-container {
-            width: 100% !important;
-        }
+        /* ---------- RESPONSIVE FORM STRUCTURE ---------- */
+        @media (max-width: 768px) {
 
-        /* Button styles */
-        .btn-secondary {
-            background-color: #7a7a7a;
-            border: none;
-            color: white;
-        }
-
-        .btn-warning {
-            background-color: #ff9800;
-            border: none;
-            color: white;
-        }
-
-        .btn-danger {
-            background-color: #d32f2f;
-            border: none;
-            color: white;
-        }
-
-        .btn-secondary:hover,
-        .btn-warning:hover,
-        .btn-danger:hover {
-            opacity: 0.9;
-        }
-
-        /* Print styles */
-        @media print {
-
-            .navbar,
-            #loadingOverlay {
-                display: none !important;
-            }
 
             .bill-card {
-                max-width: 100%;
-                margin: 0;
-                padding: 0;
-                box-shadow: none;
+                padding: 10px !important;
+                border-width: 1px !important;
             }
+
+            .bill-card h3 {
+                font-size: 18px !important;
+            }
+
+            .bill-card h4 {
+                font-size: 14px !important;
+            }
+
+            /* Stack table rows on mobile */
+            table,
+            thead,
+            tbody,
+            th,
+            td,
+            tr {
+                display: block !important;
+                width: 100% !important;
+            }
+
+            td {
+                border-left: none !important;
+                border-bottom: 1px solid #eee !important;
+                padding: 10px 5px !important;
+            }
+
+            tr {
+                border-bottom: 2px solid #000 !important;
+            }
+
+            /* Point 5, 6, 7, 8, 9 structure */
+            .mobile-stack {
+                display: flex;
+                flex-direction: column;
+                gap: 10px;
+            }
+
+            .inline-group {
+                display: flex;
+                align-items: center;
+                flex-wrap: wrap;
+                gap: 10px;
+                margin-bottom: 10px;
+            }
+
+            .inline-group .form-control {
+                width: 80px !important;
+            }
+
+            .full-width-mobile {
+                width: 100% !important;
+                max-width: 100% !important;
+                margin: 5px 0 !important;
+            }
+
+            .point-label {
+                display: block;
+                margin-bottom: 5px;
+                color: #000;
+                font-weight: bold;
+                background: #f8f9fa;
+                padding: 4px 8px;
+                border-radius: 4px;
+            }
+
+            .radio-group {
+                background: #fff;
+                padding: 10px;
+                border: 1px solid #ddd;
+                border-radius: 8px;
+                width: 100%;
+                display: flex;
+                justify-content: space-around;
+            }
+        }
+
+        /* Desktop Styles */
+        .point-row td {
+            vertical-align: middle;
+        }
+
+        .point-number {
+            width: 180px;
+        }
+
+        .select2-container .select2-selection--single {
+            height: 38px !important;
+            display: flex !important;
+            align-items: center !important;
         }
     </style>
 </head>
 
 <body>
 
-    <!-- NAVBAR -->
-    <nav class="navbar navbar-dark navbar-expand-lg px-3">
-        <div class="container-fluid px-0">
-            <span class="navbar-brand d-flex align-items-center">
-                <img th:src="@{/logo.png}" alt="Logo"
-                    style="height: 35px; width: 35px; object-fit: contain; margin-right: 8px;">
-                ShreeGuru Software Solutions
-            </span>
-
-            <!-- Mobile Toggle Button -->
-            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarMenu"
-                aria-controls="navbarMenu" aria-expanded="false" aria-label="Toggle navigation">
-                <span class="navbar-toggler-icon"></span>
-            </button>
-
-            <!-- Collapsible Navigation Menu -->
-            <div class="collapse navbar-collapse" id="navbarMenu">
-                <ul class="navbar-nav ms-auto align-items-center">
-                    <li class="nav-item">
-                        <a class="nav-link" href="/dashboard">Dashboard</a>
-                    </li>
-                    <li class="nav-item dropdown">
-                        <a class="nav-link dropdown-toggle" href="#" id="masterDropdown" role="button"
-                            data-bs-toggle="dropdown" aria-expanded="false">Master</a>
-                        <ul class="dropdown-menu dropdown-menu-dark" aria-labelledby="masterDropdown">
-                            <li><a class="dropdown-item" href="/weaver-trader">Weaver / Trader</a></li>
-                            <li><a class="dropdown-item" href="/quality">Quality</a></li>
-                        </ul>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="/gen-bill">Job Contract</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="/report">Report</a>
-                    </li>
-                </ul>
-
-                <form action="/logout" method="post" class="ms-3">
-                    <button class="btn btn-danger btn-logout">Logout</button>
-                </form>
-            </div>
-        </div>
-    </nav>
+    <nav th:replace="~{fragments :: navbar}"></nav>
 
     <main>
         <!-- LOADER -->
@@ -351,17 +263,18 @@
             <form id="billForm">
                 <!-- CONTRACT NO & DATE -->
                 <div
-                    style="display: flex; justify-content: space-between; flex-wrap: wrap; margin-bottom: 15px; gap: 15px;">
-                    <div style="flex: 1; min-width: 200px;">
-                        <strong>Contract No :</strong>
+                    style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; gap: 10px;">
+                    <div style="flex: 1; display: flex; align-items: center; white-space: nowrap;">
+                        <strong style="font-size: 13px;">Contract No :</strong>
                         <input type="text" name="contractNo" th:value="${job?.contractNo}"
-                            style="width: 100%; max-width: 150px; border: none; border-bottom: 1px solid #000; padding: 3px;">
+                            style="flex: 1; border: none; border-bottom: 1px solid #000; padding: 3px; font-size: 13px; margin-left: 5px; width: 40px;">
                     </div>
-                    <div style="flex: 1; min-width: 200px; text-align: right;">
-                        <strong style="margin-right: 20px;">Date :</strong>
+                    <div
+                        style="flex: 1; display: flex; align-items: center; justify-content: flex-end; white-space: nowrap;">
+                        <strong style="font-size: 13px; margin-right: 5px;">Date :</strong>
                         <input type="date" class="form-control" id="contractDate" name="contract_date"
                             th:value="${job?.contractDate}"
-                            style="width: 100%; max-width: 140px; border: none; border-bottom: 1px solid #000; padding: 3px; display: inline-block;"
+                            style="width: 110px; border: none; border-bottom: 1px solid #000; padding: 3px; display: inline-block; font-size: 12px;"
                             required>
                     </div>
                 </div>
@@ -370,8 +283,8 @@
 
                 <!-- SECTION: 10 CONTRACT ITEMS -->
                 <table style="width: 100%; border: 2px solid #000; margin-bottom: 15px;">
-                    <tr>
-                        <td style="padding: 12px; border-bottom: 1px solid #000;">
+                    <tr class="point-row">
+                        <td class="point-number" style="padding: 12px; border-bottom: 1px solid #000;">
                             <strong>1. WEAVER :-</strong>
                         </td>
                         <td style="padding: 12px; border-bottom: 1px solid #000; border-left: 1px solid #000;">
@@ -388,8 +301,8 @@
                             </div>
                         </td>
                     </tr>
-                    <tr>
-                        <td style="padding: 12px; border-bottom: 1px solid #000;">
+                    <tr class="point-row">
+                        <td class="point-number" style="padding: 12px; border-bottom: 1px solid #000;">
                             <strong>2. TRADER :-</strong>
                         </td>
                         <td style="padding: 12px; border-bottom: 1px solid #000; border-left: 1px solid #000;">
@@ -406,16 +319,16 @@
                             </div>
                         </td>
                     </tr>
-                    <tr>
-                        <td style="padding: 12px; border-bottom: 1px solid #000;">
+                    <tr class="point-row">
+                        <td class="point-number" style="padding: 12px; border-bottom: 1px solid #000;">
                             <strong>3. BROKER :-</strong>
                         </td>
                         <td style="padding: 12px; border-bottom: 1px solid #000; border-left: 1px solid #000;">
                             <span th:text="${#authentication.principal.name}"></span>
                         </td>
                     </tr>
-                    <tr>
-                        <td style="padding: 12px; border-bottom: 1px solid #000;">
+                    <tr class="point-row">
+                        <td class="point-number" style="padding: 12px; border-bottom: 1px solid #000;">
                             <strong>4. QUALITY :-</strong>
                         </td>
                         <td style="padding: 12px; border-bottom: 1px solid #000; border-left: 1px solid #000;">
@@ -433,65 +346,94 @@
                             </div>
                         </td>
                     </tr>
-                    <tr>
-                        <td style="padding: 12px; border-bottom: 1px solid #000;">
+                    <tr class="point-row">
+                        <td class="point-number" style="padding: 12px; border-bottom: 1px solid #000;">
                             <strong>5. QUANTITY :-</strong>
                         </td>
                         <td style="padding: 12px; border-bottom: 1px solid #000; border-left: 1px solid #000;">
-                            <input class="form-control" name="quantity_meters" id="quantityMeters"
-                                th:value="${job?.quantityMeters}" placeholder=""
-                                style="border: none; border-bottom: 1px solid #000; border-radius: 0; text-align: center; width: 90px; display: inline-block;"
-                                required>
-                            <span style="margin: 0 10px;">METERS</span>
-                            <div style="display: inline-block; margin: 0 15px;">
-                                <label style="margin-right: 20px; font-weight: bold;"><input type="radio"
-                                        name="sizing_fabric" value="SIZING"
-                                        th:checked="${job?.sizingfabric == 'SIZING' || job?.sizingfabric == 'sizing'}"
-                                        style="margin-right: 5px;"> SIZING</label>
-                                <label style="font-weight: bold;"><input type="radio" name="sizing_fabric"
-                                        value="FABRIC"
-                                        th:checked="${job?.sizingfabric == 'FABRIC' || job?.sizingfabric == 'fabric'}"
-                                        style="margin-right: 5px;"> FABRIC</label>
+                            <div class="d-flex flex-column flex-lg-row align-items-lg-center gap-2 gap-lg-4">
+                                <div class="d-flex align-items-center gap-2">
+                                    <input class="form-control" name="quantity_meters" id="quantityMeters"
+                                        th:value="${job?.quantityMeters}" placeholder="________"
+                                        style="border: none; border-bottom: 1px solid #000; border-radius: 0; text-align: center; width: 120px;"
+                                        required>
+                                    <span>METERS</span>
+                                </div>
+
+                                <div class="d-flex gap-4 justify-content-center py-1">
+                                    <label
+                                        style="margin: 0; font-weight: bold; cursor: pointer; display: flex; align-items: center; gap: 8px;">
+                                        <input type="radio" name="sizing_fabric" value="SIZING"
+                                            th:checked="${job?.sizingfabric == 'SIZING' || job?.sizingfabric == 'sizing'}">
+                                        SIZING
+                                    </label>
+                                    <label
+                                        style="margin: 0; font-weight: bold; cursor: pointer; display: flex; align-items: center; gap: 8px;">
+                                        <input type="radio" name="sizing_fabric" value="FABRIC"
+                                            th:checked="${job?.sizingfabric == 'FABRIC' || job?.sizingfabric == 'fabric'}">
+                                        FABRIC
+                                    </label>
+                                </div>
+
+                                <div class="d-flex align-items-center gap-2">
+                                    <input class="form-control" name="beams" th:value="${job?.beams}"
+                                        placeholder="________"
+                                        style="border: none; border-bottom: 1px solid #000; border-radius: 0; text-align: center; width: 100px;"
+                                        required>
+                                    <span style="font-weight: bold;">BEAMS.</span>
+                                </div>
                             </div>
-                            <input class="form-control" name="beams" th:value="${job?.beams}" placeholder=""
-                                style="border: none; border-bottom: 1px solid #000; border-radius: 0; text-align: center; width: 90px; display: inline-block; margin: 0 10px;"
-                                required>
-                            <span style="margin-left: 5px;">BEAMS.</span>
                         </td>
                     </tr>
-                    <tr>
-                        <td style="padding: 12px; border-bottom: 1px solid #000;">
+                    <tr class="point-row">
+                        <td class="point-number" style="padding: 12px; border-bottom: 1px solid #000;">
                             <strong>6. JOB RATE(in Paise) :-</strong>
                         </td>
                         <td style="padding: 12px; border-bottom: 1px solid #000; border-left: 1px solid #000;">
-                            <input class="form-control" name="job_rate" id="jobRate" th:value="${job?.jobRate}"
-                                style="border: none; border-bottom: 1px solid #000; border-radius: 0; text-align: center; width: 70px; display: inline-block;"
-                                required>
-                            <span style="margin: 0 30px; font-weight: bold;">7. PAYMENT WITHIN</span>
-                            <input class="form-control" name="payment_days" th:value="${job?.paymentDays}"
-                                style="border: none; border-bottom: 1px solid #000; border-radius: 0; text-align: center; width: 60px; display: inline-block;"
-                                required>
-                            <span style="margin-left: 10px;">DAYS.</span>
+                            <div class="d-flex flex-column flex-lg-row align-items-lg-center">
+                                <input class="form-control" name="job_rate" id="jobRate" th:value="${job?.jobRate}"
+                                    style="border: none; border-bottom: 1px solid #000; border-radius: 0; text-align: center; width: 100px;"
+                                    required>
+
+                                <div class="d-flex align-items-center mt-2 mt-lg-0">
+                                    <span class="point-label d-lg-none">7. PAYMENT WITHIN</span>
+                                    <span class="d-none d-lg-inline" style="margin: 0 40px; font-weight: bold;">7.
+                                        PAYMENT WITHIN</span>
+
+                                    <input class="form-control" name="payment_days" th:value="${job?.paymentDays}"
+                                        style="border: none; border-bottom: 1px solid #000; border-radius: 0; text-align: center; width: 60px; display: inline-block;"
+                                        required>
+                                    <span style="margin-left: 10px; font-weight: bold;">DAYS.</span>
+                                </div>
+                            </div>
                         </td>
                     </tr>
-                    <tr>
-                        <td style="padding: 12px; border-bottom: 1px solid #000;">
+                    <tr class="point-row">
+                        <td class="point-number" style="padding: 12px; border-bottom: 1px solid #000;">
                             <strong>8. PRODUCTION SCHEDULE :-</strong>
                         </td>
                         <td style="padding: 12px; border-bottom: 1px solid #000; border-left: 1px solid #000;">
-                            <input class="form-control" name="production_schedule" th:value="${job?.productionSchedule}"
-                                placeholder=""
-                                style="border: none; border-bottom: 1px solid #000; border-radius: 0; width: 45%; display: inline-block;"
-                                required>
-                            <span style="margin: 0 20px; font-weight: bold;">9. NO OF MACHINES :-</span>
-                            <input class="form-control" name="no_of_machines" th:value="${job?.noOfMachines}"
-                                placeholder=""
-                                style="border: none; border-bottom: 1px solid #000; border-radius: 0; text-align: center; width: 70px; display: inline-block;"
-                                required>
+                            <div class="d-flex flex-column flex-lg-row align-items-lg-center">
+                                <input class="form-control full-width-mobile" name="production_schedule"
+                                    th:value="${job?.productionSchedule}" placeholder="Enter schedule"
+                                    style="border: none; border-bottom: 1px solid #000; border-radius: 0; min-width: 200px; width: 45%;"
+                                    required>
+
+                                <div class="d-flex align-items-center mt-2 mt-lg-0">
+                                    <span class="point-label d-lg-none">9. NO OF MACHINES :-</span>
+                                    <span class="d-none d-lg-inline" style="margin: 0 40px; font-weight: bold;">9. NO OF
+                                        MACHINES :-</span>
+
+                                    <input class="form-control" name="no_of_machines" th:value="${job?.noOfMachines}"
+                                        placeholder=""
+                                        style="border: none; border-bottom: 1px solid #000; border-radius: 0; text-align: center; width: 70px; display: inline-block;"
+                                        required>
+                                </div>
+                            </div>
                         </td>
                     </tr>
-                    <tr>
-                        <td style="padding: 12px;">
+                    <tr class="point-row">
+                        <td class="point-number" style="padding: 12px;">
                             <strong>10. REMARK :-</strong>
                         </td>
                         <td style="padding: 12px; border-left: 1px solid #000;">
@@ -507,25 +449,31 @@
                     <tr>
                         <td style="padding: 12px; width: 33%; border-right: 1px solid #000;">
                             <strong>CUT LENGTH :-</strong>
-                            <input class="form-control" name="cut_length" th:value="${job?.cutLength}"
+                            <input class="form-control full-width-mobile" name="cut_length" th:value="${job?.cutLength}"
                                 style="border: none; border-bottom: 1px solid #000; border-radius: 0; margin-top: 5px;"
                                 required>
                         </td>
                         <td
                             style="padding: 12px; width: 33%; border-right: 1px solid #000; border-left: 1px solid #000;">
                             <strong>MINIMUM DELIVERY :-</strong>
-                            <input class="form-control" name="minimum_delivery" th:value="${job?.minimumDelivery}"
+                            <input class="form-control full-width-mobile" name="minimum_delivery"
+                                th:value="${job?.minimumDelivery}"
                                 style="border: none; border-bottom: 1px solid #000; border-radius: 0; margin-top: 5px;"
                                 required>
                         </td>
                         <td style="padding: 12px; width: 34%; border-left: 1px solid #000;">
                             <strong>ROLLING / FOLDING.</strong>
-                            <div style="font-size: 13px; margin-top: 5px;">
-                                <label><input type="radio" name="rolling_folding" value="Rolling"
-                                        th:checked="${job?.rollingFolding == 'Rolling'}"> Rolling</label>
-                                <label style="margin-left: 15px;"><input type="radio" name="rolling_folding"
-                                        value="Folding" th:checked="${job?.rollingFolding == 'Folding'}">
-                                    Folding</label>
+                            <div class="d-flex gap-3 mt-2 justify-content-center">
+                                <label
+                                    style="margin: 0; font-weight: bold; cursor: pointer; display: flex; align-items: center; gap: 5px; font-size: 13px;">
+                                    <input type="radio" name="rolling_folding" value="Rolling"
+                                        th:checked="${job?.rollingFolding == 'Rolling'}"> Rolling
+                                </label>
+                                <label
+                                    style="margin: 0; font-weight: bold; cursor: pointer; display: flex; align-items: center; gap: 5px; font-size: 13px;">
+                                    <input type="radio" name="rolling_folding" value="Folding"
+                                        th:checked="${job?.rollingFolding == 'Folding'}"> Folding
+                                </label>
                             </div>
                         </td>
                     </tr>
@@ -556,7 +504,7 @@
                         th:value="${job?.weaverBrokeragePercent}">
                     <input type="hidden" name="weaver_brokerage_paisa" id="weaverBrokeragePaisa"
                         th:value="${job?.weaverBrokeragePaisa}">
-                    <input type="hidden" name="sizing_fabric" id="sizingFabric" th:value="${job?.sizingfabric}">
+
                     <input type="hidden" name="rate" id="rate" th:value="${job?.rate}">
                     <input type="hidden" name="amount" id="amount" th:value="${job?.amount}">
                     <input type="hidden" name="brokerage_percent_amt" id="brokeragePercentAmt"
@@ -569,14 +517,14 @@
                 <div class="d-flex flex-wrap justify-content-center gap-2 mt-4 mb-3">
                     <!-- Single Generate Contract Button which saves and then asks to generate -->
                     <button type="submit" id="generateContractBtn" class="btn btn-success"
-                        style="padding: 10px 30px; font-weight: bold; font-size: 14px;">
+                        style="padding: 12px 25px; font-weight: bold; border-radius: 30px; font-size: 14px; text-transform: uppercase; background-color: #39d98a; border: none; color: #000;">
                         <i class="bi bi-image"></i> GENERATE CONTRACT
                     </button>
 
                     <button type="reset" class="btn btn-warning"
-                        style="padding: 10px 30px; font-weight: bold; font-size: 14px;">RESET</button>
+                        style="padding: 12px 25px; font-weight: bold; border-radius: 30px; font-size: 14px; text-transform: uppercase;">RESET</button>
                     <a href="/dashboard" class="btn btn-danger"
-                        style="padding: 10px 30px; font-weight: bold; font-size: 14px;">CANCEL</a>
+                        style="padding: 12px 25px; font-weight: bold; border-radius: 30px; font-size: 14px; text-transform: uppercase;">CANCEL</a>
                 </div>
 
             </form>
@@ -893,12 +841,7 @@
 
     </main>
 
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
-
-    <!-- FOOTER -->
-    <footer>
-        © All Rights Reserved ShreeGuru Software Solution.V:1.1
-    </footer>
+    <footer th:replace="~{fragments :: footer}"></footer>
 
 </body>
 

@@ -39,4 +39,10 @@ public class UserService {
     public User findById(Long id) {
         return repo.findById(id).orElse(null);
     }
+    public void updatePassword(String email, String newPassword) {
+        repo.findByEmail(email).ifPresent(user -> {
+            user.setPassword(passwordEncoder.encode(newPassword));
+            repo.save(user);
+        });
+    }
 }

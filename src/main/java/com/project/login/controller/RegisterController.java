@@ -38,10 +38,29 @@ public class RegisterController {
         session.setAttribute("REG_EMAIL", email);
         session.setAttribute("REG_PASSWORD", password);
 
+        // ✅ CHECK IF EMAIL ALREADY EXISTS BEFORE SENDING OTP
+        if (userService.findByEmail(email).isPresent()) {
+            model.addAttribute("error", "Email already exists. Please login.");
+            return "register";
+        }
+
         otpService.sendOtp(email);
 
         model.addAttribute("otpSent", true);
         return "register"; // Stay on register page
+    }
+
+    /* ===============================
+       STEP 1.5: Resend OTP
+    =============================== */
+    @PostMapping("/resend-register-otp")
+    public String resendOtp(HttpSession session, Model model) {
+        String email = (String) session.getAttribute("REG_EMAIL");
+        if (email != null) {
+            otpService.sendOtp(email);
+        }
+        model.addAttribute("otpSent", true);
+        return "register";
     }
 
     /* ===============================
@@ -66,12 +85,6 @@ public class RegisterController {
             return "register";
         }
 
-        // ✅ CHECK IF EMAIL ALREADY EXISTS
-        if (userService.findByEmail(email).isPresent()) {
-            model.addAttribute("otpSent", false);
-            model.addAttribute("error", "Email already exists. Please login.");
-            return "register";
-        }
 
         // Create user
         User user = new User();
@@ -83,7 +96,7 @@ public class RegisterController {
 
         session.invalidate();
 
-        return "redirect:/";
+        return "redirect:/?regSuccess=true";
     }
 
 }

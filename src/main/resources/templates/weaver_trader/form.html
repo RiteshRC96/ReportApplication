@@ -8,7 +8,7 @@
     <link rel="icon" type="image/png" th:href="@{/favicon.png}">
 
 
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css">
+    <link th:replace="~{fragments :: header-assets}">
 
     <style>
         body {
@@ -24,103 +24,34 @@
             flex: 1;
         }
 
-        /* ---------- NAVBAR ---------- */
-        .navbar {
-            background: linear-gradient(135deg, #1f2a30, #243840);
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
-            padding: 0.35rem 1rem !important;
+        /* Additional styles for Weaver/Trader Form */
+        .form-card {
+            max-width: 550px;
+            margin: 30px auto;
+            padding: 35px 40px;
+            border-radius: 12px;
+            background: rgba(255, 255, 255, 0.95);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+            animation: fadeUp 0.6s ease;
         }
 
-        .navbar-brand {
+        @keyframes fadeUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .form-card h2 {
             font-weight: 600;
-            font-size: 20px;
-            white-space: nowrap;
-        }
-
-        .navbar-toggler {
-            order: -1;
-            margin-right: 10px;
-        }
-
-        .navbar-toggler:focus {
-            box-shadow: none;
-            border-color: transparent;
-        }
-
-        /* ---------- NAV LINKS (WITH ANIMATION) ---------- */
-        .nav-link {
-            padding: 0.4rem 10px !important;
-            font-size: 15px;
-            font-weight: 600;
-            color: #ffffff !important;
-            position: relative;
-            transition: 0.3s ease;
-        }
-
-        .nav-link::after {
-            content: "";
-            position: absolute;
-            left: 0;
-            bottom: -6px;
-            width: 0%;
-            height: 2px;
-            background: #39d98a;
-            transition: width 0.3s ease;
-        }
-
-        .nav-link:hover::after {
-            width: 100%;
-        }
-
-        .nav-link:hover {
-            transform: translateY(-2px);
-        }
-
-        /* ---------- DROPDOWN MENU ---------- */
-        .dropdown-menu {
-            background: #243840 !important;
-            border: 1px solid #39d98a;
-            border-radius: 8px;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
-        }
-
-        .dropdown-item {
-            color: #ffffff !important;
-            font-weight: 600;
-            padding: 0.6rem 1rem !important;
-            transition: 0.3s ease;
-        }
-
-        .dropdown-item:hover {
-            background: #39d98a !important;
-            color: #000 !important;
-            transform: translateX(5px);
-        }
-
-        .btn-logout {
-            border-radius: 20px;
-            padding: 5px 15px;
-            font-size: 14px;
-            font-weight: 600;
-            transition: all 0.3s ease;
-        }
-
-        .btn-logout:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 4px 12px rgba(220, 53, 69, 0.3);
-        }
-
-        /* ---------- FOOTER ---------- */
-        footer {
-            color: #888;
+            margin-bottom: 28px;
             text-align: center;
-            padding: 25px 1rem;
-            margin-top: auto;
-            font-size: 12px;
-            font-weight: 500;
-            border-top: 1px solid #e0e0e0;
-            background: #fafafa;
-            letter-spacing: 0.3px;
+            color: #1f2933;
         }
 
         /* ---------- FORM CARD ---------- */
@@ -233,33 +164,6 @@
         /* ---------- RESPONSIVE DESIGN ---------- */
         /* MOBILE (< 576px) */
         @media (max-width: 575px) {
-            .navbar {
-                padding: 0.3rem !important;
-            }
-
-            .navbar-brand {
-                font-size: 14px;
-                white-space: nowrap;
-            }
-
-            .navbar-toggler {
-                margin-left: auto;
-                order: 1;
-            }
-
-            .nav-link {
-                padding: 0.4rem 6px !important;
-                font-size: 12px;
-                margin: 0;
-            }
-
-            .btn-logout {
-                padding: 4px 10px;
-                font-size: 12px;
-                width: 100% !important;
-                margin-top: 10px;
-            }
-
             .form-card {
                 max-width: 100%;
                 margin: 15px;
@@ -315,25 +219,6 @@
 
         /* TABLET (576px - 1023px) */
         @media (min-width: 576px) and (max-width: 1023px) {
-            .navbar {
-                padding: 0.35rem 1rem !important;
-            }
-
-            .navbar-brand {
-                font-size: 16px;
-            }
-
-            .nav-link {
-                padding: 0.4rem 8px !important;
-                font-size: 13px;
-                margin: 0;
-            }
-
-            .btn-logout {
-                padding: 4px 12px;
-                font-size: 12px;
-            }
-
             .form-card {
                 max-width: 100%;
                 margin: 25px 15px;
@@ -374,25 +259,6 @@
 
         /* DESKTOP (> 1024px) */
         @media (min-width: 1024px) {
-            .navbar {
-                padding: 0.35rem 1rem !important;
-            }
-
-            .navbar-brand {
-                font-size: 20px;
-            }
-
-            .nav-link {
-                padding: 0.4rem 10px !important;
-                font-size: 15px;
-                margin: 0;
-            }
-
-            .btn-logout {
-                padding: 5px 15px;
-                font-size: 14px;
-            }
-
             .form-card {
                 max-width: 550px;
                 margin: 30px auto;
@@ -430,49 +296,7 @@
 
 <body>
 
-    <!-- NAVBAR -->
-    <nav class="navbar navbar-dark navbar-expand-lg px-3">
-        <div class="container-fluid px-0">
-            <span class="navbar-brand d-flex align-items-center">
-                <img th:src="@{/logo.png}" alt="Logo"
-                    style="height: 35px; width: 35px; object-fit: contain; margin-right: 8px;">
-                ShreeGuru Software Solutions
-            </span>
-
-            <!-- Mobile Toggle Button -->
-            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarMenu"
-                aria-controls="navbarMenu" aria-expanded="false" aria-label="Toggle navigation">
-                <span class="navbar-toggler-icon"></span>
-            </button>
-
-            <!-- Collapsible Navigation Menu -->
-            <div class="collapse navbar-collapse" id="navbarMenu">
-                <ul class="navbar-nav ms-auto align-items-center">
-                    <li class="nav-item">
-                        <a class="nav-link" href="/dashboard">Dashboard</a>
-                    </li>
-                    <li class="nav-item dropdown">
-                        <a class="nav-link dropdown-toggle" href="#" id="masterDropdown" role="button"
-                            data-bs-toggle="dropdown" aria-expanded="false">Master</a>
-                        <ul class="dropdown-menu dropdown-menu-dark" aria-labelledby="masterDropdown">
-                            <li><a class="dropdown-item" href="/weaver-trader">Weaver / Trader</a></li>
-                            <li><a class="dropdown-item" href="/quality">Quality</a></li>
-                        </ul>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="/gen-bill">Job Contract</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="/report">Report</a>
-                    </li>
-                </ul>
-
-                <form action="/logout" method="post" class="ms-3">
-                    <button class="btn btn-danger btn-logout">Logout</button>
-                </form>
-            </div>
-        </div>
-    </nav>
+    <nav th:replace="~{fragments :: navbar}"></nav>
 
     <main>
         <!-- FORM -->
@@ -585,8 +409,10 @@
                         const props = ['tel'];
                         const contacts = await navigator.contacts.select(props, { multiple: false });
                         if (contacts && contacts.length > 0 && contacts[0].tel && contacts[0].tel.length > 0) {
-                            const phoneNumber = contacts[0].tel[0].replace(/\D/g, '');
-                            document.querySelector(`[name="${fieldId}"]`).value = phoneNumber;
+                            let phoneNumber = contacts[0].tel[0].replace(/\D/g, '');
+                            // Only take the last 10 digits
+                            let last10 = phoneNumber.slice(-10);
+                            document.querySelector(`[name="${fieldId}"]`).value = last10;
                             return;
                         }
                     } catch (error) {
@@ -609,7 +435,9 @@
                                     const contact = contacts[0];
                                     if (contact.phoneNumbers && contact.phoneNumbers.length > 0) {
                                         let phoneNumber = contact.phoneNumbers[0].value.replace(/\D/g, '');
-                                        document.querySelector(`[name="${fieldId}"]`).value = phoneNumber;
+                                        // Only take the last 10 digits
+                                        let last10 = phoneNumber.slice(-10);
+                                        document.querySelector(`[name="${fieldId}"]`).value = last10;
                                     }
                                 }
                             },
@@ -671,12 +499,7 @@
             });
         </script>
 
-        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
-
-        <!-- FOOTER -->
-        <footer>
-            © All Rights Reserved ShreeGuru Software Solution.V:1.1
-        </footer>
+    <footer th:replace="~{fragments :: footer}"></footer>
 
 </body>
 

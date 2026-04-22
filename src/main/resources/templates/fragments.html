@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <th:block th:fragment="header-assets">
+        <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+        <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet">
+        <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+        <style>
+            /* Global Navbar Styles */
+            .navbar {
+                background: linear-gradient(135deg, #1f2a30, #243840) !important;
+                box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+                padding: 0.5rem 1rem;
+                font-family: 'Inter', 'Segoe UI', sans-serif !important;
+            }
+
+            .navbar-brand {
+                font-weight: 700;
+                color: #fff !important;
+                display: flex;
+                align-items: center;
+                gap: 10px;
+                font-size: 1.1rem;
+            }
+
+            .navbar-brand img {
+                height: 35px;
+                width: 35px;
+                object-fit: contain;
+                border-radius: 4px;
+            }
+
+            .nav-link {
+                font-weight: 600;
+                color: rgba(255, 255, 255, 0.85) !important;
+                position: relative;
+                padding: 0.5rem 1rem !important;
+                transition: all 0.3s ease;
+            }
+
+            .nav-link:hover, .nav-link.active {
+                color: #fff !important;
+            }
+
+            .nav-link::after {
+                content: "";
+                position: absolute;
+                left: 10px;
+                bottom: 2px;
+                width: 0%;
+                height: 2px;
+                background: #39d98a;
+                transition: 0.3s;
+            }
+
+            .nav-link:hover::after, .nav-link.active::after {
+                width: calc(100% - 20px);
+            }
+
+            .btn-logout {
+                background-color: #dc3545 !important;
+                border: none !important;
+                border-radius: 8px;
+                font-weight: 700;
+                padding: 6px 18px;
+                color: white !important;
+                transition: all 0.3s ease;
+            }
+
+            .btn-logout:hover {
+                background-color: #c82333 !important;
+                transform: scale(1.05);
+            }
+
+            .navbar-toggler {
+                border: none !important;
+                padding: 0;
+                color: #fff !important;
+            }
+
+            .navbar-toggler:focus {
+                box-shadow: none !important;
+            }
+
+            .navbar-toggler-icon {
+                background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 30 30'%3e%3cpath stroke='white' stroke-linecap='round' stroke-miterlimit='10' stroke-width='2' d='M4 7h22M4 15h22M4 23h22'/%3e%3c/svg%3e") !important;
+                width: 28px;
+                height: 28px;
+            }
+
+            @media (max-width: 991.98px) {
+                .navbar-brand {
+                    font-size: 14px !important;
+                    gap: 6px !important;
+                }
+                
+                .navbar-brand span {
+                    font-size: 14px !important;
+                }
+
+                .navbar-collapse {
+                    background: rgba(31, 42, 48, 0.98);
+                    margin: 0 -1rem;
+                    padding: 1rem;
+                    border-top: 1px solid rgba(255, 255, 255, 0.1);
+                    margin-top: 0.5rem;
+                }
+                
+                .nav-item {
+                    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+                }
+                
+                .nav-item:last-child {
+                    border-bottom: none;
+                }
+
+                .logout-form {
+                    margin-top: 1rem;
+                    text-align: center;
+                }
+                
+                .btn-logout {
+                    width: 100%;
+                }
+            }
+        </style>
+    </th:block>
+</head>
+<body>
+
+    <nav th:fragment="navbar" class="navbar navbar-dark navbar-expand-lg sticky-top">
+        <div class="container-fluid">
+            <a class="navbar-brand" href="/dashboard">
+                <img th:src="@{/logo.png}" alt="Logo">
+                <span>ShreeGuru Software Solutions</span>
+            </a>
+
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#mainNavbar">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+
+            <div class="collapse navbar-collapse" id="mainNavbar">
+                <ul class="navbar-nav me-auto mb-2 mb-lg-0 ms-lg-4">
+                    <li class="nav-item">
+                        <a class="nav-link" href="/dashboard">Dashboard</a>
+                    </li>
+                    
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown">
+                            Master
+                        </a>
+                        <ul class="dropdown-menu dropdown-menu-dark">
+                            <li><a class="dropdown-item" href="/weaver-trader">Weaver / Trader</a></li>
+                            <li><hr class="dropdown-divider"></li>
+                            <li><a class="dropdown-item" href="/quality">Quality</a></li>
+                        </ul>
+                    </li>
+
+                    <li class="nav-item">
+                        <a class="nav-link" href="/gen-bill">Job Contract</a>
+                    </li>
+                    
+                    <li class="nav-item">
+                        <a class="nav-link" href="/report">Report</a>
+                    </li>
+                </ul>
+
+                <form action="/logout" method="post" class="logout-form">
+                    <button type="submit" class="btn btn-logout">Logout</button>
+                </form>
+            </div>
+        </div>
+    </nav>
+
+    <footer th:fragment="footer" style="margin-top: auto; border-top: 1px solid rgba(0,0,0,0.05); background: rgba(255,255,255,0.8);">
+        <div class="container text-center py-3">
+            <p class="mb-0" style="font-size: 0.75rem; color: #666; font-weight: 500; letter-spacing: 0.5px;">
+                © <span th:text="${#calendars.year(#calendars.createNow())}">2024</span> All Rights Reserved <span style="color: #1f2a30; font-weight: 700;">ShreeGuru Software Solution</span>. V:1.1
+            </p>
+        </div>
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    </footer>
+
+</body>
+</html>
