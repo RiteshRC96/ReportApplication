@@ -350,7 +350,10 @@
                     </form>
                 </div>
             </div>
+        </div>
     </main>
+
+    <footer th:replace="~{fragments :: footer}"></footer>
 
     <script>
         const deleteModal = new bootstrap.Modal(document.getElementById('deleteModal'));
@@ -361,8 +364,6 @@
             deleteModal.show();
         }
     </script>
-
-    <footer th:replace="~{fragments :: footer}"></footer>
 
 </body>
 

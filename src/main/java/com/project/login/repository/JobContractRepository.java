@@ -19,8 +19,8 @@ public interface JobContractRepository extends JpaRepository<gen_bill, Long> {
         WHERE j.userId = :userId
           AND (:weaverName IS NULL OR j.weaverName ILIKE :weaverName)
           AND (:traderName IS NULL OR j.traderName ILIKE :traderName)
-          AND (:fromDate IS NULL OR j.contractDate >= :fromDate)
-          AND (:toDate IS NULL OR j.contractDate <= :toDate)
+          AND (CAST(:fromDate AS date) IS NULL OR j.contractDate >= :fromDate)
+          AND (CAST(:toDate AS date) IS NULL OR j.contractDate <= :toDate)
         ORDER BY j.contractNo  DESC
     """)
     List<gen_bill> searchReports(

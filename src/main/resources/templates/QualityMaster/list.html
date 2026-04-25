@@ -276,12 +276,22 @@
 
 <main>
 <!-- CONTENT -->
-<div class="page-container">
+    <div class="page-container">
 
-    <div class="page-header">
-        <h3>Quality Master</h3>
-        <a href="/quality/create" class="btn btn-add">+ Add New</a>
-    </div>
+        <div class="page-header">
+            <h3>Quality Master</h3>
+            <a href="/quality/create" class="btn btn-add">+ Add New</a>
+        </div>
+
+        <!-- FLASH MESSAGES -->
+        <div th:if="${success}" class="alert alert-success alert-dismissible fade show" role="alert">
+            <span th:text="${success}"></span>
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+        <div th:if="${error}" class="alert alert-danger alert-dismissible fade show" role="alert">
+            <span th:text="${error}"></span>
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
 
     <div class="table-responsive">
         <table class="table table-hover mb-0">
@@ -325,19 +335,20 @@
             </form>
         </div>
     </div>
+</div>
 </main>
 
-<script>
-    const deleteModal = new bootstrap.Modal(document.getElementById('deleteModal'));
-    const deleteForm = document.getElementById('deleteForm');
+    <footer th:replace="~{fragments :: footer}"></footer>
 
-    function openDeleteModal(button) {
-        deleteForm.action = button.getAttribute("data-url");
-        deleteModal.show();
-    }
-</script>
+    <script>
+        const deleteModal = new bootstrap.Modal(document.getElementById('deleteModal'));
+        const deleteForm = document.getElementById('deleteForm');
 
-<footer th:replace="~{fragments :: footer}"></footer>
+        function openDeleteModal(button) {
+            deleteForm.action = button.getAttribute("data-url");
+            deleteModal.show();
+        }
+    </script>
 
 </body>
 </html>
