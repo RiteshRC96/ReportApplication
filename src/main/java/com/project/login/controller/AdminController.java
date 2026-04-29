@@ -19,21 +19,17 @@ public class AdminController {
 
     @Autowired
     private AdminService adminService;
-
+    
     @Autowired
     private PaymentService paymentService;
-
-    /**
-     * Show admin login page
-     */
+    
     @GetMapping("/login")
     public String showAdminLogin() {
+        System.out.println("Page Visited: Admin login");
         return "admin_login";
     }
 
-    /**
-     * Process admin login
-     */
+    
     @PostMapping("/login")
     public String processAdminLogin(
             @RequestParam("username") String username,
@@ -47,9 +43,12 @@ public class AdminController {
                 session.setAttribute("adminId", admin.getId());
                 session.setAttribute("adminUsername", admin.getUsername());
                 session.setAttribute("adminName", admin.getName());
+                System.out.println("Admin login successfull ");
+                System.out.println("Page Visited: Admin dashboard");
                 return "redirect:/admin/dashboard";
             } else {
                 redirectAttributes.addFlashAttribute("error", "Invalid username or password");
+                System.out.println("Invalid username or password");
                 return "redirect:/admin/login";
             }
         } catch (Exception e) {
@@ -58,9 +57,7 @@ public class AdminController {
         }
     }
 
-    /**
-     * Show admin dashboard
-     */
+   
     @GetMapping("/dashboard")
     public String showAdminDashboard(
             @RequestParam(defaultValue = "0") int page,
@@ -68,6 +65,7 @@ public class AdminController {
             Model model) {
         // Check if admin is logged in
         if (session.getAttribute("adminId") == null) {
+        	System.out.println("Secstion logout");
             return "redirect:/admin/login";
         }
 

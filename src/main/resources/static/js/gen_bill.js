@@ -127,7 +127,20 @@ function calculateAll() {
     const getVal = (id) => {
         const el = document.getElementById(id);
         if (!el) return 0;
-        let v = el.value.replace(/,/g, ''); // Remove commas
+        let v = el.value.trim().replace(/,/g, ''); // Remove commas
+        
+        // Handle range for quantity
+        if (id === "quantityMeters" && v.includes("-")) {
+            let parts = v.split("-");
+            if (parts.length === 2) {
+                let start = parseFloat(parts[0].trim());
+                let end = parseFloat(parts[1].trim());
+                if (!isNaN(start) && !isNaN(end)) {
+                    return (start + end) / 2;
+                }
+            }
+        }
+        
         return parseFloat(v || 0);
     };
 

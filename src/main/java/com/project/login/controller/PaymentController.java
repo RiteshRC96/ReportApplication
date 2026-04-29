@@ -47,9 +47,16 @@ public class PaymentController {
             @RequestParam String mobileNumber,
             @RequestParam String utrNumber,
             @RequestParam Double amount,
+            org.springframework.security.core.Authentication authentication,
             RedirectAttributes redirectAttributes) {
 
         try {
+            // If user is logged in, force use their session details
+            if (authentication != null && authentication.getPrincipal() instanceof com.project.security.CustomUserDetails) {
+                com.project.security.CustomUserDetails userDetails = (com.project.security.CustomUserDetails) authentication.getPrincipal();
+                email = userDetails.getUsername();
+                userName = userDetails.getName();
+            }
 
             // -------- Trim Inputs --------
             email = email != null ? email.trim().toLowerCase() : "";

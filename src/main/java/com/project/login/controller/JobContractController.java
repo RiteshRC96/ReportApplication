@@ -127,7 +127,7 @@ public class JobContractController {
             @RequestParam String weaver_name,
             @RequestParam String trader_name,
             @RequestParam String quality,
-            @RequestParam Integer quantity_meters,
+            @RequestParam String quantity_meters,
             @RequestParam Double job_rate,
             @RequestParam String payment_days,
             @RequestParam String beams,
@@ -183,7 +183,32 @@ public class JobContractController {
             bill.setTraderName(capitalizeInitialLetters(trader_name));
             bill.setBrokerName(capitalizeInitialLetters(userDetails.getName()));
             bill.setQuality(quality);
-            bill.setQuantityMeters(quantity_meters);
+
+            // Handle Quantity Range (e.g., 1000 or 2000-3000)
+            Integer qtyMeters = 0;
+            if (quantity_meters != null && !quantity_meters.trim().isEmpty()) {
+                String qStr = quantity_meters.trim().replace(",", "");
+                if (qStr.contains("-")) {
+                    String[] parts = qStr.split("-");
+                    if (parts.length == 2) {
+                        try {
+                            double start = Double.parseDouble(parts[0].trim());
+                            double end = Double.parseDouble(parts[1].trim());
+                            qtyMeters = (int) Math.round((start + end) / 2.0);
+                        } catch (NumberFormatException e) {
+                            qtyMeters = 0;
+                        }
+                    }
+                } else {
+                    try {
+                        qtyMeters = (int) Math.round(Double.parseDouble(qStr));
+                    } catch (NumberFormatException e) {
+                        qtyMeters = 0;
+                    }
+                }
+            }
+            bill.setQuantityMeters(qtyMeters);
+
             bill.setJobRate(job_rate);
             bill.setPaymentDays(payment_days);
             bill.setProductionSchedule(production_schedule);

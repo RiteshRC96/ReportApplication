@@ -39,7 +39,7 @@ public class SecurityConfig {
                         "/css/**",
                         "/js/**",
                         "/images/**",
-                        "/qr_code.png",
+                        "/qr_code.jpeg",
                         "/logo.png",
                         "/favicon.png",
                         "/webjars/**"

@@ -233,6 +233,12 @@
             outline: none;
         }
 
+        .form-control[readonly] {
+            background-color: #e9ecef;
+            opacity: 1;
+            cursor: not-allowed;
+        }
+
         .form-control::placeholder {
             color: #a0aec0;
         }
@@ -397,7 +403,7 @@
 <body>
     <div class="payment-container">
         
-        <a href="/report" class="back-button">← Back to Dashboard</a>
+        <a href="/dashboard" class="back-button">← Back to Dashboard</a>
 
         <div class="payment-header">
             <h1>Add Money to Wallet</h1>
@@ -437,7 +443,7 @@
                 <div class="qr-section">
                     <div class="qr-label">Scan to Pay via UPI</div>
                     <div class="qr-image">
-                        <img src="/qr_code.png" alt="UPI QR Code">
+                        <img src="/qr_code.jpeg" alt="UPI QR Code">
                     </div>
                     <div class="qr-instruction">
                         <strong>Step 1:</strong> Scan the QR code with your phone<br>
@@ -472,6 +478,7 @@
                                 name="email" 
                                 th:value="${email}"
                                 placeholder="Enter your email address"
+                                th:readonly="${email != null}"
                                 required>
                         </div>
 
@@ -484,6 +491,7 @@
                                 name="userName" 
                                 th:value="${userName}"
                                 placeholder="Enter your full name"
+                                th:readonly="${userName != null}"
                                 required>
                         </div>
 

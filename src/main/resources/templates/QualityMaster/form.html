@@ -1,3 +1,4 @@
+<!-- Author @Ritesh -->
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
@@ -337,7 +338,9 @@
         let weave = document.getElementById("weave").value || "";
 
         if(warp && weft && reed && pick && width){
-            let quality = `${warp}*${weft} / ${reed} * ${pick} / ${width}" - ${weave}`;
+            let quality = `${width}" ${reed}*${pick} / ${warp}*${weft} -${weave}`;
+            
+            <!-- width"reed*pick/warp*weft-->
             document.getElementById("qualityName").value = quality;
             document.getElementById("alias").value = quality;
         }
