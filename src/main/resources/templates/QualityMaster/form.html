@@ -260,6 +260,16 @@
 
     <h3 th:text="${quality.id == null ? 'Add Quality Master' : 'Edit Quality Master'}"></h3>
 
+    <!-- FLASH MESSAGES -->
+    <div th:if="${success}" class="alert alert-success alert-dismissible fade show" role="alert">
+        <span th:text="${success}"></span>
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+    <div th:if="${error}" class="alert alert-danger alert-dismissible fade show" role="alert">
+        <span th:text="${error}"></span>
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+
     <form th:action="@{/quality/save}" method="post" th:object="${quality}">
         <input type="hidden" th:field="*{id}">
 
@@ -323,10 +333,13 @@
 </main>
 
 <script>
-    const inputs = ["warp","weft","reed","pick","width","weave"];
+    const inputs = ["warp","weft","reed","pick","width","weave", "reedSpace"];
 
     inputs.forEach(id => {
-        document.getElementById(id).addEventListener("input", generateQuality);
+        const el = document.getElementById(id);
+        if (el) {
+            el.addEventListener("input", generateQuality);
+        }
     });
 
     function generateQuality() {
@@ -336,15 +349,19 @@
         let pick = document.getElementById("pick").value || "";
         let width = document.getElementById("width").value || "";
         let weave = document.getElementById("weave").value || "";
+        let reedSpace = document.getElementById("reedSpace").value || "";
 
         if(warp && weft && reed && pick && width){
-            let quality = `${width}" ${reed}*${pick} / ${warp}*${weft} -${weave}`;
+            // Formula: Width" Reed * Pick / Warp * Weft - Weave
+            let quality = `${width}" ${reed}*${pick} / ${warp} * ${weft} - ${weave}`.trim();
             
-            <!-- width"reed*pick/warp*weft-->
             document.getElementById("qualityName").value = quality;
             document.getElementById("alias").value = quality;
         }
     }
+
+    // Generate on page load (especially for Edit mode)
+    window.addEventListener('DOMContentLoaded', generateQuality);
 </script>
 
 <footer th:replace="~{fragments :: footer}"></footer>

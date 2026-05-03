@@ -18,8 +18,17 @@ public class QualityMasterService {
 	
 	@SuppressWarnings("null")
 	public QualityMasterEntity save(QualityMasterEntity qtEntity) {
-		return repository.save(qtEntity);		
+		// Duplicate Check
+		Optional<QualityMasterEntity> existing = repository.findByQualityNameAndUserId(qtEntity.getQualityName(), qtEntity.getUserId());
 		
+		if (existing.isPresent()) {
+			// If it's a new record OR a different record being updated to an existing name
+			if (qtEntity.getId() == null || !existing.get().getId().equals(qtEntity.getId())) {
+				throw new RuntimeException("quality already exist");
+			}
+		}
+		
+		return repository.save(qtEntity);		
 	}
 	
 	public List<QualityMasterEntity> findByUser(Long userId) {

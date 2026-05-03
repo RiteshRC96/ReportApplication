@@ -35,7 +35,7 @@ public class QualityMasterRestController {
 
     // ✅ CREATE / SAVE
     @PostMapping
-    public ResponseEntity<QualityMasterEntity> save(
+    public ResponseEntity<?> save(
             @RequestBody QualityMasterEntity quality,
             Authentication authentication) {
 
@@ -44,9 +44,12 @@ public class QualityMasterRestController {
 
         quality.setUserId(userDetails.getId());
 
-        QualityMasterEntity saved = service.save(quality);
-
-        return ResponseEntity.ok(saved);
+        try {
+            QualityMasterEntity saved = service.save(quality);
+            return ResponseEntity.ok(saved);
+        } catch (RuntimeException e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
     }
 
     // ✅ GET BY ID (FOR EDIT)
@@ -69,7 +72,7 @@ public class QualityMasterRestController {
 
     // ✅ UPDATE
     @PutMapping("/{id}")
-    public ResponseEntity<QualityMasterEntity> update(
+    public ResponseEntity<?> update(
             @PathVariable Long id,
             @RequestBody QualityMasterEntity quality,
             Authentication authentication) {
@@ -86,9 +89,12 @@ public class QualityMasterRestController {
         quality.setId(id);
         quality.setUserId(userId);
 
-        QualityMasterEntity updated = service.save(quality);
-
-        return ResponseEntity.ok(updated);
+        try {
+            QualityMasterEntity updated = service.save(quality);
+            return ResponseEntity.ok(updated);
+        } catch (RuntimeException e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
     }
 
     // ✅ DELETE

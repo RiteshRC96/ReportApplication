@@ -221,49 +221,34 @@
             }
         }
 
-        /* ---------- PAGINATION ---------- */
-        .pagination-container {
-            margin-top: 25px;
-            display: flex;
-            justify-content: center;
+        /* ---------- PAGINATION (MATCH REPORT) ---------- */
+        @media (max-width: 575px) {
+            .pagination {
+                font-size: 12px;
+                gap: 2px;
+            }
+
+            .page-link {
+                padding: 0.4rem 0.6rem;
+                font-size: 12px;
+            }
         }
 
-        .pagination {
-            display: flex;
-            gap: 5px;
-            list-style: none;
-            padding: 0;
+        @media (min-width: 576px) and (max-width: 1023px) {
+            .pagination {
+                font-size: 13px;
+            }
+
+            .page-link {
+                padding: 0.45rem 0.65rem;
+                font-size: 13px;
+            }
         }
 
-        .page-item {
-            display: inline-block;
-        }
-
-        .page-link {
-            padding: 8px 14px;
-            background: white;
-            border: 1px solid #dee2e6;
-            color: #1f2a30;
-            text-decoration: none;
-            border-radius: 8px;
-            font-weight: 600;
-            transition: 0.3s;
-        }
-
-        .page-link:hover {
-            background: #f8f9fa;
-        }
-
-        .page-item.active .page-link {
-            background: #1f2a30;
-            color: white;
-            border-color: #1f2a30;
-        }
-
-        .page-item.disabled .page-link {
-            color: #6c757d;
-            pointer-events: none;
-            background: #f8f9fa;
+        @media (min-width: 1024px) {
+            .pagination {
+                font-size: 14px;
+            }
         }
     </style>
 </head>
@@ -319,8 +304,8 @@
             </div>
 
             <!-- PAGINATION -->
-            <div class="pagination-container" th:if="${totalPages > 0}">
-                <ul class="pagination">
+            <nav th:if="${totalPages > 1}" class="mt-4">
+                <ul class="pagination justify-content-center flex-wrap">
                     <li class="page-item" th:classappend="${currentPage == 0} ? 'disabled'">
                         <a class="page-link" th:href="@{/weaver-trader(page=${currentPage - 1})}">Previous</a>
                     </li>
@@ -332,7 +317,7 @@
                         <a class="page-link" th:href="@{/weaver-trader(page=${currentPage + 1})}">Next</a>
                     </li>
                 </ul>
-            </div>
+            </nav>
         </div>
 
         <!-- DELETE MODAL -->

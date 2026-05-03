@@ -52,7 +52,7 @@ public class ContractImageGenerationService {
      * This avoids reloading the document and significantly speeds up processing.
      */
     private PDDocument createFilledDocument(gen_bill contract) throws Exception {
-        InputStream templateStream = new ClassPathResource("static/job_Contract_New.pdf").getInputStream();
+        InputStream templateStream = new ClassPathResource("static/job_Contract.pdf").getInputStream();
         PDDocument document = PDDocument.load(templateStream);
         PDPage page = document.getPage(0);
 
@@ -67,29 +67,29 @@ public class ContractImageGenerationService {
             PDType1Font boldFont = PDType1Font.HELVETICA_BOLD;
 
             // Helper to draw text at coordinates
-            drawText(contentStream, font, 11, 160, 638, contract.getContractNo());
-            drawText(contentStream, font, 11, 480, 638,
+            drawText(contentStream, font, 13, 160, 638, contract.getContractNo());
+            drawText(contentStream, font, 13, 480, 638,
                     contract.getContractDate() != null ? contract.getContractDate().format(dtf) : null);
-            drawText(contentStream, font, 11, 140, 600, capitalizeWords(contract.getWeaverName()));
-            drawText(contentStream, font, 11, 140, 560, capitalizeWords(contract.getTraderName()));
-            drawText(contentStream, font, 11, 140, 520, capitalizeWords(contract.getBrokerName()));
-            drawText(contentStream, font, 11, 140, 483, contract.getQuality());
-            drawText(contentStream, font, 11, 140, 447, contract.getQuantityMeters());
+            drawText(contentStream, font, 13, 140, 600, capitalizeWords(contract.getWeaverName()));
+            drawText(contentStream, font, 13, 140, 560, capitalizeWords(contract.getTraderName()));
+            drawText(contentStream, font, 13, 140, 520, capitalizeWords(contract.getBrokerName()));
+            drawText(contentStream, font, 13, 140, 483, contract.getQuality());
+            drawText(contentStream, font, 13, 140, 447, contract.getQuantityMeters());
 
             if (contract.getSizingfabric() != null) {
-                String sf = contract.getSizingfabric().replace(",", "").trim().toUpperCase();
-                drawText(contentStream, boldFont, 11, 180, 447, sf);
+                String sf = contract.getSizingfabric().replace(",", "").trim();
+                drawText(contentStream, font, 13, 180, 447, sf);
             }
 
-            drawText(contentStream, font, 11, 450, 447, contract.getBeams());
-            drawText(contentStream, font, 11, 140, 405, contract.getJobRate());
-            drawText(contentStream, font, 11, 480, 405, contract.getPaymentDays());
-            drawText(contentStream, font, 11, 250, 370, contract.getProductionSchedule());
-            drawText(contentStream, font, 11, 550, 370, contract.getNoOfMachines());
-            drawText(contentStream, font, 11, 140, 330, contract.getRemark());
-            drawText(contentStream, font, 11, 140, 295, contract.getCutLength());
-            drawText(contentStream, font, 11, 365, 295, contract.getMinimumDelivery());
-            drawText(contentStream, font, 11, 400, 295, contract.getRollingFolding());
+            drawText(contentStream, font, 13, 450, 447, contract.getBeams());
+            drawText(contentStream, font, 13, 135, 407, contract.getJobRate());
+            drawText(contentStream, font, 13, 445, 407, contract.getPaymentDays());
+            drawText(contentStream, font, 13, 250, 370, contract.getProductionSchedule());
+            drawText(contentStream, font, 13, 550, 370, contract.getNoOfMachines());
+            drawText(contentStream, font, 13, 140, 333, contract.getRemark());
+            drawText(contentStream, font, 13, 140, 295, contract.getCutLength());
+            drawText(contentStream, font, 13, 365, 295, contract.getMinimumDelivery());
+            drawText(contentStream, font, 13, 395, 295, contract.getRollingFolding());
         }
 
         return document;

@@ -405,6 +405,7 @@ public class JobContractController {
             @RequestParam(required = false) String warp,
             @RequestParam(required = false) String weft,
             @RequestParam(required = false) String weave,
+            @RequestParam(required = false) String reedSpace,
             Authentication authentication) {
         try {
             // Validate quality name
@@ -424,6 +425,7 @@ public class JobContractController {
             quality.setWarp(warp);
             quality.setWeft(weft);
             quality.setWeave(capitalizeInitialLetters(weave));
+            quality.setReedSpace(reedSpace);
             quality.setUserId(userDetails.getId());
 
             com.project.login.entity.QualityMasterEntity saved = qulitymasterMasterService.save(quality);
@@ -436,9 +438,8 @@ public class JobContractController {
                     "pick", saved.getPick() != null ? saved.getPick() : ""));
         } catch (Exception e) {
             System.err.println("✗ Error adding quality: " + e.getMessage());
-            e.printStackTrace();
             return ResponseEntity.badRequest()
-                    .body(java.util.Map.of("error", "Failed to add quality: " + e.getMessage()));
+                    .body(java.util.Map.of("error", e.getMessage() != null ? e.getMessage() : "An unexpected error occurred"));
         }
     }
 

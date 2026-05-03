@@ -262,7 +262,7 @@ form.addEventListener("submit", function (e) {
 // QUALITY AUTO-GENERATION
 // =====================================================
 
-const qualityInputs = ["qual_width", "qual_reed", "qual_pick", "qual_warp", "qual_weft", "qual_weave"];
+const qualityInputs = ["qual_width", "qual_reed", "qual_pick", "qual_warp", "qual_weft", "qual_weave", "qual_reedSpace"];
 qualityInputs.forEach(id => {
     const element = document.getElementById(id);
     if (element) {
@@ -278,26 +278,10 @@ function generateQualityName() {
     let weft = document.getElementById("qual_weft").value || "";
     let weave = document.getElementById("qual_weave").value || "";
 
-    // Build quality name with available fields - don't require all fields
-    let qualityParts = [];
-    
-    if (warp || weft) {
-        qualityParts.push(`${warp || "?"}*${weft || "?"}`);
-    }
-    if (reed || pick) {
-        qualityParts.push(`${reed || "?"}*${pick || "?"}`);
-    }
-    if (width) {
-        qualityParts.push(`${width}"`);
-    }
-    if (weave) {
-        qualityParts.push(weave);
-    }
-    
-    if (qualityParts.length > 0) {
-        let quality = qualityParts.join(" / ");
+    if (warp && weft && reed && pick && width) {
+        // Formula: Width" Reed * Pick / Warp * Weft - Weave
+        let quality = `${width}" ${reed}*${pick} / ${warp} * ${weft} - ${weave}`.trim();
         document.getElementById("qual_name").value = quality;
-        console.log("✓ Quality name generated:", quality);
     } else {
         document.getElementById("qual_name").value = "";
     }
@@ -419,6 +403,7 @@ document.getElementById("addQualityForm")?.addEventListener("submit", function(e
     params.append("warp", formData.get("quality_warp") || "");
     params.append("weft", formData.get("quality_weft") || "");
     params.append("weave", formData.get("quality_weave") || "");
+    params.append("reedSpace", formData.get("quality_reedSpace") || "");
 
     console.log("✓ Submitting quality:", Object.fromEntries(params));
     
@@ -427,10 +412,9 @@ document.getElementById("addQualityForm")?.addEventListener("submit", function(e
         body: params
     })
     .then(res => {
-        console.log("Response status:", res.status);
         if (!res.ok) {
-            return res.text().then(text => {
-                throw new Error(`HTTP ${res.status}: ${text}`);
+            return res.json().catch(() => ({ error: "Server Error" })).then(err => {
+                throw new Error(err.error || `HTTP ${res.status}`);
             });
         }
         return res.json();

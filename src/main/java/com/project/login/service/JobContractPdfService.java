@@ -65,12 +65,7 @@ public class JobContractPdfService {
 
                         for (String header : headers) {
                                 table.addHeaderCell(
-                                                new Cell()
-                                                                .add(new Paragraph(header)
-                                                                                .setFont(boldFont)
-                                                                                .setFontSize(8))
-                                                                .setTextAlignment(TextAlignment.CENTER)
-                                                                .setVerticalAlignment(VerticalAlignment.MIDDLE));
+                                                new Cell().add(new Paragraph(header).setFont(boldFont).setFontSize(8)).setTextAlignment(TextAlignment.CENTER).setVerticalAlignment(VerticalAlignment.MIDDLE));
                         }
 
                         DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
