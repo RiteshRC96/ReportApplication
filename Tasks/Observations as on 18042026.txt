@@ -4,20 +4,19 @@ Login:-
 	2. Done Remove 'Welcome back' and 'Login' text.
 	
 Register:-
-	1. Confirm Password want(also need to check pass == confirm_pass)
-	2. Eye button on password should change when hide and show the pass.
-	3. User is present or not has to checked aftert clicking on the 'send OTP' button.
+	1. Done Confirm Password want(also need to check pass == confirm_pass)
+	2. Done Eye button on password should change when hide and show the pass.
+	3. Done User is present or not has to checked aftert clicking on the 'send OTP' button.
 	
 OTP submiting:-
-	1. Remove 'Login' button.
-	2. OTP validation want (Only numbers and on mobile keypad it has to show only numbers).
-	3. Resend button is not working.
+	2. DONE OTP validation want (Only numbers and on mobile keypad it has to show only numbers).
+	3. DONE Resend button is not working.
 	4. After successfully Register it should give pop up 'Acc created ' and after clicking ok it should redirect to login page.
 	
 	
 User Dashboard:-
-	1. fix the nav bar
-	2. Ask AI what to add on dashboard based on this project.
+	1. fix the nav bar for mobile
+	2. what to add on dashboard based on this project?(don't remove wallate bal)
 
 Weaver/treder Master:-
 	1. fix the nav bar.
