@@ -47,7 +47,12 @@ public class ForgotPasswordController {
         session.setAttribute("resetPassword", password);
 
         // Send OTP
-        otpService.sendOtp(email);
+        try {
+            otpService.sendOtp(email);
+        } catch (IllegalStateException e) {
+            redirectAttributes.addFlashAttribute("error", e.getMessage());
+            return "redirect:/forgot-password";
+        }
 
         redirectAttributes.addFlashAttribute("message", "OTP has been sent to your email.");
         return "redirect:/verify-otp";
@@ -74,14 +79,16 @@ public class ForgotPasswordController {
             return "redirect:/forgot-password";
         }
 
-        if (otpService.verifyOtp(email, otp)) {
+        String status = otpService.verifyOtp(email, otp);
+
+        if ("VALID".equals(status)) {
             userService.updatePassword(email, newPassword);
             session.removeAttribute("resetEmail");
             session.removeAttribute("resetPassword");
             redirectAttributes.addFlashAttribute("message", "Password updated successfully. Please login.");
             return "redirect:/";
         } else {
-            redirectAttributes.addFlashAttribute("error", "Invalid or expired OTP.");
+            redirectAttributes.addFlashAttribute("error", status);
             return "redirect:/verify-otp";
         }
     }

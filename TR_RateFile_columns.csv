@@ -1,0 +1,8 @@
+Column Name,Data Type,Position
+RecNo,STRING,1
+TaxableValue,NUMBER,2
+Tax,NUMBER,3
+TxnDate,DATETIME,4
+Description,STRING,5
+TotalAmt,NUMBER,6
+USDAmt,NUMBER,7

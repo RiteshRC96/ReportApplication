@@ -212,6 +212,11 @@ body {
       </div>
 
       <button type="submit" class="btn btn-main w-100">Send OTP</button>
+
+      <div class="text-center mt-3 mb-2" style="font-size: 14px; color: #6c757d;">OR</div>
+      <a th:href="@{/oauth2/authorization/google}" class="btn btn-outline-dark w-100 mb-3" style="border-radius: 8px; font-weight: 600;">
+        <i class="fab fa-google me-2" style="color: #DB4437;"></i> Register with Google
+      </a>
     </form>
 
     <!-- VERIFY OTP -->

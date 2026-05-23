@@ -44,7 +44,12 @@ public class RegisterController {
             return "register";
         }
 
-        otpService.sendOtp(email);
+        try {
+            otpService.sendOtp(email);
+        } catch (IllegalStateException e) {
+            model.addAttribute("error", e.getMessage());
+            return "register";
+        }
 
         model.addAttribute("otpSent", true);
         return "register"; // Stay on register page
@@ -57,7 +62,11 @@ public class RegisterController {
     public String resendOtp(HttpSession session, Model model) {
         String email = (String) session.getAttribute("REG_EMAIL");
         if (email != null) {
-            otpService.sendOtp(email);
+            try {
+                otpService.sendOtp(email);
+            } catch (IllegalStateException e) {
+                model.addAttribute("error", e.getMessage());
+            }
         }
         model.addAttribute("otpSent", true);
         return "register";
@@ -77,11 +86,11 @@ public class RegisterController {
             return "redirect:/register";
         }
 
-        boolean valid = otpService.verifyOtp(email, otp);
+        String status = otpService.verifyOtp(email, otp);
 
-        if (!valid) {
+        if (!"VALID".equals(status)) {
             model.addAttribute("otpSent", true);
-            model.addAttribute("error", "Invalid or expired OTP");
+            model.addAttribute("error", status);
             return "register";
         }
 

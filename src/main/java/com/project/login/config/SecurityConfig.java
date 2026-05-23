@@ -57,6 +57,12 @@ public class SecurityConfig {
                 .permitAll()
             )
 
+            .oauth2Login(oauth2 -> oauth2
+                .loginPage("/")
+                .defaultSuccessUrl("/google-success", true)
+                .permitAll()
+            )
+
             .logout(logout -> logout
                 .logoutUrl("/logout")
                 .logoutSuccessUrl("/?logout")
