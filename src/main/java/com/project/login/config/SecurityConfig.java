@@ -36,6 +36,7 @@ public class SecurityConfig {
                         "/verify-register-otp",
                         "/forgot-password",
                         "/verify-otp",
+                        "/account-inactive",
                         "/css/**",
                         "/js/**",
                         "/images/**",
@@ -53,7 +54,19 @@ public class SecurityConfig {
                 .usernameParameter("email")
                 .passwordParameter("password")
                 .defaultSuccessUrl("/dashboard", true)
-                .failureUrl("/?error=true")
+                .failureHandler((request, response, exception) -> {
+                    String errorMsg = "Invalid email or password";
+                    if (exception instanceof org.springframework.security.authentication.DisabledException) {
+                        // User is inactive — redirect to subscription_invalid page
+                        response.sendRedirect("/account-inactive?email=" + 
+                            java.net.URLEncoder.encode(
+                                request.getParameter("email") != null ? request.getParameter("email") : "", 
+                                "UTF-8"
+                            ));
+                        return;
+                    }
+                    response.sendRedirect("/?error=true");
+                })
                 .permitAll()
             )
 
@@ -76,16 +89,16 @@ public class SecurityConfig {
         return http.build();
     }
 
+    @Autowired
+    private PasswordEncoder passwordEncoder;
+
     @Bean
     public DaoAuthenticationProvider authenticationProvider() {
         DaoAuthenticationProvider provider = new DaoAuthenticationProvider();
         provider.setUserDetailsService(customUserDetailsService);
-        provider.setPasswordEncoder(passwordEncoder());
+        provider.setPasswordEncoder(passwordEncoder);
+        // This ensures DisabledException is thrown for inactive users
+        provider.setHideUserNotFoundExceptions(true);
         return provider;
-    }
-
-    @Bean
-    public PasswordEncoder passwordEncoder() {
-        return new BCryptPasswordEncoder();
     }
 }

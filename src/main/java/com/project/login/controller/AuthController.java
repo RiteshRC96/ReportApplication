@@ -11,6 +11,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -49,6 +50,32 @@ public class AuthController {
         return "redirect:/";
     }
 
+    /**
+     * Handle inactive account redirect from Spring Security
+     */
+    @GetMapping("/account-inactive")
+    public String accountInactive(@RequestParam(required = false) String email, Model model) {
+        if (email != null && !email.trim().isEmpty()) {
+            PaymentStatus realStatus = paymentService.getPaymentStatus(email);
+            if (realStatus != PaymentStatus.APPROVED) {
+                model.addAttribute("status", realStatus);
+                if (realStatus == PaymentStatus.REJECTED) {
+                    var payment = paymentService.getLatestPaymentByEmail(email);
+                    if (payment != null) {
+                        model.addAttribute("rejectionReason", payment.getAdminNotes());
+                    }
+                }
+            } else {
+                // If payment is approved but they are inactive, it means admin manually disabled them
+                model.addAttribute("status", PaymentStatus.INACTIVE_ACCOUNT);
+            }
+            model.addAttribute("userEmail", email);
+        } else {
+            model.addAttribute("status", PaymentStatus.INACTIVE_ACCOUNT);
+        }
+        return "subscription_invalid";
+    }
+
     @GetMapping("/dashboard")
     public String dashboard(Model model) {
 
@@ -65,6 +92,14 @@ public class AuthController {
 
         String username = userDetails.getName();
         String email = userDetails.getUsername().trim().toLowerCase();
+
+        // 🔥 Check if user is inactive
+        User user = service.findByEmail(email).orElse(null);
+        if (user != null && !user.isActive()) {
+            model.addAttribute("status", PaymentStatus.INACTIVE_ACCOUNT);
+            model.addAttribute("userEmail", email);
+            return "subscription_invalid";
+        }
 
         // 🔥 Check subscription status using enum
         PaymentStatus status = paymentService.getPaymentStatus(email);
@@ -84,6 +119,12 @@ public class AuthController {
             }
 
             return "subscription_invalid";
+        }
+
+        // Update last active date on successful dashboard access
+        if (user != null) {
+            user.setLastActiveDate(java.time.LocalDateTime.now());
+            service.saveUserEntity(user);
         }
 
         model.addAttribute("username", username);

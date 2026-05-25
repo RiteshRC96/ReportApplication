@@ -217,6 +217,16 @@
         <p>Wait for your subscription start date to access the dashboard.</p>
     </div>
 
+    <!-- INACTIVE_ACCOUNT -->
+    <div th:if="${status.name() == 'INACTIVE_ACCOUNT'}" class="subscription-message">
+        <p>Your account has been
+            <span class="message-highlight-rejected">INACTIVATED</span> by the administrator.</p>
+        <p>Please contact admin to reactivate your account.</p>
+        <div style="margin-top: 15px; padding: 12px; background: #fff3cd; border-left: 4px solid #ffc107; color: #856404; border-radius: 4px;">
+            <strong>NOTE:</strong> Account will be deleted after inactivity of <strong>180 days</strong>.
+        </div>
+    </div>
+
     <div class="info-box">
         <h4>What to do next?</h4>
 
@@ -260,7 +270,7 @@
            th:if="${status.name() == 'REJECTED' || status.name() == 'EXPIRED' || status.name() == 'NOT_FOUND'}">
             [[${status.name() == 'EXPIRED' ? 'Renew Subscription' : (status.name() == 'NOT_FOUND' ? 'Submit Payment' : 'Re-submit Payment')}]]
         </a>
-        <a href="/admin/login" class="btn-secondary-custom">Contact Admin</a>
+        <a href="https://shreegurusoftwaresolution.com/" class="btn-secondary-custom">Contact Admin</a>
     </div>
 
     <div class="footer-text">

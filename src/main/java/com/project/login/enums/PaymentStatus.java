@@ -7,7 +7,8 @@ public enum PaymentStatus {
     REJECTED("Rejected"),
     EXPIRED("Expired"),
     NOT_STARTED("Not Started Yet"),
-    NOT_FOUND("No Payment Found");
+    NOT_FOUND("No Payment Found"),
+    INACTIVE_ACCOUNT("Account Inactive");
 
     private final String displayName;
 
