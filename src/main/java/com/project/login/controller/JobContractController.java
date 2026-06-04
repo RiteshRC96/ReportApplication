@@ -232,7 +232,7 @@ public class JobContractController {
             
             // ✅ DEDUCT WALLET (Only for NEW contracts)
             if (!isUpdate) {
-                walletService.deduct(user, 10.0, "Contract Creation: " + savedBill.getContractNo());
+                walletService.deduct(user, 8.0, "Contract Creation: " + savedBill.getContractNo());
             }
 
             return ResponseEntity.ok("SUCCESS:" + userDetails.getId() + ":" + savedBill.getContractNo());
