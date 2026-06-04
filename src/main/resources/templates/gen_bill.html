@@ -132,6 +132,23 @@
             z-index: 9999;
         }
 
+        /* ---------- NUMERIC FIELD VALIDATION ERROR STYLE ---------- */
+        .field-error {
+            display: none;
+            color: #dc3545;
+            font-size: 11px;
+            font-weight: bold;
+            margin-top: 3px;
+        }
+
+        .field-error.visible {
+            display: block;
+        }
+
+        input.input-invalid {
+            border-bottom: 2px solid #dc3545 !important;
+        }
+
         /* ---------- RESPONSIVE FORM STRUCTURE ---------- */
         @media (max-width: 768px) {
 
@@ -353,10 +370,18 @@
                         <td style="padding: 12px; border-bottom: 1px solid #000; border-left: 1px solid #000;">
                             <div class="d-flex flex-column flex-lg-row align-items-lg-center gap-2 gap-lg-4">
                                 <div class="d-flex align-items-center gap-2">
-                                    <input class="form-control" name="quantity_meters" id="quantityMeters"
-                                        th:value="${job?.quantityMeters}" placeholder="________"
-                                        style="border: none; border-bottom: 1px solid #000; border-radius: 0; text-align: center; width: 120px;"
-                                        required>
+                                    <div style="display: flex; flex-direction: column;">
+                                        <input class="form-control"
+                                                name="quantity_meters"
+                                                id="quantityMeters"
+                                                th:value="${job?.quantityMeters}"
+                                                placeholder="Enter only number"
+                                                inputmode="numeric"
+                                                pattern="[0-9]*"
+                                                style="border: none; border-bottom: 1px solid #000; border-radius: 0; text-align: center; width: 120px;"
+                                            required>
+                                        <span class="field-error" id="quantityMetersError">Enter number only</span>
+                                    </div>
                                     <span>METERS</span>
                                 </div>
 
@@ -376,9 +401,10 @@
                                 </div>
 
                                 <div class="d-flex align-items-center gap-2">
-                                    <input class="form-control" name="beams" th:value="${job?.beams}"
-                                        placeholder="________"
-                                        style="border: none; border-bottom: 1px solid #000; border-radius: 0; text-align: center; width: 140px;"
+                                    <input class="form-control"
+                                            name="beams"
+                                            th:value="${job?.beams}"
+                                            style="border: none; border-bottom: 1px solid #000; border-radius: 0; text-align: center; width: 140px;"
                                         required>
                                     <span style="font-weight: bold;">BEAMS.</span>
                                 </div>
@@ -391,9 +417,17 @@
                         </td>
                         <td style="padding: 12px; border-bottom: 1px solid #000; border-left: 1px solid #000;">
                             <div class="d-flex flex-column flex-lg-row align-items-lg-center">
-                                <input class="form-control" name="job_rate" id="jobRate" th:value="${job?.jobRate}"
-                                    style="border: none; border-bottom: 1px solid #000; border-radius: 0; text-align: center; width: 100px;"
-                                    required>
+                                <div style="display: flex; flex-direction: column;">
+                                    <input class="form-control"
+                                            name="job_rate"
+                                            id="jobRate"
+                                            th:value="${job?.jobRate}"
+                                            inputmode="decimal"
+                                            pattern="[0-9]*\.?[0-9]*"
+                                            style="border: none; border-bottom: 1px solid #000; border-radius: 0; text-align: center; width: 100px;"
+                                            required>
+                                    <span class="field-error" id="jobRateError">Enter number only</span>
+                                </div>
 
                                 <div class="d-flex align-items-center mt-2 mt-lg-0">
                                     <span class="point-label d-lg-none">7. PAYMENT WITHIN</span>
@@ -424,10 +458,17 @@
                                     <span class="d-none d-lg-inline" style="margin: 0 40px; font-weight: bold;">9. NO OF
                                         MACHINES :-</span>
 
-                                    <input class="form-control" name="no_of_machines" th:value="${job?.noOfMachines}"
-                                        placeholder=""
-                                        style="border: none; border-bottom: 1px solid #000; border-radius: 0; text-align: center; width: 70px; display: inline-block;"
-                                        required>
+                                    <div style="display: flex; flex-direction: column;">
+                                        <input class="form-control"
+                                                name="no_of_machines"
+                                                id="noOfMachines"
+                                                th:value="${job?.noOfMachines}"
+                                                inputmode="numeric"
+                                                pattern="[0-9]*"
+                                                style="border: none; border-bottom: 1px solid #000; border-radius: 0; text-align: center; width: 70px; display: inline-block;"
+                                                required>
+                                        <span class="field-error" id="noOfMachinesError">Enter number only</span>
+                                    </div>
                                 </div>
                             </div>
                         </td>
@@ -672,17 +713,98 @@
         <!-- Select2 -->
         <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
 
+        <!-- ============================================================
+             NUMERIC FIELD VALIDATION
+             - quantityMeters : integers only  (inputmode="numeric")
+             - jobRate        : decimals allowed (inputmode="decimal")
+             - noOfMachines   : integers only  (inputmode="numeric")
+        ============================================================ -->
+        <script>
+            (function () {
+                // Config: fieldId -> { errorId, allowDecimal }
+                var numericFields = [
+                    { fieldId: 'quantityMeters', errorId: 'quantityMetersError', allowDecimal: false },
+                    { fieldId: 'jobRate',         errorId: 'jobRateError',         allowDecimal: true  },
+                    { fieldId: 'noOfMachines',    errorId: 'noOfMachinesError',    allowDecimal: false }
+                ];
+
+                function isValidNumber(value, allowDecimal) {
+                    if (value === '') return true; // empty = handled by 'required', not us
+                    if (allowDecimal) {
+                        // Allow digits and at most one decimal point, e.g. 12, 12.5, .5
+                        return /^\d*\.?\d+$/.test(value) || /^\d+\.?\d*$/.test(value);
+                    } else {
+                        return /^\d+$/.test(value);
+                    }
+                }
+
+                function setError(field, errorEl, hasError) {
+                    if (hasError) {
+                        field.classList.add('input-invalid');
+                        errorEl.classList.add('visible');
+                    } else {
+                        field.classList.remove('input-invalid');
+                        errorEl.classList.remove('visible');
+                    }
+                }
+
+                document.addEventListener('DOMContentLoaded', function () {
+                    numericFields.forEach(function (cfg) {
+                        var field   = document.getElementById(cfg.fieldId);
+                        var errorEl = document.getElementById(cfg.errorId);
+                        if (!field || !errorEl) return;
+
+                        // Real-time validation on every keystroke
+                        field.addEventListener('input', function () {
+                            var val = field.value.trim();
+                            setError(field, errorEl, val !== '' && !isValidNumber(val, cfg.allowDecimal));
+                        });
+
+                        // Also validate on blur (when user leaves the field)
+                        field.addEventListener('blur', function () {
+                            var val = field.value.trim();
+                            setError(field, errorEl, val !== '' && !isValidNumber(val, cfg.allowDecimal));
+                        });
+                    });
+                });
+
+                // Returns true if all three numeric fields are valid; shows errors otherwise
+                window.validateNumericFields = function () {
+                    var allValid = true;
+                    numericFields.forEach(function (cfg) {
+                        var field   = document.getElementById(cfg.fieldId);
+                        var errorEl = document.getElementById(cfg.errorId);
+                        if (!field || !errorEl) return;
+                        var val = field.value.trim();
+                        var invalid = val !== '' && !isValidNumber(val, cfg.allowDecimal);
+                        // Also flag empty required fields
+                        if (val === '') {
+                            // Let browser handle 'required'; we only check format here
+                        }
+                        setError(field, errorEl, invalid);
+                        if (invalid) allValid = false;
+                    });
+                    return allValid;
+                };
+            })();
+        </script>
+
         <!-- FIELD VALIDATION -->
         <script>
             document.addEventListener("DOMContentLoaded", function () {
                 const form = document.getElementById("billForm");
 
-                // Store original submit handler
-                const originalSubmitHandler = form.onsubmit;
-
-                // Override form submission to validate radio buttons first
+                // Override form submission to validate radio buttons and numeric fields first
                 form.addEventListener("submit", function (e) {
-                    // Check if sizing_fabric is selected
+
+                    // 1. Validate numeric fields
+                    if (typeof window.validateNumericFields === 'function' && !window.validateNumericFields()) {
+                        e.preventDefault();
+                        Swal.fire("Validation Error", "Please enter valid numbers in Quantity, Job Rate, and No. of Machines fields.", "error");
+                        return false;
+                    }
+
+                    // 2. Check if sizing_fabric is selected
                     const sizingFabricSelected = document.querySelector('input[name="sizing_fabric"]:checked');
                     if (!sizingFabricSelected) {
                         e.preventDefault();
@@ -690,7 +812,7 @@
                         return false;
                     }
 
-                    // Check if rolling_folding is selected
+                    // 3. Check if rolling_folding is selected
                     const rollingFoldingSelected = document.querySelector('input[name="rolling_folding"]:checked');
                     if (!rollingFoldingSelected) {
                         e.preventDefault();
