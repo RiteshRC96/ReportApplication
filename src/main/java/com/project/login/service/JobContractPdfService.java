@@ -65,12 +65,7 @@ public class JobContractPdfService {
 
                         for (String header : headers) {
                                 table.addHeaderCell(
-                                                new Cell()
-                                                                .add(new Paragraph(header)
-                                                                                .setFont(boldFont)
-                                                                                .setFontSize(8))
-                                                                .setTextAlignment(TextAlignment.CENTER)
-                                                                .setVerticalAlignment(VerticalAlignment.MIDDLE));
+                                                new Cell().add(new Paragraph(header).setFont(boldFont).setFontSize(8)).setTextAlignment(TextAlignment.CENTER).setVerticalAlignment(VerticalAlignment.MIDDLE));
                         }
 
                         DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
@@ -99,7 +94,7 @@ public class JobContractPdfService {
                                 table.addCell(getCell(bill.getQuality(), normalFont));
                                 table.addCell(getCell(qty != null ? qty.toString() : "0", normalFont));
                                 table.addCell(getCell(bill.getSizingfabric() != null ? bill.getSizingfabric().toUpperCase() : "-", normalFont));
-                                table.addCell(getCell(bill.getBeams() != null ? bill.getBeams().toString() : "0",
+                                table.addCell(getCell(bill.getBeams() != null ? bill.getBeams() : "0",
                                                 normalFont));
                                 table.addCell(getCell(rate != null ? rate.toString() : "0", normalFont));
 
@@ -120,7 +115,7 @@ public class JobContractPdfService {
                                                 : "0.00", normalFont));
 
                                 table.addCell(getCell(
-                                                bill.getPaymentDays() != null ? bill.getPaymentDays().toString() : "-",
+                                                bill.getPaymentDays() != null ? bill.getPaymentDays() : "-",
                                                 normalFont));
 
                                 // ✅ Production Schedule

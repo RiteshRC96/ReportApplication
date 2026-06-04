@@ -19,10 +19,10 @@ public class ReportEntity {
     private Long userId;
 
     @Column(name = "contract_no")
-    private String contractNo;
+    private Integer contractNo;
 
     @Column(name = "sr_no")
-    private String srNo; // 🔧 FIX: must match gen_bill (String)
+    private Integer srNo;
 
     @Column(name = "contract_date")
     private LocalDate contractDate;
@@ -47,6 +47,9 @@ public class ReportEntity {
 
     @Column(name = "quantity_meters")
     private Integer quantityMeters;  // 🔧 FIX: match gen_bill (Integer)
+
+    @Column(name = "beams")
+    private String beams;
 
     @Column(name = "job_rate")
     private Double jobRate;
@@ -73,7 +76,7 @@ public class ReportEntity {
     private Double brokerageMtrAmt;
 
     @Column(name = "payment_days")
-    private Integer paymentDays;
+    private String paymentDays;
 
     @Column(name = "production_schedule")
     private String productionSchedule;
@@ -109,19 +112,19 @@ public class ReportEntity {
         this.userId = userId;
     }
 
-    public String getContractNo() {
+    public Integer getContractNo() {
         return contractNo;
     }
 
-    public void setContractNo(String contractNo) {
+    public void setContractNo(Integer contractNo) {
         this.contractNo = contractNo;
     }
 
-    public String getSrNo() {
+    public Integer getSrNo() {
         return srNo;
     }
 
-    public void setSrNo(String srNo) {
+    public void setSrNo(Integer srNo) {
         this.srNo = srNo;
     }
 
@@ -237,12 +240,20 @@ public class ReportEntity {
         this.brokerageMtrAmt = brokerageMtrAmt;
     }
 
-    public Integer getPaymentDays() {
+    public String getPaymentDays() {
         return paymentDays;
     }
 
-    public void setPaymentDays(Integer paymentDays) {
+    public void setPaymentDays(String paymentDays) {
         this.paymentDays = paymentDays;
+    }
+
+    public String getBeams() {
+        return beams;
+    }
+
+    public void setBeams(String beams) {
+        this.beams = beams;
     }
 
     public String getProductionSchedule() {

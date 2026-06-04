@@ -1,6 +1,7 @@
 package com.project.login.entity;
 
 import jakarta.persistence.*;
+import java.time.LocalDateTime;
 
 @Entity
 @Table(
@@ -23,6 +24,12 @@ public class User {
 
     @Column(nullable = false)
     private String password;
+
+    @Column(nullable = false)
+    private boolean active = true;
+
+    @Column(nullable = true)
+    private LocalDateTime lastActiveDate;
 
     /* ========= GETTERS & SETTERS ========= */
 
@@ -56,5 +63,21 @@ public class User {
 
     public void setPassword(String password) {
         this.password = password;
+    }
+
+    public boolean isActive() {
+        return active;
+    }
+
+    public void setActive(boolean active) {
+        this.active = active;
+    }
+
+    public LocalDateTime getLastActiveDate() {
+        return lastActiveDate;
+    }
+
+    public void setLastActiveDate(LocalDateTime lastActiveDate) {
+        this.lastActiveDate = lastActiveDate;
     }
 }

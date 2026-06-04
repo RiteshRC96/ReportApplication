@@ -127,10 +127,10 @@ public class JobContractController {
             @RequestParam String weaver_name,
             @RequestParam String trader_name,
             @RequestParam String quality,
-            @RequestParam Integer quantity_meters,
+            @RequestParam String quantity_meters,
             @RequestParam Double job_rate,
-            @RequestParam Integer payment_days,
-            @RequestParam Integer beams,
+            @RequestParam String payment_days,
+            @RequestParam String beams,
             @RequestParam String production_schedule,
             @RequestParam Integer no_of_machines,
             @RequestParam(required = false) String remark,
@@ -183,7 +183,32 @@ public class JobContractController {
             bill.setTraderName(capitalizeInitialLetters(trader_name));
             bill.setBrokerName(capitalizeInitialLetters(userDetails.getName()));
             bill.setQuality(quality);
-            bill.setQuantityMeters(quantity_meters);
+
+            // Handle Quantity Range (e.g., 1000 or 2000-3000)
+            Integer qtyMeters = 0;
+            if (quantity_meters != null && !quantity_meters.trim().isEmpty()) {
+                String qStr = quantity_meters.trim().replace(",", "");
+                if (qStr.contains("-")) {
+                    String[] parts = qStr.split("-");
+                    if (parts.length == 2) {
+                        try {
+                            double start = Double.parseDouble(parts[0].trim());
+                            double end = Double.parseDouble(parts[1].trim());
+                            qtyMeters = (int) Math.round((start + end) / 2.0);
+                        } catch (NumberFormatException e) {
+                            qtyMeters = 0;
+                        }
+                    }
+                } else {
+                    try {
+                        qtyMeters = (int) Math.round(Double.parseDouble(qStr));
+                    } catch (NumberFormatException e) {
+                        qtyMeters = 0;
+                    }
+                }
+            }
+            bill.setQuantityMeters(qtyMeters);
+
             bill.setJobRate(job_rate);
             bill.setPaymentDays(payment_days);
             bill.setProductionSchedule(production_schedule);
@@ -207,7 +232,7 @@ public class JobContractController {
             
             // ✅ DEDUCT WALLET (Only for NEW contracts)
             if (!isUpdate) {
-                walletService.deduct(user, 10.0, "Contract Creation: " + savedBill.getContractNo());
+                walletService.deduct(user, 8.0, "Contract Creation: " + savedBill.getContractNo());
             }
 
             return ResponseEntity.ok("SUCCESS:" + userDetails.getId() + ":" + savedBill.getContractNo());
@@ -380,6 +405,7 @@ public class JobContractController {
             @RequestParam(required = false) String warp,
             @RequestParam(required = false) String weft,
             @RequestParam(required = false) String weave,
+            @RequestParam(required = false) String reedSpace,
             Authentication authentication) {
         try {
             // Validate quality name
@@ -399,6 +425,7 @@ public class JobContractController {
             quality.setWarp(warp);
             quality.setWeft(weft);
             quality.setWeave(capitalizeInitialLetters(weave));
+            quality.setReedSpace(reedSpace);
             quality.setUserId(userDetails.getId());
 
             com.project.login.entity.QualityMasterEntity saved = qulitymasterMasterService.save(quality);
@@ -411,9 +438,8 @@ public class JobContractController {
                     "pick", saved.getPick() != null ? saved.getPick() : ""));
         } catch (Exception e) {
             System.err.println("✗ Error adding quality: " + e.getMessage());
-            e.printStackTrace();
             return ResponseEntity.badRequest()
-                    .body(java.util.Map.of("error", "Failed to add quality: " + e.getMessage()));
+                    .body(java.util.Map.of("error", e.getMessage() != null ? e.getMessage() : "An unexpected error occurred"));
         }
     }
 

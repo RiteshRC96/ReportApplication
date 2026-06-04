@@ -1,8 +1,11 @@
 package com.project.login.controller;
 import com.project.login.entity.WeaverTrader;
 import com.project.login.service.WeaverTraderService;
-import org.springframework.security.core.Authentication;
 import com.project.security.CustomUserDetails;
+
+import org.springframework.security.core.Authentication;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
@@ -22,7 +25,9 @@ public class WeaverTraderController {
     }
 
     @GetMapping
-    public String list(Model model, Authentication authentication) {
+    public String list(@RequestParam(defaultValue = "0") int page,
+                       @RequestParam(defaultValue = "10") int size,
+                       Model model, Authentication authentication) {
     	System.out.println("Page Visited: " + "weaver-trader");
 
         CustomUserDetails userDetails =
@@ -30,7 +35,13 @@ public class WeaverTraderController {
 
         Long userId = userDetails.getId();
 
-        model.addAttribute("list", service.findByUser(userId));
+        Page<WeaverTrader> listPage = service.findByUserPaginated(userId, PageRequest.of(page, size));
+        
+        model.addAttribute("list", listPage.getContent());
+        model.addAttribute("currentPage", page);
+        model.addAttribute("totalPages", listPage.getTotalPages());
+        model.addAttribute("pageSize", size);
+        
         return "weaver_trader/list";
     }
 

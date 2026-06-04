@@ -1,8 +1,10 @@
 package com.project.login.controller;
 
 import com.project.login.entity.Payment;
+import com.project.login.entity.User;
 import com.project.login.enums.PaymentStatus;
 import com.project.login.service.PaymentService;
+import com.project.login.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -17,6 +19,9 @@ public class PaymentController {
 
     @Autowired
     private PaymentService paymentService;
+
+    @Autowired
+    private UserService userService;
 
     private static final Pattern EMAIL_PATTERN =
             Pattern.compile("^[A-Za-z0-9+_.-]+@(.+)$");
@@ -33,6 +38,14 @@ public class PaymentController {
             com.project.security.CustomUserDetails userDetails = (com.project.security.CustomUserDetails) authentication.getPrincipal();
             model.addAttribute("userName", userDetails.getName());
             model.addAttribute("email", userDetails.getUsername());
+
+            // Check if user is inactive
+            User user = userService.findByEmail(userDetails.getUsername()).orElse(null);
+            if (user != null && !user.isActive()) {
+                model.addAttribute("status", PaymentStatus.INACTIVE_ACCOUNT);
+                model.addAttribute("userEmail", userDetails.getUsername());
+                return "subscription_invalid";
+            }
         }
         return "payment";
     }
@@ -47,9 +60,16 @@ public class PaymentController {
             @RequestParam String mobileNumber,
             @RequestParam String utrNumber,
             @RequestParam Double amount,
+            org.springframework.security.core.Authentication authentication,
             RedirectAttributes redirectAttributes) {
 
         try {
+            // If user is logged in, force use their session details
+            if (authentication != null && authentication.getPrincipal() instanceof com.project.security.CustomUserDetails) {
+                com.project.security.CustomUserDetails userDetails = (com.project.security.CustomUserDetails) authentication.getPrincipal();
+                email = userDetails.getUsername();
+                userName = userDetails.getName();
+            }
 
             // -------- Trim Inputs --------
             email = email != null ? email.trim().toLowerCase() : "";
@@ -110,6 +130,14 @@ public class PaymentController {
     public String checkSubscriptionStatus(@RequestParam String email, Model model) {
 
         email = email != null ? email.trim().toLowerCase() : "";
+
+        // Check if user is inactive
+        User user = userService.findByEmail(email).orElse(null);
+        if (user != null && !user.isActive()) {
+            model.addAttribute("status", PaymentStatus.INACTIVE_ACCOUNT);
+            model.addAttribute("userEmail", email);
+            return "subscription_invalid";
+        }
 
         PaymentStatus status = paymentService.getPaymentStatus(email);
 

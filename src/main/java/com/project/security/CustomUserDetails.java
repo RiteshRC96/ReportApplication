@@ -42,7 +42,9 @@ public class CustomUserDetails implements UserDetails {
     public boolean isCredentialsNonExpired() { return true; }
 
     @Override
-    public boolean isEnabled() { return true; }
+    public boolean isEnabled() {
+        return user.isActive(); // 👈 Inactive users cannot login
+    }
 
 	@Override
 	public Collection<? extends GrantedAuthority> getAuthorities() {

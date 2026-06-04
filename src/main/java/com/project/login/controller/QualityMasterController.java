@@ -53,18 +53,19 @@ public class QualityMasterController {
                 (CustomUserDetails) authentication.getPrincipal();
         Long userId = userDetails.getId();
         quality.setUserId(userId);
-
-        // Check for duplication
-        if (quality.getId() == null) {
-            java.util.Optional<QualityMasterEntity> duplicate = service.findByNameAndUser(quality.getQualityName(), userId);
-            if (duplicate.isPresent()) {
-                redirectAttributes.addFlashAttribute("error", "Quality Name already exists!");
+        
+        try {
+            service.save(quality);
+            redirectAttributes.addFlashAttribute("success", "Quality saved successfully!");
+        } catch (RuntimeException e) {
+            redirectAttributes.addFlashAttribute("error", e.getMessage());
+            if (quality.getId() == null) {
                 return "redirect:/quality/create";
+            } else {
+                return "redirect:/quality/edit/" + quality.getId();
             }
         }
 
-        service.save(quality);
-        redirectAttributes.addFlashAttribute("success", "Quality saved successfully!");
         return "redirect:/quality";
     }
 

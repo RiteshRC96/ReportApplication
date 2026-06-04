@@ -6,6 +6,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import java.util.List;
 import java.util.Optional;
 
@@ -25,6 +27,10 @@ public class WeaverTraderService {
 
     public List<WeaverTrader> findByUser(Long userId) {
         return repository.findByUserId(userId);
+    }
+
+    public Page<WeaverTrader> findByUserPaginated(Long userId, Pageable pageable) {
+        return repository.findByUserId(userId, pageable);
     }
 
     public Optional<WeaverTrader> findByIdAndUser(Long id, Long userId) {

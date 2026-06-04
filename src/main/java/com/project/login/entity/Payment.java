@@ -13,6 +13,9 @@ public class Payment {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @Column(nullable = true)
+    private Long userId;
+
     @Column(nullable = false, length = 150)
     private String email;
 
@@ -28,6 +31,7 @@ public class Payment {
     @Column(nullable = false)
     private LocalDateTime paymentDate;
 
+    @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     private PaymentStatus status = PaymentStatus.PENDING;
 
@@ -66,6 +70,14 @@ public class Payment {
 
     public void setId(Long id) {
         this.id = id;
+    }
+
+    public Long getUserId() {
+        return userId;
+    }
+
+    public void setUserId(Long userId) {
+        this.userId = userId;
     }
 
     public String getEmail() {
@@ -160,6 +172,7 @@ public class Payment {
     public String toString() {
         return "Payment{" +
                 "id=" + id +
+                ", userId=" + userId +
                 ", email='" + email + '\'' +
                 ", userName='" + userName + '\'' +
                 ", mobileNumber='" + mobileNumber + '\'' +

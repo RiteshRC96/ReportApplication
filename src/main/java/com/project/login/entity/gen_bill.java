@@ -22,7 +22,7 @@ public class gen_bill {
 
 
     @Column(name = "sr_no")
-    private int srNo;
+    private Integer srNo;
 
     @Column(name = "contract_date", nullable = false)
     private LocalDate contractDate;
@@ -41,13 +41,13 @@ public class gen_bill {
     @Column(name = "quantity_meters")
     private Integer quantityMeters;
 
-    private Integer beams;
+    private String beams;
 
     @Column(name = "job_rate")
     private Double jobRate;
 
     @Column(name = "payment_days")
-    private Integer paymentDays;
+    private String paymentDays;
 
     @Column(name = "production_schedule")
     private String productionSchedule;
@@ -141,11 +141,11 @@ public class gen_bill {
     }
 
 
-    public int getSrNo() {
+    public Integer getSrNo() {
         return srNo;
     }
 
-    public void setSrNo(int srNo) {
+    public void setSrNo(Integer srNo) {
         this.srNo = srNo;
     }
 
@@ -197,11 +197,11 @@ public class gen_bill {
         this.quantityMeters = quantityMeters;
     }
 
-    public Integer getBeams() {
+    public String getBeams() {
         return beams;
     }
 
-    public void setBeams(Integer beams) {
+    public void setBeams(String beams) {
         this.beams = beams;
     }
 
@@ -213,11 +213,11 @@ public class gen_bill {
         this.jobRate = jobRate;
     }
 
-    public Integer getPaymentDays() {
+    public String getPaymentDays() {
         return paymentDays;
     }
 
-    public void setPaymentDays(Integer paymentDays) {
+    public void setPaymentDays(String paymentDays) {
         this.paymentDays = paymentDays;
     }
 

@@ -17,8 +17,8 @@ public interface ReportRepository extends JpaRepository<ReportEntity, Long> {
         WHERE r.brokerName = :brokerName
           AND (:weaverName IS NULL OR r.weaverName LIKE %:weaverName%)
           AND (:traderName IS NULL OR r.traderName LIKE %:traderName%)
-          AND (:fromDate IS NULL OR r.contractDate >= :fromDate)
-          AND (:toDate IS NULL OR r.contractDate <= :toDate)
+          AND (CAST(:fromDate AS date) IS NULL OR r.contractDate >= :fromDate)
+          AND (CAST(:toDate AS date) IS NULL OR r.contractDate <= :toDate)
         ORDER BY r.contractDate DESC
     """)
     Page<ReportEntity> filterReport(
