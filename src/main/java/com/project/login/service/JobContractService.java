@@ -8,6 +8,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Service
@@ -37,7 +38,7 @@ public class JobContractService {
     }
 
     /* ==========================
-       DELETE
+       DELETE (SOFT DELETE)
        ========================== */
     @Transactional
     public void deleteByUserIdAndContractNo(
@@ -47,7 +48,25 @@ public class JobContractService {
 
         gen_bill contract = getByUserIdAndContractNo(userId, contractNo);
 
-        jobContractRepository.delete(contract);
+        contract.setDeleted(true);
+        contract.setDeletedAt(LocalDateTime.now());
+        jobContractRepository.save(contract);
+    }
+
+    /* ==========================
+       RESTORE SOFT-DELETED RECORD
+       ========================== */
+    @Transactional
+    public void restoreByUserIdAndContractNo(
+            Long userId,
+            Integer contractNo
+    ) {
+        gen_bill contract = jobContractRepository.findAnyByUserIdAndContractNo(userId, contractNo)
+                .orElseThrow(() -> new RuntimeException("Contract not found"));
+
+        contract.setDeleted(false);
+        contract.setDeletedAt(null);
+        jobContractRepository.save(contract);
     }
 
     /* ==========================

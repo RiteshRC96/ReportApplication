@@ -104,6 +104,12 @@ public class gen_bill {
     @Column(name = "updated_at")
     private LocalDateTime updatedAt;
 
+    @Column(name = "is_deleted", nullable = false)
+    private boolean isDeleted = false;
+
+    @Column(name = "deleted_at")
+    private LocalDateTime deletedAt;
+
     @PrePersist
     protected void onCreate() {
         createdAt = LocalDateTime.now();
@@ -296,5 +302,11 @@ public class gen_bill {
 
     public Double getBrokerageMtrAmt() { return brokerageMtrAmt; }
     public void setBrokerageMtrAmt(Double brokerageMtrAmt) { this.brokerageMtrAmt = brokerageMtrAmt; }
+
+    public boolean isDeleted() { return isDeleted; }
+    public void setDeleted(boolean deleted) { this.isDeleted = deleted; }
+
+    public LocalDateTime getDeletedAt() { return deletedAt; }
+    public void setDeletedAt(LocalDateTime deletedAt) { this.deletedAt = deletedAt; }
 
 }

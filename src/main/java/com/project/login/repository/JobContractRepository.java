@@ -3,9 +3,12 @@ package com.project.login.repository;
 import com.project.login.entity.gen_bill;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.repository.query.Param;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
@@ -17,6 +20,7 @@ public interface JobContractRepository extends JpaRepository<gen_bill, Long> {
     @Query("""
         SELECT j FROM gen_bill j
         WHERE j.userId = :userId
+          AND j.isDeleted = false
           AND (:weaverName IS NULL OR j.weaverName ILIKE :weaverName)
           AND (:traderName IS NULL OR j.traderName ILIKE :traderName)
           AND (CAST(:fromDate AS date) IS NULL OR j.contractDate >= :fromDate)
@@ -32,20 +36,53 @@ public interface JobContractRepository extends JpaRepository<gen_bill, Long> {
     );
 
     /* ==========================
-       FIND FOR EDIT / DELETE
+       FIND FOR EDIT / DELETE (ACTIVE ONLY)
        ========================== */
+    @Query("""
+        SELECT j FROM gen_bill j
+        WHERE j.userId = :userId
+          AND j.contractNo = :contractNo
+          AND j.isDeleted = false
+    """)
     Optional<gen_bill> findByUserIdAndContractNo(
-            Long userId,
-            Integer contractNo
+            @Param("userId") Long userId,
+            @Param("contractNo") Integer contractNo
     );
 
     /* ==========================
-       (OPTIONAL) EXISTS CHECK
+       FIND ANY (INCLUDING SOFT DELETED) FOR RESTORE
        ========================== */
-    boolean existsByUserIdAndContractNo(
-            Long userId,
-            Integer contractNo
+    @Query("""
+        SELECT j FROM gen_bill j
+        WHERE j.userId = :userId
+          AND j.contractNo = :contractNo
+    """)
+    Optional<gen_bill> findAnyByUserIdAndContractNo(
+            @Param("userId") Long userId,
+            @Param("contractNo") Integer contractNo
     );
+
+    /* ==========================
+       (OPTIONAL) EXISTS CHECK (ACTIVE ONLY)
+       ========================== */
+    @Query("""
+        SELECT COUNT(j) > 0 FROM gen_bill j
+        WHERE j.userId = :userId
+          AND j.contractNo = :contractNo
+          AND j.isDeleted = false
+    """)
+    boolean existsByUserIdAndContractNo(
+            @Param("userId") Long userId,
+            @Param("contractNo") Integer contractNo
+    );
+
+    /* ==========================
+       HARD DELETE SOFT-DELETED RECORDS OLDER THAN X DAYS
+       ========================== */
+    @Modifying
+    @Transactional
+    @Query("DELETE FROM gen_bill j WHERE j.isDeleted = true AND j.deletedAt < :cutoff")
+    void deleteSoftDeletedContractsOlderThan(@Param("cutoff") LocalDateTime cutoff);
 
     /* ==========================
        USER-WISE AUTO INCREMENT

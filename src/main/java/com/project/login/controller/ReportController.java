@@ -22,6 +22,9 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
+import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
+
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.time.LocalDate;
@@ -35,34 +38,36 @@ public class ReportController {
         private final JobContractService jobContractService;
         private final JobContractPdfService jobContractPdfService;
         private final com.project.login.service.WalletService walletService;
+        private final PasswordEncoder passwordEncoder;
 
         public ReportController(
                         JobContractService jobContractService,
                         JobContractPdfService jobContractPdfService,
-                        com.project.login.service.WalletService walletService) {
+                        com.project.login.service.WalletService walletService,
+                        PasswordEncoder passwordEncoder) {
                 this.jobContractService = jobContractService;
                 this.jobContractPdfService = jobContractPdfService;
                 this.walletService = walletService;
+                this.passwordEncoder = passwordEncoder;
         }
-
-        /*
-         * ==========================
-         * DELETE
-         * ==========================
-         */
         @PostMapping("/delete/{userId}/{contractNo}")
         public String deleteJobContract(
                         @PathVariable Long userId,
-                        @PathVariable int contractNo) {
-                jobContractService.deleteByUserIdAndContractNo(userId, contractNo);
+                        @PathVariable int contractNo,
+                        @RequestParam("confirmPassword") String confirmPassword,
+                        RedirectAttributes redirectAttributes) {
+                Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+                CustomUserDetails userDetails = (CustomUserDetails) authentication.getPrincipal();
+
+                if (passwordEncoder.matches(confirmPassword, userDetails.getPassword())) {
+                        jobContractService.deleteByUserIdAndContractNo(userId, contractNo);
+                        redirectAttributes.addFlashAttribute("success", "Record deleted successfully.");
+                } else {
+                        redirectAttributes.addFlashAttribute("error", "Incorrect password! Record was not deleted.");
+                }
                 return "redirect:/report";
         }
 
-        /*
-         * ==========================
-         * REPORT PAGE
-         * ==========================
-         */
         @GetMapping
         public String reportPage(
                         @RequestParam(required = false) String weaverName,
@@ -109,11 +114,6 @@ public class ReportController {
                 return "report";
         }
 
-        /*
-         * ==========================
-         * EXCEL EXPORT
-         * ==========================
-         */
         @GetMapping("/excel")
         public void exportExcel(
                         @RequestParam(required = false) String weaverName,
@@ -192,12 +192,7 @@ public class ReportController {
                 workbook.write(response.getOutputStream());
                 workbook.close();
         }
-
-        /*
-         * ==========================
-         * PDF EXPORT
-         * ==========================
-         */
+        
         @GetMapping("/pdf")
         public ResponseEntity<InputStreamResource> exportPdf(
                         @RequestParam(required = false) String weaverName,
