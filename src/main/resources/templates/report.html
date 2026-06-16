@@ -203,6 +203,88 @@
                 font-size: 14px;
             }
         }
+
+        /* Custom Pagination */
+        .pagination {
+            margin-top: 15px;
+            gap: 8px;
+        }
+        .pagination .page-item .page-link {
+            border-radius: 8px;
+            border: none;
+            color: #4b5563;
+            font-weight: 600;
+            padding: 8px 16px;
+            background: #f8f9fa;
+            transition: all 0.3s ease;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+        }
+        .pagination .page-item .page-link:hover {
+            background: #e2e8f0;
+            color: #1f2933;
+            transform: translateY(-2px);
+        }
+        .pagination .page-item.active .page-link {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            box-shadow: 0 4px 10px rgba(102, 126, 234, 0.3);
+        }
+        .pagination .page-item.disabled .page-link {
+            background: #f1f3f5;
+            color: #adb5bd;
+            box-shadow: none;
+        }
+
+        @media (max-width: 575px) {
+            .pagination {
+                gap: 4px !important;
+            }
+            .pagination .page-item .page-link {
+                padding: 6px 12px !important;
+                font-size: 12px !important;
+            }
+        }
+        /* Column Search & Filter Layout */
+        .table-blue-header {
+            background: linear-gradient(135deg, #1f2a30, #243840) !important;
+            color: #ffffff !important;
+        }
+        .table-blue-header th {
+            background: linear-gradient(135deg, #1f2a30, #243840) !important;
+            color: #ffffff !important;
+            font-size: 11px !important;
+            font-weight: 600;
+            padding: 4px 6px !important;
+            border-color: #2b3941 !important;
+            vertical-align: middle;
+        }
+        #reportTable thead .text-white-50,
+        .filter-row .text-white-50 {
+            color: rgba(255, 255, 255, 0.6) !important;
+            opacity: 0.8;
+        }
+        .filter-row th {
+            padding: 4px 4px !important;
+            vertical-align: middle;
+            background-color: #2e3d46 !important;
+            border-color: #354751 !important;
+        }
+        .filter-row input {
+            background-color: #ffffff !important;
+            color: #0f172a !important;
+            border: 1px solid #485c68;
+            border-radius: 4px;
+            box-shadow: inset 0 1px 1px rgba(0,0,0,0.05);
+            transition: border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
+            font-size: 10px !important;
+            padding: 2px 4px !important;
+            height: auto !important;
+        }
+        .filter-row input:focus {
+            border-color: #39d98a;
+            outline: 0;
+            box-shadow: 0 0 0 0.15rem rgba(57, 217, 138, 0.25);
+        }
     </style>
 </head>
 
@@ -225,67 +307,201 @@
                 <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
             </div>
 
-            <!-- FILTER FORM -->
-            <form th:action="@{/report}" method="get" class="row g-2 g-md-3 mb-4">
 
-                <div class="col-12 col-sm-6 col-md-3">
-                    <label class="form-label">Weaver Name</label>
-                    <input type="text" name="weaverName" class="form-control" th:value="${weaverName}">
-                </div>
-
-                <div class="col-12 col-sm-6 col-md-3">
-                    <label class="form-label">Trader Name</label>
-                    <input type="text" name="traderName" class="form-control" th:value="${traderName}">
-                </div>
-
-                <div class="col-12 col-sm-6 col-md-2">
-                    <label class="form-label">From Date</label>
-                    <input type="date" name="fromDate" class="form-control"
-                        th:value="${fromDate != null ? #temporals.format(fromDate,'yyyy-MM-dd') : ''}">
-                </div>
-
-                <div class="col-12 col-sm-6 col-md-2">
-                    <label class="form-label">To Date</label>
-                    <input type="date" name="toDate" class="form-control"
-                        th:value="${toDate != null ? #temporals.format(toDate,'yyyy-MM-dd') : ''}">
-                </div>
-
-                <div class="col-12 col-md-2 d-flex align-items-end">
-                    <button type="submit" class="btn btn-primary w-100">
-                        Search
-                    </button>
-                </div>
-            </form>
 
             <!-- REPORT TABLE -->
             <div class="table-responsive mt-4">
-                <table class="table table-bordered table-striped">
+                <table id="reportTable" class="table table-bordered table-striped">
 
-                    <thead class="table-dark">
+                    <thead class="table-blue-header">
                         <tr>
-                            <th>Contract No</th>
-                            <th>Contract Date</th>
-                            <th>Weaver</th>
-                            <th>Trader</th>
-                            <th>Quality</th>
-                            <th>Qty (Meters)</th>
-                            <th>Sizing/Fabric</th>
-                            <th>Beams</th>
-                            <th>Job Rate</th>
-                            <th>Pick</th>
-                            <th>Payment Days</th>
-                            <th>Production Schedule</th>
-                            <th>Machines</th>
-                            <th>Remark</th>
-                            <th>Cut Length</th>
-                            <th>Minimum Delivery</th>
-                            <th>Rolling / Folding</th>
-                            <th>Rate</th>
-                            <th>Amount</th>
-                            <th>Brokerage % Amt</th>
-                            <th>Brokerage Mtr Amt</th>
-                            <th>Created At</th>
+                            <th style="cursor: pointer; user-select: none;" onclick="sortByColumn(0)">Contract No <i class="bi bi-arrow-down-up ms-1 text-white-50" style="font-size: 0.75rem;"></i></th>
+                            <th style="cursor: pointer; user-select: none;" onclick="sortByColumn(1)">Contract Date <i class="bi bi-arrow-down-up ms-1 text-white-50" style="font-size: 0.75rem;"></i></th>
+                            <th style="cursor: pointer; user-select: none;" onclick="sortByColumn(2)">Weaver <i class="bi bi-arrow-down-up ms-1 text-white-50" style="font-size: 0.75rem;"></i></th>
+                            <th style="cursor: pointer; user-select: none;" onclick="sortByColumn(3)">Trader <i class="bi bi-arrow-down-up ms-1 text-white-50" style="font-size: 0.75rem;"></i></th>
+                            <th style="cursor: pointer; user-select: none;" onclick="sortByColumn(4)">Quality <i class="bi bi-arrow-down-up ms-1 text-white-50" style="font-size: 0.75rem;"></i></th>
+                            <th style="cursor: pointer; user-select: none;" onclick="sortByColumn(5)">Qty (Meters) <i class="bi bi-arrow-down-up ms-1 text-white-50" style="font-size: 0.75rem;"></i></th>
+                            <th style="cursor: pointer; user-select: none;" onclick="sortByColumn(6)">Sizing/Fabric <i class="bi bi-arrow-down-up ms-1 text-white-50" style="font-size: 0.75rem;"></i></th>
+                            <th style="cursor: pointer; user-select: none;" onclick="sortByColumn(7)">Beams <i class="bi bi-arrow-down-up ms-1 text-white-50" style="font-size: 0.75rem;"></i></th>
+                            <th style="cursor: pointer; user-select: none;" onclick="sortByColumn(8)">Job Rate <i class="bi bi-arrow-down-up ms-1 text-white-50" style="font-size: 0.75rem;"></i></th>
+                            <th style="cursor: pointer; user-select: none;" onclick="sortByColumn(9)">Pick <i class="bi bi-arrow-down-up ms-1 text-white-50" style="font-size: 0.75rem;"></i></th>
+                            <th style="cursor: pointer; user-select: none;" onclick="sortByColumn(10)">Payment Days <i class="bi bi-arrow-down-up ms-1 text-white-50" style="font-size: 0.75rem;"></i></th>
+                            <th style="cursor: pointer; user-select: none;" onclick="sortByColumn(11)">Production Schedule <i class="bi bi-arrow-down-up ms-1 text-white-50" style="font-size: 0.75rem;"></i></th>
+                            <th style="cursor: pointer; user-select: none;" onclick="sortByColumn(12)">Machines <i class="bi bi-arrow-down-up ms-1 text-white-50" style="font-size: 0.75rem;"></i></th>
+                            <th style="cursor: pointer; user-select: none;" onclick="sortByColumn(13)">Remark <i class="bi bi-arrow-down-up ms-1 text-white-50" style="font-size: 0.75rem;"></i></th>
+                            <th style="cursor: pointer; user-select: none;" onclick="sortByColumn(14)">Cut Length <i class="bi bi-arrow-down-up ms-1 text-white-50" style="font-size: 0.75rem;"></i></th>
+                            <th style="cursor: pointer; user-select: none;" onclick="sortByColumn(15)">Minimum Delivery <i class="bi bi-arrow-down-up ms-1 text-white-50" style="font-size: 0.75rem;"></i></th>
+                            <th style="cursor: pointer; user-select: none;" onclick="sortByColumn(16)">Rolling / Folding <i class="bi bi-arrow-down-up ms-1 text-white-50" style="font-size: 0.75rem;"></i></th>
+                            <th style="cursor: pointer; user-select: none;" onclick="sortByColumn(17)">Rate <i class="bi bi-arrow-down-up ms-1 text-white-50" style="font-size: 0.75rem;"></i></th>
+                            <th style="cursor: pointer; user-select: none;" onclick="sortByColumn(18)">Amount <i class="bi bi-arrow-down-up ms-1 text-white-50" style="font-size: 0.75rem;"></i></th>
+                            <th style="cursor: pointer; user-select: none;" onclick="sortByColumn(19)">Brokerage % Amt <i class="bi bi-arrow-down-up ms-1 text-white-50" style="font-size: 0.75rem;"></i></th>
+                            <th style="cursor: pointer; user-select: none;" onclick="sortByColumn(20)">Brokerage Mtr Amt <i class="bi bi-arrow-down-up ms-1 text-white-50" style="font-size: 0.75rem;"></i></th>
+                            <th style="cursor: pointer; user-select: none;" onclick="sortByColumn(21)">Created At <i class="bi bi-arrow-down-up ms-1 text-white-50" style="font-size: 0.75rem;"></i></th>
                             <th>Action</th>
+                        </tr>
+                        <tr class="filter-row">
+                            <!-- Contract No (0) -->
+                            <th>
+                                <div class="d-flex align-items-center gap-1">
+                                    <input type="text" class="form-control form-control-sm column-search" style="font-size: 11px; padding: 2px 4px; min-width: 60px;" onkeyup="filterTable()">
+                                    <i class="bi bi-search text-white-50" style="font-size: 0.8rem;"></i>
+                                </div>
+                            </th>
+                            <!-- Contract Date (1) -->
+                            <th>
+                                <div class="d-flex align-items-center gap-1">
+                                    <div class="d-flex flex-column gap-1">
+                                        <input type="date" class="form-control form-control-sm column-search-from" style="font-size: 10px; padding: 1px 3px; width: 105px;" onchange="filterTable()">
+                                        <input type="date" class="form-control form-control-sm column-search-to" style="font-size: 10px; padding: 1px 3px; width: 105px;" onchange="filterTable()">
+                                    </div>
+                                    <i class="bi bi-search text-white-50" style="font-size: 0.8rem;"></i>
+                                </div>
+                            </th>
+                            <!-- Weaver (2) -->
+                            <th>
+                                <div class="d-flex align-items-center gap-1">
+                                    <input type="text" class="form-control form-control-sm column-search" style="font-size: 11px; padding: 2px 4px; min-width: 80px;" onkeyup="filterTable()">
+                                    <i class="bi bi-search text-white-50" style="font-size: 0.8rem;"></i>
+                                </div>
+                            </th>
+                            <!-- Trader (3) -->
+                            <th>
+                                <div class="d-flex align-items-center gap-1">
+                                    <input type="text" class="form-control form-control-sm column-search" style="font-size: 11px; padding: 2px 4px; min-width: 80px;" onkeyup="filterTable()">
+                                    <i class="bi bi-search text-white-50" style="font-size: 0.8rem;"></i>
+                                </div>
+                            </th>
+                            <!-- Quality (4) -->
+                            <th>
+                                <div class="d-flex align-items-center gap-1">
+                                    <input type="text" class="form-control form-control-sm column-search" style="font-size: 11px; padding: 2px 4px; min-width: 80px;" onkeyup="filterTable()">
+                                    <i class="bi bi-search text-white-50" style="font-size: 0.8rem;"></i>
+                                </div>
+                            </th>
+                            <!-- Qty (Meters) (5) -->
+                            <th>
+                                <div class="d-flex align-items-center gap-1">
+                                    <input type="text" class="form-control form-control-sm column-search" style="font-size: 11px; padding: 2px 4px; min-width: 60px;" onkeyup="filterTable()">
+                                    <i class="bi bi-search text-white-50" style="font-size: 0.8rem;"></i>
+                                </div>
+                            </th>
+                            <!-- Sizing/Fabric (6) -->
+                            <th>
+                                <div class="d-flex align-items-center gap-1">
+                                    <input type="text" class="form-control form-control-sm column-search" style="font-size: 11px; padding: 2px 4px; min-width: 60px;" onkeyup="filterTable()">
+                                    <i class="bi bi-search text-white-50" style="font-size: 0.8rem;"></i>
+                                </div>
+                            </th>
+                            <!-- Beams (7) -->
+                            <th>
+                                <div class="d-flex align-items-center gap-1">
+                                    <input type="text" class="form-control form-control-sm column-search" style="font-size: 11px; padding: 2px 4px; min-width: 50px;" onkeyup="filterTable()">
+                                    <i class="bi bi-search text-white-50" style="font-size: 0.8rem;"></i>
+                                </div>
+                            </th>
+                            <!-- Job Rate (8) -->
+                            <th>
+                                <div class="d-flex align-items-center gap-1">
+                                    <input type="text" class="form-control form-control-sm column-search" style="font-size: 11px; padding: 2px 4px; min-width: 50px;" onkeyup="filterTable()">
+                                    <i class="bi bi-search text-white-50" style="font-size: 0.8rem;"></i>
+                                </div>
+                            </th>
+                            <!-- Pick (9) -->
+                            <th>
+                                <div class="d-flex align-items-center gap-1">
+                                    <input type="text" class="form-control form-control-sm column-search" style="font-size: 11px; padding: 2px 4px; min-width: 50px;" onkeyup="filterTable()">
+                                    <i class="bi bi-search text-white-50" style="font-size: 0.8rem;"></i>
+                                </div>
+                            </th>
+                            <!-- Payment Days (10) -->
+                            <th>
+                                <div class="d-flex align-items-center gap-1">
+                                    <input type="text" class="form-control form-control-sm column-search" style="font-size: 11px; padding: 2px 4px; min-width: 60px;" onkeyup="filterTable()">
+                                    <i class="bi bi-search text-white-50" style="font-size: 0.8rem;"></i>
+                                </div>
+                            </th>
+                            <!-- Production Schedule (11) -->
+                            <th>
+                                <div class="d-flex align-items-center gap-1">
+                                    <input type="text" class="form-control form-control-sm column-search" style="font-size: 11px; padding: 2px 4px; min-width: 80px;" onkeyup="filterTable()">
+                                    <i class="bi bi-search text-white-50" style="font-size: 0.8rem;"></i>
+                                </div>
+                            </th>
+                            <!-- Machines (12) -->
+                            <th>
+                                <div class="d-flex align-items-center gap-1">
+                                    <input type="text" class="form-control form-control-sm column-search" style="font-size: 11px; padding: 2px 4px; min-width: 50px;" onkeyup="filterTable()">
+                                    <i class="bi bi-search text-white-50" style="font-size: 0.8rem;"></i>
+                                </div>
+                            </th>
+                            <!-- Remark (13) -->
+                            <th>
+                                <div class="d-flex align-items-center gap-1">
+                                    <input type="text" class="form-control form-control-sm column-search" style="font-size: 11px; padding: 2px 4px; min-width: 80px;" onkeyup="filterTable()">
+                                    <i class="bi bi-search text-white-50" style="font-size: 0.8rem;"></i>
+                                </div>
+                            </th>
+                            <!-- Cut Length (14) -->
+                            <th>
+                                <div class="d-flex align-items-center gap-1">
+                                    <input type="text" class="form-control form-control-sm column-search" style="font-size: 11px; padding: 2px 4px; min-width: 60px;" onkeyup="filterTable()">
+                                    <i class="bi bi-search text-white-50" style="font-size: 0.8rem;"></i>
+                                </div>
+                            </th>
+                            <!-- Minimum Delivery (15) -->
+                            <th>
+                                <div class="d-flex align-items-center gap-1">
+                                    <input type="text" class="form-control form-control-sm column-search" style="font-size: 11px; padding: 2px 4px; min-width: 60px;" onkeyup="filterTable()">
+                                    <i class="bi bi-search text-white-50" style="font-size: 0.8rem;"></i>
+                                </div>
+                            </th>
+                            <!-- Rolling / Folding (16) -->
+                            <th>
+                                <div class="d-flex align-items-center gap-1">
+                                    <input type="text" class="form-control form-control-sm column-search" style="font-size: 11px; padding: 2px 4px; min-width: 60px;" onkeyup="filterTable()">
+                                    <i class="bi bi-search text-white-50" style="font-size: 0.8rem;"></i>
+                                </div>
+                            </th>
+                            <!-- Rate (17) -->
+                            <th>
+                                <div class="d-flex align-items-center gap-1">
+                                    <input type="text" class="form-control form-control-sm column-search" style="font-size: 11px; padding: 2px 4px; min-width: 60px;" onkeyup="filterTable()">
+                                    <i class="bi bi-search text-white-50" style="font-size: 0.8rem;"></i>
+                                </div>
+                            </th>
+                            <!-- Amount (18) -->
+                            <th>
+                                <div class="d-flex align-items-center gap-1">
+                                    <input type="text" class="form-control form-control-sm column-search" style="font-size: 11px; padding: 2px 4px; min-width: 70px;" onkeyup="filterTable()">
+                                    <i class="bi bi-search text-white-50" style="font-size: 0.8rem;"></i>
+                                </div>
+                            </th>
+                            <!-- Brokerage % Amt (19) -->
+                            <th>
+                                <div class="d-flex align-items-center gap-1">
+                                    <input type="text" class="form-control form-control-sm column-search" style="font-size: 11px; padding: 2px 4px; min-width: 60px;" onkeyup="filterTable()">
+                                    <i class="bi bi-search text-white-50" style="font-size: 0.8rem;"></i>
+                                </div>
+                            </th>
+                            <!-- Brokerage Mtr Amt (20) -->
+                            <th>
+                                <div class="d-flex align-items-center gap-1">
+                                    <input type="text" class="form-control form-control-sm column-search" style="font-size: 11px; padding: 2px 4px; min-width: 60px;" onkeyup="filterTable()">
+                                    <i class="bi bi-search text-white-50" style="font-size: 0.8rem;"></i>
+                                </div>
+                            </th>
+                            <!-- Created At (21) -->
+                            <th>
+                                <div class="d-flex align-items-center gap-1">
+                                    <div class="d-flex flex-column gap-1">
+                                        <input type="date" class="form-control form-control-sm column-search-from" style="font-size: 10px; padding: 1px 3px; width: 105px;" onchange="filterTable()">
+                                        <input type="date" class="form-control form-control-sm column-search-to" style="font-size: 10px; padding: 1px 3px; width: 105px;" onchange="filterTable()">
+                                    </div>
+                                    <i class="bi bi-search text-white-50" style="font-size: 0.8rem;"></i>
+                                </div>
+                            </th>
+                            <!-- Action (22) -->
+                            <th></th>
                         </tr>
                     </thead>
 
@@ -318,7 +534,7 @@
                             </td>
 
                             <!-- ACTION -->
-                            <td class="text-center">
+                            <td class="text-center" style="white-space: nowrap;">
 
                                 <!-- EDIT -->
                                 <a class="btn btn-warning btn-sm" th:href="@{/gen-bill/edit/{u}/{c}(
@@ -326,6 +542,11 @@
                            c=${r.contractNo}
                        )}">
                                     Edit
+                                </a>
+
+                                <!-- CLONE -->
+                                <a class="btn btn-info btn-sm text-white" th:href="@{/gen-bill(cloneFrom=${r.contractNo})}">
+                                    Clone
                                 </a>
 
                                 <button type="button" class="btn btn-danger btn-sm"
@@ -343,65 +564,17 @@
 
             <!-- EXCEL EXPORT -->
             <div class="d-flex flex-column flex-sm-row gap-2 mb-4">
-                <a class="btn btn-success" th:href="@{/report/excel(
-               weaverName=${weaverName},
-               traderName=${traderName},
-               fromDate=${fromDate},
-               toDate=${toDate}
-           )}">
+                <a id="exportExcelBtn" class="btn btn-success" th:href="@{/report/excel}">
                     Export to Excel
                 </a>
-                <a class="btn btn-danger" th:href="@{/report/pdf(
-               weaverName=${weaverName},
-               traderName=${traderName},
-               fromDate=${fromDate},
-               toDate=${toDate}
-           )}">
+                <a id="exportPdfBtn" class="btn btn-danger" th:href="@{/report/pdf}">
                     Export to PDF
                 </a>
             </div>
 
             <!-- PAGINATION -->
-            <nav th:if="${totalPages > 1}" class="mt-4">
-                <ul class="pagination justify-content-center flex-wrap">
-
-                    <li class="page-item" th:classappend="${currentPage == 0} ? 'disabled'">
-                        <a class="page-link" th:href="@{/report(
-                       page=${currentPage-1},
-                       weaverName=${weaverName},
-                       traderName=${traderName},
-                       fromDate=${fromDate},
-                       toDate=${toDate}
-                   )}">
-                            Previous
-                        </a>
-                    </li>
-
-                    <li class="page-item" th:each="i : ${#numbers.sequence(0, totalPages-1)}"
-                        th:classappend="${i == currentPage} ? 'active'">
-                        <a class="page-link" th:href="@{/report(
-                       page=${i},
-                       weaverName=${weaverName},
-                       traderName=${traderName},
-                       fromDate=${fromDate},
-                       toDate=${toDate}
-                   )}" th:text="${i + 1}">
-                        </a>
-                    </li>
-
-                    <li class="page-item" th:classappend="${currentPage == totalPages-1} ? 'disabled'">
-                        <a class="page-link" th:href="@{/report(
-                       page=${currentPage+1},
-                       weaverName=${weaverName},
-                       traderName=${traderName},
-                       fromDate=${fromDate},
-                       toDate=${toDate}
-                   )}">
-                            Next
-                        </a>
-                    </li>
-
-                </ul>
+            <nav id="paginationContainer" class="mt-4 d-flex justify-content-center align-items-center gap-2">
+                <!-- Will be populated dynamically by JavaScript -->
             </nav>
 
         </div>
@@ -413,7 +586,7 @@
     <div class="modal fade" id="deleteModal" tabindex="-1" aria-labelledby="deleteModalLabel" aria-hidden="true">
         <div class="modal-dialog modal-dialog-centered">
             <div class="modal-content p-4" style="border-radius: 12px; box-shadow: 0 10px 40px rgba(0, 0, 0, 0.15);">
-                <div class="modal-header border-0 p-0 mb-3">
+                <div class="border-0 p-0 mb-3 d-flex justify-content-between align-items-center">
                     <h5 class="modal-title" id="deleteModalLabel" style="font-weight: 600; color: #1f2933;">Confirm Deletion</h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
@@ -436,20 +609,296 @@
 
     <script>
         let deleteModalInstance;
+        let originalRows = [];
+        let filteredRows = [];
+        let sortColIndex = -1;
+        let sortDirection = 'asc';
+        let currentPage = 0;
+        const itemsPerPage = 7;
 
         document.addEventListener('DOMContentLoaded', function() {
             deleteModalInstance = new bootstrap.Modal(document.getElementById('deleteModal'));
+            
+            const table = document.getElementById('reportTable');
+            if (table) {
+                const tbody = table.querySelector('tbody');
+                originalRows = Array.from(tbody.querySelectorAll('tr'));
+                filteredRows = [...originalRows];
+                
+                updateTable();
+            }
         });
+
+        function updateTable() {
+            const table = document.getElementById('reportTable');
+            if (!table) return;
+            const tbody = table.querySelector('tbody');
+            const totalItems = filteredRows.length;
+            const totalPages = Math.ceil(totalItems / itemsPerPage) || 1;
+            
+            if (currentPage >= totalPages) {
+                currentPage = totalPages - 1;
+            }
+            if (currentPage < 0) {
+                currentPage = 0;
+            }
+            
+            tbody.innerHTML = '';
+            
+            if (totalItems === 0) {
+                const tr = document.createElement('tr');
+                const td = document.createElement('td');
+                td.colSpan = 23;
+                td.className = 'text-center py-4 text-muted';
+                td.innerText = 'No matching reports found';
+                tr.appendChild(td);
+                tbody.appendChild(tr);
+            } else {
+                const start = currentPage * itemsPerPage;
+                const end = Math.min(start + itemsPerPage, totalItems);
+                for (let i = start; i < end; i++) {
+                    tbody.appendChild(filteredRows[i]);
+                }
+            }
+            
+            renderPagination(totalPages);
+            updateExportLinks();
+        }
+
+        function updateExportLinks() {
+            const contractNos = filteredRows.map(row => {
+                const cell = row.cells[0];
+                return cell ? parseInt(cell.innerText.trim()) : null;
+            }).filter(n => n !== null && !isNaN(n));
+
+            const excelBtn = document.getElementById('exportExcelBtn');
+            const pdfBtn = document.getElementById('exportPdfBtn');
+            
+            const queryParam = contractNos.length > 0 ? `?contractNos=${contractNos.join(',')}` : '';
+            
+            if (excelBtn) {
+                excelBtn.href = `/report/excel${queryParam}`;
+            }
+            if (pdfBtn) {
+                pdfBtn.href = `/report/pdf${queryParam}`;
+            }
+        }
+
+        function renderPagination(totalPages) {
+            const paginationContainer = document.getElementById('paginationContainer');
+            if (!paginationContainer) return;
+            paginationContainer.innerHTML = '';
+            
+            // First page button
+            const btnFirst = document.createElement('button');
+            btnFirst.className = 'btn page-btn' + (currentPage === 0 ? ' disabled' : '');
+            btnFirst.innerHTML = '<i class="bi bi-chevron-bar-left"></i>';
+            btnFirst.onclick = () => { if (currentPage > 0) { currentPage = 0; updateTable(); } };
+            paginationContainer.appendChild(btnFirst);
+            
+            // Prev page button
+            const btnPrev = document.createElement('button');
+            btnPrev.className = 'btn page-btn' + (currentPage === 0 ? ' disabled' : '');
+            btnPrev.innerHTML = '<i class="bi bi-chevron-double-left"></i>';
+            btnPrev.onclick = () => { if (currentPage > 0) { currentPage--; updateTable(); } };
+            paginationContainer.appendChild(btnPrev);
+            
+            // Dropdown Page Selector
+            const dropdownDiv = document.createElement('div');
+            dropdownDiv.className = 'dropdown mx-1';
+            
+            const dropdownBtn = document.createElement('button');
+            dropdownBtn.className = 'btn page-select-btn';
+            dropdownBtn.type = 'button';
+            dropdownBtn.setAttribute('data-bs-toggle', 'dropdown');
+            dropdownBtn.innerHTML = `<span>${currentPage + 1}/${totalPages}</span>`;
+            dropdownDiv.appendChild(dropdownBtn);
+            
+            const dropdownMenu = document.createElement('ul');
+            dropdownMenu.className = 'dropdown-menu page-dropdown-menu';
+            dropdownMenu.style.maxHeight = '250px';
+            dropdownMenu.style.overflowY = 'auto';
+            
+            for (let i = 0; i < totalPages; i++) {
+                const li = document.createElement('li');
+                const btn = document.createElement('button');
+                btn.type = 'button';
+                btn.className = 'dropdown-item' + (i === currentPage ? ' active' : '');
+                btn.innerText = `Page ${i + 1}`;
+                btn.onclick = () => { currentPage = i; updateTable(); };
+                li.appendChild(btn);
+                dropdownMenu.appendChild(li);
+            }
+            dropdownDiv.appendChild(dropdownMenu);
+            paginationContainer.appendChild(dropdownDiv);
+            
+            // Next page button
+            const btnNext = document.createElement('button');
+            btnNext.className = 'btn page-btn' + (currentPage === totalPages - 1 ? ' disabled' : '');
+            btnNext.innerHTML = '<i class="bi bi-chevron-double-right"></i>';
+            btnNext.onclick = () => { if (currentPage < totalPages - 1) { currentPage++; updateTable(); } };
+            paginationContainer.appendChild(btnNext);
+            
+            // Last page button
+            const btnLast = document.createElement('button');
+            btnLast.className = 'btn page-btn' + (currentPage === totalPages - 1 ? ' disabled' : '');
+            btnLast.innerHTML = '<i class="bi bi-chevron-bar-right"></i>';
+            btnLast.onclick = () => { if (currentPage < totalPages - 1) { currentPage = totalPages - 1; updateTable(); } };
+            paginationContainer.appendChild(btnLast);
+        }
+
+        function filterTable() {
+            const table = document.getElementById('reportTable');
+            if (!table) return;
+
+            const searchInputs = Array.from(table.querySelectorAll('.column-search'));
+            const searchFromInputs = Array.from(table.querySelectorAll('.column-search-from'));
+            const searchToInputs = Array.from(table.querySelectorAll('.column-search-to'));
+
+            const textFilters = {};
+            const dateFilters = {};
+
+            searchInputs.forEach(input => {
+                const th = input.closest('th');
+                const colIndex = Array.from(th.parentNode.children).indexOf(th);
+                const val = input.value.trim().toLowerCase();
+                if (val) {
+                    textFilters[colIndex] = val;
+                }
+            });
+
+            const allDateInputs = [...searchFromInputs, ...searchToInputs];
+            allDateInputs.forEach(input => {
+                const th = input.closest('th');
+                const colIndex = Array.from(th.parentNode.children).indexOf(th);
+                if (!dateFilters[colIndex]) {
+                    dateFilters[colIndex] = { from: null, to: null };
+                }
+                const val = input.value.trim();
+                if (val) {
+                    if (input.classList.contains('column-search-from')) {
+                        dateFilters[colIndex].from = new Date(val);
+                    } else {
+                        dateFilters[colIndex].to = new Date(val);
+                    }
+                }
+            });
+
+            filteredRows = originalRows.filter(row => {
+                const cells = row.children;
+                
+                // Check text filters
+                for (const [colIdx, filterVal] of Object.entries(textFilters)) {
+                    const cellVal = cells[colIdx].innerText.trim().toLowerCase();
+                    if (!cellVal.includes(filterVal)) {
+                        return false;
+                    }
+                }
+
+                // Check date filters
+                for (const [colIdx, dateRange] of Object.entries(dateFilters)) {
+                    const cellValText = cells[colIdx].innerText.trim();
+                    if (!cellValText || cellValText === '-') {
+                        if (dateRange.from || dateRange.to) return false;
+                        continue;
+                    }
+                    
+                    const parts = cellValText.split('/');
+                    if (parts.length === 3) {
+                        const cellDate = new Date(parts[2], parts[1] - 1, parts[0]);
+                        if (dateRange.from && cellDate < dateRange.from) {
+                            return false;
+                        }
+                        if (dateRange.to) {
+                            const toDateEnd = new Date(dateRange.to);
+                            toDateEnd.setHours(23, 59, 59, 999);
+                            if (cellDate > toDateEnd) {
+                                return false;
+                            }
+                        }
+                    }
+                }
+
+                return true;
+            });
+
+            if (sortColIndex !== -1) {
+                sortRows(sortColIndex, sortDirection);
+            }
+
+            currentPage = 0;
+            updateTable();
+        }
+
+        function sortByColumn(colIndex) {
+            if (sortColIndex === colIndex) {
+                sortDirection = sortDirection === 'asc' ? 'desc' : 'asc';
+            } else {
+                sortColIndex = colIndex;
+                sortDirection = 'asc';
+            }
+
+            updateSortArrows();
+            sortRows(colIndex, sortDirection);
+            currentPage = 0;
+            updateTable();
+        }
+
+        function sortRows(colIndex, direction) {
+            filteredRows.sort((a, b) => {
+                let valA = a.children[colIndex].innerText.trim();
+                let valB = b.children[colIndex].innerText.trim();
+
+                // If numeric
+                let numA = parseFloat(valA.replace(/[₹,%\s]/g, ''));
+                let numB = parseFloat(valB.replace(/[₹,%\s]/g, ''));
+
+                if (!isNaN(numA) && !isNaN(numB)) {
+                    return direction === 'asc' ? numA - numB : numB - numA;
+                }
+
+                // If dates (DD/MM/YYYY)
+                if (valA.includes('/') && valA.split('/').length === 3) {
+                    const partsA = valA.split('/');
+                    const dateA = new Date(partsA[2], partsA[1] - 1, partsA[0]);
+                    
+                    const partsB = valB.split('/');
+                    const dateB = new Date(partsB[2], partsB[1] - 1, partsB[0]);
+
+                    if (!isNaN(dateA.getTime()) && !isNaN(dateB.getTime())) {
+                        return direction === 'asc' ? dateA - dateB : dateB - dateA;
+                    }
+                }
+
+                return direction === 'asc' 
+                    ? valA.localeCompare(valB, undefined, { numeric: true, sensitivity: 'base' })
+                    : valB.localeCompare(valA, undefined, { numeric: true, sensitivity: 'base' });
+            });
+        }
+
+        function updateSortArrows() {
+            const table = document.getElementById('reportTable');
+            if (!table) return;
+            const headers = table.querySelectorAll('thead tr:first-child th');
+            
+            headers.forEach((th, idx) => {
+                const icon = th.querySelector('i');
+                if (icon) {
+                    if (idx === sortColIndex) {
+                        icon.className = sortDirection === 'asc' ? 'bi bi-sort-up ms-1 text-white' : 'bi bi-sort-down ms-1 text-white';
+                    } else {
+                        icon.className = 'bi bi-arrow-down-up ms-1 text-white-50';
+                    }
+                }
+            });
+        }
 
         function openDeleteModal(button) {
             const deleteUrl = button.getAttribute('data-url');
             const form = document.getElementById('deleteForm');
             form.action = deleteUrl;
 
-            // Clear previous password inputs
             document.getElementById('confirmPassword').value = '';
-
-            // Open modal
             deleteModalInstance.show();
         }
     </script>

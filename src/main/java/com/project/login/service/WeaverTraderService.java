@@ -56,4 +56,12 @@ public class WeaverTraderService {
         return repository.findByNameAndPhnoAndTypeAndUserId(name, phno, type, userId);
     }
 
+    public long countWeavers(Long userId) {
+        return repository.countByUserIdAndType(userId, "WEAVER");
+    }
+
+    public long countTraders(Long userId) {
+        return repository.countByUserIdAndType(userId, "TRADER");
+    }
+
 }

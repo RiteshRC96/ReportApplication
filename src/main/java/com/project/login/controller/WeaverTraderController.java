@@ -9,6 +9,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.security.crypto.password.PasswordEncoder;
 
 @Controller
 @RequestMapping("/weaver-trader")
@@ -17,17 +18,18 @@ public class WeaverTraderController {
 
     private final WeaverTraderService service;
     private final com.project.login.repository.JobContractRepository jobContractRepository;
+    private final PasswordEncoder passwordEncoder;
 
     public WeaverTraderController(WeaverTraderService service, 
-                                  com.project.login.repository.JobContractRepository jobContractRepository) {
+                                  com.project.login.repository.JobContractRepository jobContractRepository,
+                                  PasswordEncoder passwordEncoder) {
         this.service = service;
         this.jobContractRepository = jobContractRepository;
+        this.passwordEncoder = passwordEncoder;
     }
 
     @GetMapping
-    public String list(@RequestParam(defaultValue = "0") int page,
-                       @RequestParam(defaultValue = "10") int size,
-                       Model model, Authentication authentication) {
+    public String list(Model model, Authentication authentication) {
     	System.out.println("Page Visited: " + "weaver-trader");
 
         CustomUserDetails userDetails =
@@ -35,12 +37,9 @@ public class WeaverTraderController {
 
         Long userId = userDetails.getId();
 
-        Page<WeaverTrader> listPage = service.findByUserPaginated(userId, PageRequest.of(page, size));
+        java.util.List<WeaverTrader> list = service.findByUser(userId);
         
-        model.addAttribute("list", listPage.getContent());
-        model.addAttribute("currentPage", page);
-        model.addAttribute("totalPages", listPage.getTotalPages());
-        model.addAttribute("pageSize", size);
+        model.addAttribute("list", list);
         
         return "weaver_trader/list";
     }
@@ -107,6 +106,7 @@ public class WeaverTraderController {
 
     @PostMapping("/delete/{id}")
     public String delete(@PathVariable Long id,
+                         @RequestParam("confirmPassword") String confirmPassword,
                          Authentication authentication,
                          org.springframework.web.servlet.mvc.support.RedirectAttributes redirectAttributes) {
 
@@ -114,15 +114,20 @@ public class WeaverTraderController {
                 (CustomUserDetails) authentication.getPrincipal();
         Long userId = userDetails.getId();
 
+        if (!passwordEncoder.matches(confirmPassword, userDetails.getPassword())) {
+            redirectAttributes.addFlashAttribute("error", "Incorrect password! Record was not deleted.");
+            return "redirect:/weaver-trader";
+        }
+
         WeaverTrader wt = service.findByIdAndUser(id, userId)
                 .orElse(null);
         
         if (wt != null) {
             boolean isUsed = false;
             if ("WEAVER".equals(wt.getType())) {
-                isUsed = jobContractRepository.existsByWeaverNameAndUserId(wt.getName(), userId);
+                isUsed = jobContractRepository.existsByWeaverIdAndUserId(wt.getId(), userId);
             } else {
-                isUsed = jobContractRepository.existsByTraderNameAndUserId(wt.getName(), userId);
+                isUsed = jobContractRepository.existsByTraderIdAndUserId(wt.getId(), userId);
             }
             
             if (isUsed) {

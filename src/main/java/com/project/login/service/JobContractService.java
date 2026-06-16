@@ -69,6 +69,35 @@ public class JobContractService {
         jobContractRepository.save(contract);
     }
 
+    public gen_bill cloneContract(gen_bill source) {
+        gen_bill clone = new gen_bill();
+        clone.setWeaverId(source.getWeaverId());
+        clone.setWeaverName(source.getWeaverName());
+        clone.setTraderId(source.getTraderId());
+        clone.setTraderName(source.getTraderName());
+        clone.setBrokerName(source.getBrokerName());
+        clone.setQuality(source.getQuality());
+        clone.setQuantityMeters(source.getQuantityMeters());
+        clone.setBeams(source.getBeams());
+        clone.setJobRate(source.getJobRate());
+        clone.setPaymentDays(source.getPaymentDays());
+        clone.setProductionSchedule(source.getProductionSchedule());
+        clone.setNoOfMachines(source.getNoOfMachines());
+        clone.setRemark(source.getRemark());
+        clone.setCutLength(source.getCutLength());
+        clone.setMinimumDelivery(source.getMinimumDelivery());
+        clone.setRollingFolding(source.getRollingFolding());
+        clone.setSizingfabric(source.getSizingfabric());
+        clone.setPick(source.getPick());
+        clone.setWeaverBrokeragePercent(source.getWeaverBrokeragePercent());
+        clone.setWeaverBrokeragePaisa(source.getWeaverBrokeragePaisa());
+        clone.setRate(source.getRate());
+        clone.setAmount(source.getAmount());
+        clone.setBrokeragePercentAmt(source.getBrokeragePercentAmt());
+        clone.setBrokerageMtrAmt(source.getBrokerageMtrAmt());
+        return clone;
+    }
+
     /* ==========================
        SAVE OR UPDATE
        ========================== */
@@ -179,5 +208,17 @@ public class JobContractService {
         }
 
         return maxSrNo + 1;
+    }
+
+    public List<gen_bill> getRecentContracts(Long userId) {
+        return jobContractRepository.findTop5ByUserIdAndIsDeletedFalseOrderByCreatedAtDesc(userId);
+    }
+
+    public long countContracts(Long userId) {
+        return jobContractRepository.countByUserIdAndIsDeletedFalse(userId);
+    }
+
+    public List<gen_bill> getContractsByContractNos(Long userId, List<Integer> contractNos) {
+        return jobContractRepository.findByUserIdAndContractNoIn(userId, contractNos);
     }
 }

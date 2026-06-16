@@ -54,7 +54,10 @@ public class JobContractController {
      * =====================
      */
     @GetMapping("/gen-bill")
-    public String genBillPage(Model model, Authentication authentication) {
+    public String genBillPage(
+            @RequestParam(required = false) Integer cloneFrom,
+            Model model, 
+            Authentication authentication) {
 
         CustomUserDetails userDetails = (CustomUserDetails) authentication.getPrincipal();
 
@@ -65,10 +68,20 @@ public class JobContractController {
         model.addAttribute("quality", qulitymasterMasterService.findByUser(userId));
 
         model.addAttribute("editMode", false);
-        model.addAttribute("job", new gen_bill());
 
-        gen_bill job = new gen_bill();
-        job.setContractDate(java.time.LocalDate.now()); // ✅ Set today's date
+        gen_bill job;
+        if (cloneFrom != null) {
+            try {
+                gen_bill source = jobContractService.getByUserIdAndContractNo(userId, cloneFrom);
+                job = jobContractService.cloneContract(source);
+            } catch (Exception e) {
+                job = new gen_bill();
+                job.setContractDate(java.time.LocalDate.now());
+            }
+        } else {
+            job = new gen_bill();
+            job.setContractDate(java.time.LocalDate.now()); // ✅ Set today's date
+        }
         
         // Auto-generate next contract number
         Integer nextContractNo = jobContractService.generateContractNo(userId);
@@ -124,8 +137,8 @@ public class JobContractController {
 
             @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate contract_date,
 
-            @RequestParam String weaver_name,
-            @RequestParam String trader_name,
+            @RequestParam Long weaver_id,
+            @RequestParam Long trader_id,
             @RequestParam String quality,
             @RequestParam String quantity_meters,
             @RequestParam Double job_rate,
@@ -179,8 +192,17 @@ public class JobContractController {
 
             bill.setUserId(user.getId()); // ✅ FIXED
             bill.setContractDate(contract_date);
-            bill.setWeaverName(capitalizeInitialLetters(weaver_name));
-            bill.setTraderName(capitalizeInitialLetters(trader_name));
+
+            com.project.login.entity.WeaverTrader weaver = weaverTraderService.findByIdAndUser(weaver_id, user.getId())
+                    .orElseThrow(() -> new IllegalArgumentException("Weaver not found"));
+            bill.setWeaverId(weaver.getId());
+            bill.setWeaverName(weaver.getName());
+
+            com.project.login.entity.WeaverTrader trader = weaverTraderService.findByIdAndUser(trader_id, user.getId())
+                    .orElseThrow(() -> new IllegalArgumentException("Trader not found"));
+            bill.setTraderId(trader.getId());
+            bill.setTraderName(trader.getName());
+
             bill.setBrokerName(capitalizeInitialLetters(userDetails.getName()));
             bill.setQuality(quality);
 
@@ -248,22 +270,43 @@ public class JobContractController {
 
     /*
      * =====================
+     * API: CHECK IF CONTRACT EXISTS (FOR CREATE VALIDATION)
+     * =====================
+     */
+    @GetMapping("/api/check-contract-exists")
+    @ResponseBody
+    public ResponseEntity<Boolean> checkContractExists(
+            @RequestParam Integer contractNo,
+            Authentication authentication) {
+        if (authentication == null || !(authentication.getPrincipal() instanceof CustomUserDetails)) {
+            return ResponseEntity.status(401).body(false);
+        }
+        CustomUserDetails userDetails = (CustomUserDetails) authentication.getPrincipal();
+        boolean exists = jobContractService.existsByUserIdAndContractNo(userDetails.getId(), contractNo);
+        return ResponseEntity.ok(exists);
+    }
+
+    /*
+     * =====================
      * API: GET WEAVER DETAILS (FOR AUTO-FILL)
      * =====================
      */
-    @GetMapping("/api/weaver-details/{weaverName}")
+    @GetMapping("/api/weaver-details/{weaverId}")
     @ResponseBody
     public ResponseEntity<?> getWeaverDetails(
-            @PathVariable String weaverName,
+            @PathVariable Long weaverId,
             Authentication authentication) {
         CustomUserDetails userDetails = (CustomUserDetails) authentication.getPrincipal();
 
         Long userId = userDetails.getId();
 
-        var weaver = weaverTraderService.findByNameAndUser(weaverName, userId)
-                .map(w -> java.util.Map.of(
-                        "brokeragePercent", w.getWeaverBrokeragePercent(),
-                        "brokeragePaisa", w.getWeaverBrokeragePaisa()))
+        var weaver = weaverTraderService.findByIdAndUser(weaverId, userId)
+                .map(w -> {
+                    java.util.Map<String, Object> map = new java.util.HashMap<>();
+                    map.put("brokeragePercent", w.getWeaverBrokeragePercent() != null ? w.getWeaverBrokeragePercent() : 0.0);
+                    map.put("brokeragePaisa", w.getWeaverBrokeragePaisa() != null ? w.getWeaverBrokeragePaisa() : 0.0);
+                    return map;
+                })
                 .orElse(null);
 
         if (weaver == null) {
@@ -348,8 +391,8 @@ public class JobContractController {
                     "name", saved.getName(),
                     "phno", saved.getphno(),
                     "type", saved.getType(),
-                    "brokeragePercent", saved.getWeaverBrokeragePercent(),
-                    "brokeragePaisa", saved.getWeaverBrokeragePaisa()));
+                    "brokeragePercent", saved.getWeaverBrokeragePercent() != null ? saved.getWeaverBrokeragePercent() : 0.0,
+                    "brokeragePaisa", saved.getWeaverBrokeragePaisa() != null ? saved.getWeaverBrokeragePaisa() : 0.0));
         } catch (Exception e) {
             return ResponseEntity.badRequest().body(java.util.Map.of("error", e.getMessage()));
         }

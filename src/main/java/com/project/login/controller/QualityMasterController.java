@@ -7,6 +7,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.security.crypto.password.PasswordEncoder;
 
 @Controller
 @RequestMapping("/quality")
@@ -14,11 +15,14 @@ public class QualityMasterController {
 
     private final QualityMasterService service;
     private final com.project.login.repository.JobContractRepository jobContractRepository;
+    private final PasswordEncoder passwordEncoder;
 
     public QualityMasterController(QualityMasterService service, 
-                                    com.project.login.repository.JobContractRepository jobContractRepository) {
+                                    com.project.login.repository.JobContractRepository jobContractRepository,
+                                    PasswordEncoder passwordEncoder) {
         this.service = service;
         this.jobContractRepository = jobContractRepository;
+        this.passwordEncoder = passwordEncoder;
     }
 
     @GetMapping
@@ -90,6 +94,7 @@ public class QualityMasterController {
 
     @PostMapping("/delete/{id}")
     public String delete(@PathVariable Long id,
+                         @RequestParam("confirmPassword") String confirmPassword,
                          Authentication authentication,
                          org.springframework.web.servlet.mvc.support.RedirectAttributes redirectAttributes) {
     	System.out.println("Button Clicked: delete(quality master)");
@@ -97,6 +102,11 @@ public class QualityMasterController {
         CustomUserDetails userDetails =
                 (CustomUserDetails) authentication.getPrincipal();
         Long userId = userDetails.getId();
+
+        if (!passwordEncoder.matches(confirmPassword, userDetails.getPassword())) {
+            redirectAttributes.addFlashAttribute("error", "Incorrect password! Record was not deleted.");
+            return "redirect:/quality";
+        }
 
         QualityMasterEntity quality = service.findByIdAndUser(id, userId).orElse(null);
         if (quality != null) {

@@ -84,4 +84,8 @@ public class WalletService {
         transaction.setDescription(description);
         walletTransactionRepository.save(transaction);
     }
+
+    public java.util.List<WalletTransaction> getRecentTransactions(Long userId) {
+        return walletTransactionRepository.findTop5ByUserIdOrderByCreatedAtDesc(userId);
+    }
 }

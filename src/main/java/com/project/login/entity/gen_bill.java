@@ -33,6 +33,12 @@ public class gen_bill {
     @Column(name = "trader_name")
     private String traderName;
 
+    @Column(name = "weaver_id")
+    private Long weaverId;
+
+    @Column(name = "trader_id")
+    private Long traderId;
+
     @Column(name = "broker_name", nullable = false)
     private String brokerName;
 
@@ -177,6 +183,22 @@ public class gen_bill {
 
     public void setTraderName(String traderName) {
         this.traderName = traderName;
+    }
+
+    public Long getWeaverId() {
+        return weaverId;
+    }
+
+    public void setWeaverId(Long weaverId) {
+        this.weaverId = weaverId;
+    }
+
+    public Long getTraderId() {
+        return traderId;
+    }
+
+    public void setTraderId(Long traderId) {
+        this.traderId = traderId;
     }
 
     public String getBrokerName() {

@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
+
 <head>
     <th:block th:fragment="header-assets">
         <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
@@ -38,7 +39,8 @@
                 transition: all 0.3s ease;
             }
 
-            .nav-link:hover, .nav-link.active {
+            .nav-link:hover,
+            .nav-link.active {
                 color: #fff !important;
             }
 
@@ -53,23 +55,120 @@
                 transition: 0.3s;
             }
 
-            .nav-link:hover::after, .nav-link.active::after {
+            .nav-link:hover::after,
+            .nav-link.active::after {
                 width: calc(100% - 20px);
             }
 
-            .btn-logout {
-                background-color: #dc3545 !important;
-                border: none !important;
+            /* User Profile Dropdown Pill */
+            .profile-pill {
+                background: none;
+                border: none;
                 border-radius: 8px;
-                font-weight: 700;
-                padding: 6px 18px;
-                color: white !important;
-                transition: all 0.3s ease;
+                padding: 4px 8px;
+                display: flex;
+                align-items: center;
+                gap: 12px;
+                cursor: pointer;
+                text-decoration: none;
+                transition: all 0.2s ease;
+                text-align: left;
+                max-width: 320px;
             }
 
-            .btn-logout:hover {
-                background-color: #c82333 !important;
-                transform: scale(1.05);
+            .profile-pill::after {
+                display: none !important;
+            }
+
+            .profile-pill:hover, .profile-pill:focus {
+                background-color: rgba(255, 255, 255, 0.08);
+            }
+
+            .profile-avatar {
+                width: 38px;
+                height: 38px;
+                background-color: #007bff;
+                color: white;
+                border-radius: 50%;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                font-weight: 700;
+                font-size: 14px;
+                flex-shrink: 0;
+                box-shadow: 0 2px 5px rgba(0,0,0,0.15);
+            }
+
+            .profile-info {
+                display: flex;
+                flex-direction: column;
+                line-height: 1.2;
+            }
+
+            .profile-name {
+                font-weight: 700;
+                color: #ffffff;
+                font-size: 13px;
+                white-space: nowrap;
+                overflow: hidden;
+                text-overflow: ellipsis;
+            }
+
+            .profile-email {
+                color: rgba(255, 255, 255, 0.7);
+                font-size: 11px;
+                white-space: nowrap;
+                overflow: hidden;
+                text-overflow: ellipsis;
+            }
+
+            /* Profile Dropdown Menu */
+            .profile-dropdown-menu {
+                border-radius: 12px;
+                border: 1px solid rgba(0,0,0,0.08);
+                box-shadow: 0 10px 25px rgba(0,0,0,0.15);
+                padding: 12px 0;
+                min-width: 240px;
+                margin-top: 8px !important;
+            }
+
+            .profile-dropdown-header {
+                padding: 0 16px 8px 16px;
+                font-weight: 700;
+                font-size: 15px;
+                color: #1a2b4c;
+            }
+
+            .profile-dropdown-divider {
+                margin: 8px 0;
+                border-top: 1px solid #eaedea;
+            }
+
+            .profile-dropdown-item {
+                padding: 8px 16px;
+                font-weight: 600;
+                font-size: 13.5px;
+                color: #3b82f6 !important;
+                display: flex;
+                align-items: center;
+                gap: 10px;
+                transition: background-color 0.2s ease;
+                border: none;
+                background: none;
+                width: 100%;
+                text-align: left;
+            }
+
+            .profile-dropdown-item:hover {
+                background-color: #f1f5f9;
+            }
+
+            .profile-dropdown-item.sign-out-item {
+                color: #ef4444 !important;
+            }
+
+            .profile-dropdown-item.sign-out-item:hover {
+                background-color: #fef2f2;
             }
 
             .navbar-toggler {
@@ -93,7 +192,7 @@
                     font-size: 14px !important;
                     gap: 6px !important;
                 }
-                
+
                 .navbar-brand span {
                     font-size: 14px !important;
                 }
@@ -105,27 +204,171 @@
                     border-top: 1px solid rgba(255, 255, 255, 0.1);
                     margin-top: 0.5rem;
                 }
-                
+
                 .nav-item {
                     border-bottom: 1px solid rgba(255, 255, 255, 0.05);
                 }
-                
+
                 .nav-item:last-child {
                     border-bottom: none;
                 }
 
-                .logout-form {
-                    margin-top: 1rem;
-                    text-align: center;
+                /* Mobile profile card styling */
+                .mobile-profile-card {
+                    background-color: rgba(255, 255, 255, 0.06);
+                    border: 1px solid rgba(255, 255, 255, 0.1);
+                    border-radius: 14px;
+                    padding: 16px;
+                    margin-top: 1.5rem;
                 }
-                
-                .btn-logout {
+
+                .mobile-profile-header {
+                    display: flex;
+                    align-items: center;
+                    gap: 12px;
+                    margin-bottom: 14px;
+                }
+
+                .mobile-profile-avatar {
+                    width: 44px;
+                    height: 44px;
+                    background-color: #007bff;
+                    color: white;
+                    border-radius: 50%;
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                    font-weight: 700;
+                    font-size: 16px;
+                    flex-shrink: 0;
+                    box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+                }
+
+                .mobile-profile-info {
+                    display: flex;
+                    flex-direction: column;
+                    line-height: 1.3;
+                    text-align: left;
+                }
+
+                .mobile-profile-name {
+                    font-weight: 700;
+                    color: #ffffff;
+                    font-size: 15px;
+                }
+
+                .mobile-profile-email {
+                    color: rgba(255, 255, 255, 0.6);
+                    font-size: 12px;
+                    word-break: break-all;
+                }
+
+                .mobile-profile-actions {
+                    display: flex;
+                    flex-direction: column;
+                    gap: 8px;
+                    border-top: 1px solid rgba(255, 255, 255, 0.1);
+                    padding-top: 12px;
+                }
+
+                .mobile-action-btn {
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                    gap: 8px;
+                    font-weight: 600;
+                    font-size: 13px;
+                    padding: 10px;
+                    border-radius: 8px;
+                    text-decoration: none;
+                    transition: all 0.2s ease;
                     width: 100%;
+                    border: none;
+                    outline: none;
                 }
+
+                .mobile-action-btn-settings {
+                    background-color: rgba(255, 255, 255, 0.1);
+                    color: #ffffff !important;
+                }
+
+                .mobile-action-btn-settings:hover {
+                    background-color: rgba(255, 255, 255, 0.15);
+                }
+
+                .mobile-action-btn-logout {
+                    background-color: #ef4444;
+                    color: #ffffff !important;
+                }
+
+                .mobile-action-btn-logout:hover {
+                    background-color: #dc2626;
+                }
+            }
+
+            /* Custom Pagination Styles */
+            .page-btn {
+                border: 1px solid #cbd5e0 !important;
+                border-radius: 6px !important;
+                background: #f8f9fa !important;
+                color: #4b5563 !important;
+                font-weight: 600 !important;
+                padding: 4px 10px !important;
+                font-size: 12px !important;
+                transition: all 0.3s ease !important;
+                box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05) !important;
+                display: inline-flex !important;
+                align-items: center !important;
+                justify-content: center !important;
+                height: 32px !important;
+                text-decoration: none !important;
+            }
+
+            .page-btn:hover {
+                background: #e2e8f0 !important;
+                color: #1f2933 !important;
+                transform: translateY(-1px) !important;
+                border-color: #cbd5e0 !important;
+            }
+
+            .page-btn.disabled,
+            .page-btn:disabled {
+                background: #f1f3f5 !important;
+                color: #adb5bd !important;
+                border-color: #e2e8f0 !important;
+                box-shadow: none !important;
+                pointer-events: none !important;
+                opacity: 0.65 !important;
+            }
+
+            .page-select-btn {
+                border: 1px solid #cbd5e0 !important;
+                border-radius: 6px !important;
+                background: #f8f9fa !important;
+                color: #4b5563 !important;
+                font-weight: 600 !important;
+                padding: 4px 12px !important;
+                font-size: 12px !important;
+                transition: all 0.3s ease !important;
+                box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05) !important;
+                height: 32px !important;
+            }
+
+            .page-select-btn:hover {
+                background: #e2e8f0 !important;
+                color: #1f2933 !important;
+                transform: translateY(-1px) !important;
+                border-color: #cbd5e0 !important;
+            }
+
+            .page-dropdown-menu .dropdown-item.active {
+                background: linear-gradient(135deg, #667eea 0%, #764ba2 100%) !important;
+                color: white !important;
             }
         </style>
     </th:block>
 </head>
+
 <body>
 
     <nav th:fragment="navbar" class="navbar navbar-dark navbar-expand-lg sticky-top">
@@ -144,14 +387,16 @@
                     <li class="nav-item">
                         <a class="nav-link" href="/dashboard">Dashboard</a>
                     </li>
-                    
+
                     <li class="nav-item dropdown">
                         <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown">
                             Master
                         </a>
                         <ul class="dropdown-menu dropdown-menu-dark">
                             <li><a class="dropdown-item" href="/weaver-trader">Weaver / Trader</a></li>
-                            <li><hr class="dropdown-divider"></li>
+                            <li>
+                                <hr class="dropdown-divider">
+                            </li>
                             <li><a class="dropdown-item" href="/quality">Quality</a></li>
                         </ul>
                     </li>
@@ -159,27 +404,80 @@
                     <li class="nav-item">
                         <a class="nav-link" href="/gen-bill">Job Contract</a>
                     </li>
-                    
+
                     <li class="nav-item">
                         <a class="nav-link" href="/report">Report</a>
                     </li>
                 </ul>
 
-                <form action="/logout" method="post" class="logout-form">
-                    <button type="submit" class="btn btn-logout">Logout</button>
-                </form>
+                <!-- Desktop Profile Dropdown (visible only on lg screens and up) -->
+                <div class="d-none d-lg-block dropdown ms-lg-3">
+                    <a class="profile-pill dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false"
+                       th:with="fullName=${#authentication != null and #authentication.principal != null ? #authentication.principal.name : 'User'}, 
+                                emailName=${#authentication != null and #authentication.principal != null ? #authentication.principal.username : 'user@example.com'}">
+                        <div class="profile-avatar" th:with="parts=${#strings.arraySplit(fullName, ' ')}">
+                            <span th:text="${#arrays.length(parts) > 1 ? (#strings.substring(parts[0],0,1) + #strings.substring(parts[1],0,1)).toUpperCase() : (#strings.length(fullName) > 1 ? #strings.substring(fullName,0,2).toUpperCase() : (#strings.length(fullName) > 0 ? #strings.substring(fullName,0,1).toUpperCase() : 'U'))}">AH</span>
+                        </div>
+                        <div class="profile-info">
+                            <span class="profile-name" th:text="${fullName}">Akash</span>
+                            <span class="profile-email" th:text="${emailName}">akashmahato1945@gmail.com</span>
+                        </div>
+                    </a>
+                    <ul class="dropdown-menu dropdown-menu-end profile-dropdown-menu">
+                        <li><div class="profile-dropdown-header">My Account</div></li>
+                        <li><hr class="profile-dropdown-divider"></li>
+                        <li>
+                            <a class="dropdown-item profile-dropdown-item" href="/forgot-password">
+                                <i class="bi bi-gear text-primary"></i> Change password
+                            </a>
+                        </li>
+                        <li>
+                            <button class="dropdown-item profile-dropdown-item sign-out-item" onclick="document.getElementById('desktop-logout-form').submit();">
+                                <i class="bi bi-box-arrow-right text-danger"></i> Sign-out
+                            </button>
+                            <form id="desktop-logout-form" action="/logout" method="post" style="display: none;"></form>
+                        </li>
+                    </ul>
+                </div>
+
+                <!-- Mobile Profile Card (visible only on screens smaller than lg) -->
+                <div class="d-block d-lg-none mobile-profile-card"
+                     th:with="fullName=${#authentication != null and #authentication.principal != null ? #authentication.principal.name : 'User'}, 
+                              emailName=${#authentication != null and #authentication.principal != null ? #authentication.principal.username : 'user@example.com'}">
+                    <div class="mobile-profile-header">
+                        <div class="mobile-profile-avatar" th:with="parts=${#strings.arraySplit(fullName, ' ')}">
+                            <span th:text="${#arrays.length(parts) > 1 ? (#strings.substring(parts[0],0,1) + #strings.substring(parts[1],0,1)).toUpperCase() : (#strings.length(fullName) > 1 ? #strings.substring(fullName,0,2).toUpperCase() : (#strings.length(fullName) > 0 ? #strings.substring(fullName,0,1).toUpperCase() : 'U'))}">AH</span>
+                        </div>
+                        <div class="mobile-profile-info">
+                            <span class="mobile-profile-name" th:text="${fullName}">Akash</span>
+                            <span class="mobile-profile-email" th:text="${emailName}">akashmahato1945@gmail.com</span>
+                        </div>
+                    </div>
+                    <div class="mobile-profile-actions">
+                        <a class="mobile-action-btn mobile-action-btn-settings" href="/forgot-password">
+                            <i class="bi bi-gear"></i> Change password
+                        </a>
+                        <button class="mobile-action-btn mobile-action-btn-logout" onclick="document.getElementById('mobile-logout-form').submit();">
+                            <i class="bi bi-box-arrow-right"></i> Sign-out
+                        </button>
+                        <form id="mobile-logout-form" action="/logout" method="post" style="display: none;"></form>
+                    </div>
+                </div>
             </div>
         </div>
     </nav>
 
-    <footer th:fragment="footer" style="margin-top: auto; border-top: 1px solid rgba(0,0,0,0.05); background: rgba(255,255,255,0.8);">
+    <footer th:fragment="footer"
+        style="margin-top: auto; border-top: 1px solid rgba(0,0,0,0.05); background: rgba(255,255,255,0.8);">
         <div class="container text-center py-3">
             <p class="mb-0" style="font-size: 0.75rem; color: #666; font-weight: 500; letter-spacing: 0.5px;">
-                © <span th:text="${#calendars.year(#calendars.createNow())}">2024</span> All Rights Reserved <span style="color: #1f2a30; font-weight: 700;">ShreeGuru Software Solution</span>. V:1.1
+                © <span th:text="${#calendars.year(#calendars.createNow())}">2024</span> All Rights Reserved <span
+                    style="color: #1f2a30; font-weight: 700;">ShreeGuru Software Solution</span>. V:2.0
             </p>
         </div>
         <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
     </footer>
 
 </body>
+
 </html>

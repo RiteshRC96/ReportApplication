@@ -74,7 +74,6 @@ public class ReportController {
                         @RequestParam(required = false) String traderName,
                         @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate fromDate,
                         @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate toDate,
-                        @RequestParam(defaultValue = "0") int page,
                         Model model) {
 
                 Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
@@ -91,25 +90,15 @@ public class ReportController {
                                 fromDate,
                                 toDate);
 
-                // ... (pagination logic) ...
-                int pageSize = 7;
-                int start = page * pageSize;
-                int end = Math.min(start + pageSize, allReports.size());
-
-                List<gen_bill> paginatedReports = allReports.subList(start, end);
-                int totalPages = (int) Math.ceil((double) allReports.size() / pageSize);
-
                 // ✅ Add Wallet Balance
                 Double walletBalance = walletService.getBalance(userId);
                 model.addAttribute("walletBalance", walletBalance);
 
-                model.addAttribute("reports", paginatedReports);
+                model.addAttribute("reports", allReports);
                 model.addAttribute("weaverName", weaverName);
                 model.addAttribute("traderName", traderName);
                 model.addAttribute("fromDate", fromDate);
                 model.addAttribute("toDate", toDate);
-                model.addAttribute("currentPage", page);
-                model.addAttribute("totalPages", totalPages);
 
                 return "report";
         }
@@ -120,6 +109,7 @@ public class ReportController {
                         @RequestParam(required = false) String traderName,
                         @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate fromDate,
                         @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate toDate,
+                        @RequestParam(required = false) List<Integer> contractNos,
                         HttpServletResponse response) throws IOException {
 
                 Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
@@ -128,12 +118,17 @@ public class ReportController {
 
                 Long userId = userDetails.getId();
 
-                List<gen_bill> data = jobContractService.searchReportsByUser(
-                                userId,
-                                weaverName,
-                                traderName,
-                                fromDate,
-                                toDate);
+                List<gen_bill> data;
+                if (contractNos != null && !contractNos.isEmpty()) {
+                        data = jobContractService.getContractsByContractNos(userId, contractNos);
+                } else {
+                        data = jobContractService.searchReportsByUser(
+                                        userId,
+                                        weaverName,
+                                        traderName,
+                                        fromDate,
+                                        toDate);
+                }
 
                 Workbook workbook = new XSSFWorkbook();
                 Sheet sheet = workbook.createSheet("Job Contract Report");
@@ -198,7 +193,8 @@ public class ReportController {
                         @RequestParam(required = false) String weaverName,
                         @RequestParam(required = false) String traderName,
                         @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate fromDate,
-                        @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate toDate) {
+                        @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate toDate,
+                        @RequestParam(required = false) List<Integer> contractNos) {
 
                 Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 
@@ -206,12 +202,17 @@ public class ReportController {
 
                 Long userId = userDetails.getId();
 
-                List<gen_bill> data = jobContractService.searchReportsByUser(
-                                userId,
-                                weaverName,
-                                traderName,
-                                fromDate,
-                                toDate);
+                List<gen_bill> data;
+                if (contractNos != null && !contractNos.isEmpty()) {
+                        data = jobContractService.getContractsByContractNos(userId, contractNos);
+                } else {
+                        data = jobContractService.searchReportsByUser(
+                                        userId,
+                                        weaverName,
+                                        traderName,
+                                        fromDate,
+                                        toDate);
+                }
 
                 ByteArrayInputStream pdf = jobContractPdfService.export(data);
 

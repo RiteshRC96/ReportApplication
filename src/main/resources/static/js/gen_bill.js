@@ -16,19 +16,56 @@ const form = document.getElementById("billForm");
 const loader = document.getElementById("loadingOverlay");
 const submitBtn = document.getElementById("generateContractBtn"); // Changed from submitBtn to match HTML ID
 
+// Custom matcher to normalize multiple spaces to a single space during search
+function select2NormalizeSpacingMatcher(params, data) {
+    if ($.trim(params.term) === '') {
+        return data;
+    }
+
+    if (typeof data.text === 'undefined') {
+        return null;
+    }
+
+    // Handle children (optgroup)
+    if (data.children && data.children.length > 0) {
+        var match = $.extend(true, {}, data);
+        for (var c = data.children.length - 1; c >= 0; c--) {
+            var child = data.children[c];
+            var matches = select2NormalizeSpacingMatcher(params, child);
+            if (matches == null) {
+                match.children.splice(c, 1);
+            }
+        }
+        if (match.children.length > 0) {
+            return match;
+        }
+        return select2NormalizeSpacingMatcher(params, match);
+    }
+
+    const term = $.trim(params.term).toLowerCase().replace(/\s+/g, ' ');
+    const text = $.trim(data.text).toLowerCase().replace(/\s+/g, ' ');
+
+    if (text.indexOf(term) > -1) {
+        return data;
+    }
+
+    return null;
+}
+
 // Initialize Select2 and event listeners
 $(document).ready(function() {
     $('.searchable').select2({
         placeholder: "Search here...",
-        allowClear: true
+        allowClear: true,
+        matcher: select2NormalizeSpacingMatcher
     });
 
     // Auto-fill Weaver Brokerage on weaver selection
     $('#weaverSelect').on('select2:select', function(e) {
-        const weaverName = $(this).val();
-        console.log("Weaver selected:", weaverName);
-        if (weaverName) {
-            const url = `/api/weaver-details/${encodeURIComponent(weaverName)}`;
+        const weaverId = $(this).val();
+        console.log("Weaver selected ID:", weaverId);
+        if (weaverId) {
+            const url = `/api/weaver-details/${encodeURIComponent(weaverId)}`;
             console.log("Fetching from:", url);
             fetch(url)
                 .then(res => {
@@ -188,6 +225,56 @@ document.addEventListener("DOMContentLoaded", function() {
 form.addEventListener("submit", function (e) {
     e.preventDefault();
 
+    // Check if we are in Edit Mode
+    const editModeVal = document.getElementById("editMode")?.value;
+    const isEditMode = editModeVal === "true";
+    const contractNo = document.querySelector('input[name="contractNo"]')?.value;
+
+    if (!isEditMode && contractNo) {
+        submitBtn.disabled = true;
+        loader.style.display = "flex";
+
+        fetch(`/api/check-contract-exists?contractNo=${encodeURIComponent(contractNo)}`)
+            .then(res => {
+                if (!res.ok) throw new Error("Could not verify contract number");
+                return res.json();
+            })
+            .then(exists => {
+                loader.style.display = "none";
+                submitBtn.disabled = false;
+
+                if (exists) {
+                    Swal.fire({
+                        title: `Contract No. ${contractNo} already exists.`,
+                        text: "Clicking Save will update the existing contract instead of creating a new one. Do you want to continue?",
+                        icon: "warning",
+                        showCancelButton: true,
+                        confirmButtonText: "Save",
+                        cancelButtonText: "Cancel",
+                        confirmButtonColor: "#39d98a",
+                        cancelButtonColor: "#dc3545"
+                    }).then((result) => {
+                        if (result.isConfirmed) {
+                            executeFormSubmit();
+                        }
+                    });
+                } else {
+                    executeFormSubmit();
+                }
+            })
+            .catch(err => {
+                loader.style.display = "none";
+                submitBtn.disabled = false;
+                console.error("Error checking contract existence:", err);
+                // In case of error, fall back to submit
+                executeFormSubmit();
+            });
+    } else {
+        executeFormSubmit();
+    }
+});
+
+function executeFormSubmit() {
     submitBtn.disabled = true;
     loader.style.display = "flex";
 
@@ -234,6 +321,12 @@ form.addEventListener("submit", function (e) {
                 // Change URL to edit mode without reloading the page
                 window.history.replaceState({}, '', `/gen-bill/edit/${userId}/${contractNo}`);
                 
+                // Update the hidden input value so subsequent saves do not trigger warning
+                const editModeInput = document.getElementById("editMode");
+                if (editModeInput) {
+                    editModeInput.value = "true";
+                }
+                
                 // CALL THE GENERATION FUNCTION DIRECTLY WITHOUT INTERMEDIATE POPUP
                 if (typeof generateContractImage === "function") {
                     generateContractImage();
@@ -256,7 +349,7 @@ form.addEventListener("submit", function (e) {
         console.error("Error:", err);
         Swal.fire("Error", "Error: " + err.message, "error");
     });
-});
+}
 
 // =====================================================
 // QUALITY AUTO-GENERATION
@@ -293,6 +386,11 @@ function generateQualityName() {
 
 document.getElementById("addWeaverForm")?.addEventListener("submit", function(e) {
     e.preventDefault();
+    const submitBtn = this.querySelector('button[type="submit"]');
+    const originalText = submitBtn.innerHTML;
+    submitBtn.disabled = true;
+    submitBtn.innerHTML = '<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> Adding...';
+
     const formData = new FormData(this);
     const params = new URLSearchParams();
     params.append("name", formData.get("weaver_name"));
@@ -307,17 +405,19 @@ document.getElementById("addWeaverForm")?.addEventListener("submit", function(e)
     })
     .then(res => res.json())
     .then(data => {
+        submitBtn.disabled = false;
+        submitBtn.innerHTML = originalText;
         if (data.error) {
             Swal.fire("Error", data.error, "error");
         } else {
             // Add to weaver dropdown
             const option = document.createElement("option");
-            option.value = data.name;
+            option.value = data.id;
             option.text = data.name;
             document.getElementById("weaverSelect").appendChild(option);
             
             // Select the new weaver
-            $("#weaverSelect").val(data.name).trigger("change");
+            $("#weaverSelect").val(data.id).trigger("change");
 
             // Manually set brokerage values and recalculate
             document.getElementById("weaverBrokeragePercent").value = data.brokeragePercent || 0;
@@ -332,6 +432,8 @@ document.getElementById("addWeaverForm")?.addEventListener("submit", function(e)
         }
     })
     .catch(err => {
+        submitBtn.disabled = false;
+        submitBtn.innerHTML = originalText;
         Swal.fire("Error", "Failed to add weaver: " + err.message, "error");
     });
 });
@@ -342,6 +444,11 @@ document.getElementById("addWeaverForm")?.addEventListener("submit", function(e)
 
 document.getElementById("addTraderForm")?.addEventListener("submit", function(e) {
     e.preventDefault();
+    const submitBtn = this.querySelector('button[type="submit"]');
+    const originalText = submitBtn.innerHTML;
+    submitBtn.disabled = true;
+    submitBtn.innerHTML = '<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> Adding...';
+
     const formData = new FormData(this);
     const params = new URLSearchParams();
     params.append("name", formData.get("trader_name"));
@@ -355,17 +462,19 @@ document.getElementById("addTraderForm")?.addEventListener("submit", function(e)
     })
     .then(res => res.json())
     .then(data => {
+        submitBtn.disabled = false;
+        submitBtn.innerHTML = originalText;
         if (data.error) {
             Swal.fire("Error", data.error, "error");
         } else {
             // Add to trader dropdown
             const option = document.createElement("option");
-            option.value = data.name;
+            option.value = data.id;
             option.text = data.name;
             document.getElementById("traderSelect").appendChild(option);
             
             // Select the new trader
-            $("#traderSelect").val(data.name).trigger("change");
+            $("#traderSelect").val(data.id).trigger("change");
             
             // Close modal and reset form
             bootstrap.Modal.getInstance(document.getElementById("addTraderModal")).hide();
@@ -375,6 +484,8 @@ document.getElementById("addTraderForm")?.addEventListener("submit", function(e)
         }
     })
     .catch(err => {
+        submitBtn.disabled = false;
+        submitBtn.innerHTML = originalText;
         Swal.fire("Error", "Failed to add trader: " + err.message, "error");
     });
 });
@@ -394,6 +505,11 @@ document.getElementById("addQualityForm")?.addEventListener("submit", function(e
         return;
     }
     
+    const submitBtn = this.querySelector('button[type="submit"]');
+    const originalText = submitBtn.innerHTML;
+    submitBtn.disabled = true;
+    submitBtn.innerHTML = '<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> Adding...';
+
     const formData = new FormData(this);
     const params = new URLSearchParams();
     params.append("qualityName", formData.get("quality_name"));
@@ -420,6 +536,8 @@ document.getElementById("addQualityForm")?.addEventListener("submit", function(e
         return res.json();
     })
     .then(data => {
+        submitBtn.disabled = false;
+        submitBtn.innerHTML = originalText;
         if (data.error) {
             console.error("✗ API Error:", data.error);
             Swal.fire("Error", data.error, "error");
@@ -452,6 +570,8 @@ document.getElementById("addQualityForm")?.addEventListener("submit", function(e
         }
     })
     .catch(err => {
+        submitBtn.disabled = false;
+        submitBtn.innerHTML = originalText;
         console.error("✗ Error adding quality:", err);
         Swal.fire("Error", "Failed to add quality: " + err.message, "error");
     });

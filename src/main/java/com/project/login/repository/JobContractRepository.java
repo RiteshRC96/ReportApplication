@@ -107,5 +107,22 @@ public interface JobContractRepository extends JpaRepository<gen_bill, Long> {
 
     boolean existsByWeaverNameAndUserId(String weaverName, Long userId);
     boolean existsByTraderNameAndUserId(String traderName, Long userId);
+    boolean existsByWeaverIdAndUserId(Long weaverId, Long userId);
+    boolean existsByTraderIdAndUserId(Long traderId, Long userId);
     boolean existsByQualityAndUserId(String quality, Long userId);
+
+    List<gen_bill> findTop5ByUserIdAndIsDeletedFalseOrderByCreatedAtDesc(Long userId);
+    long countByUserIdAndIsDeletedFalse(Long userId);
+
+    @Query("""
+        SELECT j FROM gen_bill j
+        WHERE j.userId = :userId
+          AND j.contractNo IN :contractNos
+          AND j.isDeleted = false
+        ORDER BY j.contractNo DESC
+    """)
+    List<gen_bill> findByUserIdAndContractNoIn(
+            @Param("userId") Long userId,
+            @Param("contractNos") List<Integer> contractNos
+    );
 }

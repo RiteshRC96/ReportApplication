@@ -11,7 +11,10 @@ import org.springframework.web.bind.annotation.GetMapping;
 import com.project.login.entity.User;
 import com.project.login.repository.UserRepository;
 import com.project.security.CustomUserDetails;
+import com.project.security.JwtTokenProvider;
 
+import jakarta.servlet.http.Cookie;
+import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
 
 @Controller
@@ -19,11 +22,15 @@ public class GoogleAuthController {
 	
 	@Autowired
 	private UserRepository userRepository;
+
+	@Autowired
+	private JwtTokenProvider tokenProvider;
 	
 	@GetMapping("/google-success")
 	public String googleLogin(
 			Authentication authentication,
-			HttpSession session
+			HttpSession session,
+			HttpServletResponse response
 			) {
 		OAuth2User oauthUser = (OAuth2User) authentication.getPrincipal();
 		
@@ -45,6 +52,15 @@ public class GoogleAuthController {
 		SecurityContextHolder.getContext().setAuthentication(auth);
 		
 		session.setAttribute("loggedInUser", user);
+
+		// Generate JWT token and set in cookie
+		String token = tokenProvider.generateToken(email);
+		Cookie jwtCookie = new Cookie("jwt-token", token);
+		jwtCookie.setHttpOnly(true);
+		jwtCookie.setSecure(false); // set to true if HTTPS is used
+		jwtCookie.setPath("/");
+		jwtCookie.setMaxAge(30 * 24 * 60 * 60); // 30 days
+		response.addCookie(jwtCookie);
 		
 		return "redirect:/dashboard";
 	}

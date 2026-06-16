@@ -7,13 +7,13 @@
     <title>Dashboard</title>
     <link rel="icon" type="image/png" th:href="@{/favicon.png}">
 
-
+    <!-- Replace standard header assets -->
     <link th:replace="~{fragments :: header-assets}">
 
     <style>
         body {
-            background: #eef2f5;
-            font-family: 'Segoe UI', sans-serif;
+            background: #f4f7f6;
+            font-family: 'Inter', 'Segoe UI', sans-serif;
             display: flex;
             flex-direction: column;
             min-height: 100vh;
@@ -21,100 +21,159 @@
 
         main {
             flex: 1;
-            padding: 20px 15px;
+            padding: 24px 16px;
         }
 
-        /* DASHBOARD BOX */
-        .dashboard-box {
-            width: 100%;
-            max-width: 500px;
-            margin: 40px auto;
-            padding: 40px 20px;
-            border-radius: 30px;
-            background: linear-gradient(135deg, #cfe9ef, #d9f0f5);
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
-            border: 4px solid #ff7a2f;
-            text-align: center;
-        }
-
-        /* TYPEWRITER */
         .typewriter {
-            font-size: 28px;
-            font-weight: 600;
-            color: #333;
+            font-size: 24px;
+            font-weight: 700;
+            color: #fff;
             white-space: nowrap;
             overflow: hidden;
-            border-right: 3px solid #333;
+            border-right: 3px solid #39d98a;
             width: fit-content;
-            margin: 0 auto 40px auto;
             animation: blinkCursor 0.8s infinite;
         }
 
-        @media (max-width: 576px) {
-            .typewriter {
-                font-size: 20px;
-            }
-
-            .dashboard-box {
-                padding: 30px 15px;
-                margin: 20px auto;
-            }
-        }
-
         @keyframes blinkCursor {
-            0% {
+
+            0%,
+            100% {
                 border-color: transparent;
             }
 
             50% {
-                border-color: #333;
-            }
-
-            100% {
-                border-color: transparent;
+                border-color: #39d98a;
             }
         }
 
-        /* WALLET */
-        .wallet-card {
-            width: 100%;
-            max-width: 320px;
-            margin: auto;
-            border-radius: 15px;
-            overflow: hidden;
-            display: flex;
-            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+        /* METRIC CARDS */
+        .metric-card {
+            border-radius: 14px;
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+            background: #fff;
         }
 
-        .wallet-left {
-            background: linear-gradient(135deg, #1f2a30, #2c3e50);
-            color: white;
-            padding: 15px;
-            flex: 1;
-            text-align: left;
+        .metric-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.06) !important;
         }
 
-        .wallet-right {
-            background: #2c3e50;
+        .icon-wrapper {
+            width: 48px;
+            height: 48px;
+            border-radius: 10px;
             display: flex;
             align-items: center;
             justify-content: center;
-            padding: 10px;
+            flex-shrink: 0;
         }
 
-        .btn-add-money {
+        .bg-primary-light {
+            background-color: rgba(13, 110, 253, 0.1);
+        }
+
+        .bg-success-light {
+            background-color: rgba(57, 217, 138, 0.15);
+        }
+
+        .bg-info-light {
+            background-color: rgba(13, 202, 240, 0.1);
+        }
+
+        .bg-warning-light {
+            background-color: rgba(255, 193, 7, 0.15);
+        }
+
+        .bg-danger-light {
+            background-color: rgba(220, 53, 69, 0.1);
+        }
+
+        .text-success {
+            color: #2e8b57 !important;
+        }
+
+        .ls-wide {
+            letter-spacing: 0.8px;
+        }
+
+        .font-xs {
+            font-size: 0.75rem;
+        }
+
+        /* QUICK ACTIONS */
+        .action-card {
+            border-radius: 12px;
             background: #fff;
-            color: #1f2a30;
-            font-weight: 600;
-            border-radius: 10px;
-            padding: 8px 18px;
-            border: none;
-            transition: 0.3s;
+            border: 1px solid rgba(0, 0, 0, 0.05);
+            transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+            text-decoration: none;
+            color: #333;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 20px 10px;
+            text-align: center;
         }
 
-        .btn-add-money:hover {
-            background: #39d98a;
-            color: black;
+        .action-card:hover {
+            background: #e2eaf4;
+            color: #0f2d59;
+            border-color: rgba(13, 110, 253, 0.2);
+            transform: translateY(-3px);
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.08);
+        }
+
+        .action-card i {
+            font-size: 1.8rem;
+            margin-bottom: 8px;
+            transition: transform 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .action-card:hover i {
+            transform: scale(1.1);
+        }
+
+        /* TX BADGE */
+        .tx-badge {
+            width: 38px;
+            height: 38px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.25rem;
+        }
+
+        /* MOBILE ADJUSTMENTS */
+        @media (max-width: 576px) {
+            .typewriter {
+                font-size: 18px;
+            }
+
+            .welcome-banner {
+                padding: 16px !important;
+            }
+
+            main {
+                padding: 16px 8px;
+            }
+
+            .metric-card .card-body {
+                padding: 12px 16px;
+            }
+
+            .action-card {
+                padding: 15px 5px;
+            }
+
+            .action-card i {
+                font-size: 1.5rem;
+            }
+
+            .action-card span {
+                font-size: 0.8rem;
+            }
         }
     </style>
 </head>
@@ -123,28 +182,231 @@
 
     <nav th:replace="~{fragments :: navbar}"></nav>
 
-    <main>
+    <main class="container-fluid max-width-1200 px-3 px-md-4">
 
-        <!-- DASHBOARD BOX -->
-        <div class="dashboard-box">
-
-            <!-- TYPEWRITER -->
-            <div id="typewriter" class="typewriter"></div>
-
-            <!-- WALLET -->
-            <div class="wallet-card">
-                <div class="wallet-left">
-                    <small style="opacity:0.7;">WALLET BALANCE</small>
-                    <h2>₹ <span th:text="${#numbers.formatDecimal(walletBalance,1,2)}">0.00</span></h2>
-                </div>
-
-                <div class="wallet-right">
-                    <a href="/payment" class="btn btn-add-money">
-                        <i class="bi bi-plus-lg"></i> Add Money
-                    </a>
+        <!-- METRICS ROW -->
+        <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 row-cols-lg-5 g-3 mb-4">
+            <!-- Wallet Card -->
+            <div class="col">
+                <div class="card h-100 border-0 shadow-sm metric-card" style="border-left: 4px solid #39d98a;">
+                    <div class="card-body d-flex align-items-center">
+                        <div class="icon-wrapper me-3 text-success bg-success-light">
+                            <i class="bi bi-wallet2 fs-4"></i>
+                        </div>
+                        <div>
+                            <span class="text-muted text-uppercase ls-wide font-xs fw-semibold d-block">Wallet</span>
+                            <h4 class="mb-0 fw-bold text-dark">₹ <span
+                                    th:text="${#numbers.formatDecimal(walletBalance,1,2)}">0.00</span></h4>
+                            <a href="/payment"
+                                class="text-success font-xs fw-bold text-decoration-none mt-1 d-inline-block">
+                                Add Funds <i class="bi bi-plus-circle-fill ms-1"></i>
+                            </a>
+                        </div>
+                    </div>
                 </div>
             </div>
 
+            <!-- Weavers Count Card -->
+            <div class="col">
+                <div class="card h-100 border-0 shadow-sm metric-card" style="border-left: 4px solid #0d6efd;">
+                    <div class="card-body d-flex align-items-center">
+                        <div class="icon-wrapper me-3 text-primary bg-primary-light">
+                            <i class="bi bi-people fs-4"></i>
+                        </div>
+                        <div>
+                            <span class="text-muted text-uppercase ls-wide font-xs fw-semibold d-block">Weavers</span>
+                            <h4 class="mb-0 fw-bold text-dark" th:text="${weaverCount}">0</h4>
+                            <a href="/weaver-trader"
+                                class="text-primary font-xs fw-bold text-decoration-none mt-1 d-inline-block">
+                                View Master <i class="bi bi-arrow-right-short"></i>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Traders Count Card -->
+            <div class="col">
+                <div class="card h-100 border-0 shadow-sm metric-card" style="border-left: 4px solid #0dcaf0;">
+                    <div class="card-body d-flex align-items-center">
+                        <div class="icon-wrapper me-3 text-info bg-info-light">
+                            <i class="bi bi-person-badge fs-4"></i>
+                        </div>
+                        <div>
+                            <span class="text-muted text-uppercase ls-wide font-xs fw-semibold d-block">Traders</span>
+                            <h4 class="mb-0 fw-bold text-dark" th:text="${traderCount}">0</h4>
+                            <a href="/weaver-trader"
+                                class="text-info font-xs fw-bold text-decoration-none mt-1 d-inline-block">
+                                View Master <i class="bi bi-arrow-right-short"></i>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Quality Count Card -->
+            <div class="col">
+                <div class="card h-100 border-0 shadow-sm metric-card" style="border-left: 4px solid #ffc107;">
+                    <div class="card-body d-flex align-items-center">
+                        <div class="icon-wrapper me-3 text-warning bg-warning-light">
+                            <i class="bi bi-patch-check fs-4"></i>
+                        </div>
+                        <div>
+                            <span class="text-muted text-uppercase ls-wide font-xs fw-semibold d-block">Qualities</span>
+                            <h4 class="mb-0 fw-bold text-dark" th:text="${qualityCount}">0</h4>
+                            <a href="/quality"
+                                class="text-warning font-xs fw-bold text-decoration-none mt-1 d-inline-block">
+                                View Master <i class="bi bi-arrow-right-short"></i>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Contracts Count Card -->
+            <div class="col">
+                <div class="card h-100 border-0 shadow-sm metric-card" style="border-left: 4px solid #dc3545;">
+                    <div class="card-body d-flex align-items-center">
+                        <div class="icon-wrapper me-3 text-danger bg-danger-light">
+                            <i class="bi bi-file-earmark-text fs-4"></i>
+                        </div>
+                        <div>
+                            <span class="text-muted text-uppercase ls-wide font-xs fw-semibold d-block">Contracts</span>
+                            <h4 class="mb-0 fw-bold text-dark" th:text="${contractCount}">0</h4>
+                            <a href="/report"
+                                class="text-danger font-xs fw-bold text-decoration-none mt-1 d-inline-block">
+                                View Reports <i class="bi bi-arrow-right-short"></i>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- QUICK ACTIONS ROW -->
+        <h5 class="fw-bold mb-3 text-dark text-uppercase font-xs ls-wide"><i
+                class="bi bi-lightning-charge-fill text-warning me-1"></i> Quick Actions</h5>
+        <div class="row row-cols-2 row-cols-sm-2 row-cols-md-4 g-3 mb-4">
+            <div class="col">
+                <a href="/gen-bill" class="action-card shadow-sm h-100">
+                    <i class="bi bi-file-earmark-plus text-primary"></i>
+                    <span class="fw-semibold">New Job Contract</span>
+                </a>
+            </div>
+            <div class="col">
+                <a href="/weaver-trader/create" class="action-card shadow-sm h-100">
+                    <i class="bi bi-person-plus text-success"></i>
+                    <span class="fw-semibold">Add Weaver / Trader</span>
+                </a>
+            </div>
+            <div class="col">
+                <a href="/quality/create" class="action-card shadow-sm h-100">
+                    <i class="bi bi-plus-square text-warning"></i>
+                    <span class="fw-semibold">Add Quality Master</span>
+                </a>
+            </div>
+            <div class="col">
+                <a href="/report" class="action-card shadow-sm h-100">
+                    <i class="bi bi-bar-chart-line text-info"></i>
+                    <span class="fw-semibold">View Reports</span>
+                </a>
+            </div>
+        </div>
+
+        <!-- RECENT DATA ROWS (STACKS FOR MOBILE, SIDE-BY-SIDE FOR DESKTOP) -->
+        <div class="row">
+            <!-- Recent Job Contracts Table -->
+            <div class="col-12 col-xl-7 mb-4">
+                <div class="card border-0 shadow-sm h-100">
+                    <div class="card-header bg-white border-0 py-3 d-flex justify-content-between align-items-center">
+                        <h6 class="mb-0 fw-bold text-dark"><i class="bi bi-clock-history me-1 text-primary"></i> Recent
+                            Job Contracts</h6>
+                        <a href="/report" class="btn btn-sm btn-outline-primary px-3 rounded-pill"
+                            style="font-size: 0.75rem;">View All</a>
+                    </div>
+                    <div class="card-body p-0">
+                        <div class="table-responsive">
+                            <table class="table table-hover align-middle mb-0" style="font-size: 0.85rem;">
+                                <thead class="table-light">
+                                    <tr>
+                                        <th class="ps-3 border-0">No</th>
+                                        <th class="border-0">Date</th>
+                                        <th class="border-0">Weaver</th>
+                                        <th class="border-0 text-end">Amount</th>
+                                        <th class="pe-3 border-0 text-end">Action</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr th:each="c : ${recentContracts}">
+                                        <td class="ps-3 fw-semibold text-dark" th:text="${c.contractNo}">1</td>
+                                        <td th:text="${c.contractDate != null ? #temporals.format(c.contractDate, 'dd-MM-yyyy') : (c.createdAt != null ? #temporals.format(c.createdAt, 'dd-MM-yyyy') : '-')}"
+                                            class="text-nowrap">12-06-2026</td>
+                                        <td th:text="${c.weaverName}">Weaver Name</td>
+                                        <td class="text-end fw-semibold text-dark">
+                                            <span
+                                                th:text="${c.amount != null ? '₹ ' + #numbers.formatDecimal(c.amount, 1, 2) : '₹ 0.00'}">₹
+                                                0.00</span>
+                                        </td>
+                                        <td class="pe-3 text-end text-nowrap">
+                                            <a class="btn btn-sm btn-info text-white py-0 px-2" th:href="@{/gen-bill(cloneFrom=${c.contractNo})}" title="Clone Contract" style="font-size: 0.75rem;">
+                                                <i class="bi bi-copy"></i>
+                                            </a>
+                                            <a class="btn btn-sm btn-warning py-0 px-2 ms-1" th:href="@{/gen-bill/edit/{u}/{c}(u=${c.userId}, c=${c.contractNo})}" title="Edit Contract" style="font-size: 0.75rem;">
+                                                <i class="bi bi-pencil"></i>
+                                            </a>
+                                        </td>
+                                    </tr>
+                                    <tr th:if="${recentContracts == null || recentContracts.empty}">
+                                        <td colspan="5" class="text-center py-4 text-muted">No recent job contracts
+                                            found</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Recent Wallet Log -->
+            <div class="col-12 col-xl-5 mb-4">
+                <div class="card border-0 shadow-sm h-100">
+                    <div class="card-header bg-white border-0 py-3">
+                        <h6 class="mb-0 fw-bold text-dark"><i class="bi bi-credit-card-2-front me-1 text-success"></i>
+                            Recent Wallet Logs</h6>
+                    </div>
+                    <div class="card-body p-0">
+                        <div class="list-group list-group-flush" style="font-size: 0.85rem;">
+                            <div th:each="tx : ${recentTransactions}"
+                                class="list-group-item px-3 py-3 border-0 border-bottom">
+                                <div class="d-flex w-100 justify-content-between align-items-center">
+                                    <div class="d-flex align-items-center">
+                                        <div class="tx-badge me-3"
+                                            th:classappend="${tx.transactionType == 'DEPOSIT' ? 'bg-success-light text-success' : 'bg-danger-light text-danger'}">
+                                            <i
+                                                th:class="${tx.transactionType == 'DEPOSIT' ? 'bi bi-arrow-down-left-circle-fill' : 'bi bi-arrow-up-right-circle-fill'}"></i>
+                                        </div>
+                                        <div>
+                                            <h6 class="mb-0 fw-semibold text-dark" th:text="${tx.description}"
+                                                style="font-size: 0.85rem;">Deposit Details</h6>
+                                            <small class="text-muted"
+                                                th:text="${#temporals.format(tx.createdAt, 'dd-MM-yyyy HH:mm')}"
+                                                style="font-size: 0.75rem;">12-06-2026 10:30</small>
+                                        </div>
+                                    </div>
+                                    <span class="fw-bold"
+                                        th:classappend="${tx.transactionType == 'DEPOSIT' ? 'text-success' : 'text-danger'}"
+                                        th:text="${tx.transactionType == 'DEPOSIT' ? '+ ₹' + tx.amount : '- ₹' + #numbers.formatDecimal(-tx.amount,1,2)}">+₹
+                                        500.00</span>
+                                </div>
+                            </div>
+                            <div th:if="${recentTransactions == null || recentTransactions.empty}"
+                                class="text-center py-4 text-muted">
+                                No wallet transaction logs yet
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
 
     </main>

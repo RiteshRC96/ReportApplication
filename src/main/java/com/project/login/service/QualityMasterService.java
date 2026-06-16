@@ -47,4 +47,8 @@ public class QualityMasterService {
 	public Optional<QualityMasterEntity> findByNameAndUser(String qualityName, Long userId) {
 		return repository.findByQualityNameAndUserId(qualityName, userId);
 	}
+
+	public long countQualities(Long userId) {
+		return repository.countByUserId(userId);
+	}
 }

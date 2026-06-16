@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.authentication.AnonymousAuthenticationToken;
 
 @Controller
 public class AuthController {
@@ -28,8 +29,22 @@ public class AuthController {
     @Autowired
     private com.project.login.service.WalletService walletService;
 
+    @Autowired
+    private com.project.login.service.WeaverTraderService weaverTraderService;
+
+    @Autowired
+    private com.project.login.service.QualityMasterService qualityMasterService;
+
+    @Autowired
+    private com.project.login.service.JobContractService jobContractService;
+
     @GetMapping("/")
     public String loginPage() {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        if (authentication != null && authentication.isAuthenticated() &&
+                !(authentication instanceof AnonymousAuthenticationToken)) {
+            return "redirect:/dashboard";
+        }
         return "login";
     }
 
@@ -129,6 +144,12 @@ public class AuthController {
 
         model.addAttribute("username", username);
         model.addAttribute("walletBalance", walletService.getBalance(userDetails.getId()));
+        model.addAttribute("weaverCount", weaverTraderService.countWeavers(userDetails.getId()));
+        model.addAttribute("traderCount", weaverTraderService.countTraders(userDetails.getId()));
+        model.addAttribute("qualityCount", qualityMasterService.countQualities(userDetails.getId()));
+        model.addAttribute("contractCount", jobContractService.countContracts(userDetails.getId()));
+        model.addAttribute("recentContracts", jobContractService.getRecentContracts(userDetails.getId()));
+        model.addAttribute("recentTransactions", walletService.getRecentTransactions(userDetails.getId()));
         return "dashboard";
     }
 }

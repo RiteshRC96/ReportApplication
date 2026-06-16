@@ -27,4 +27,5 @@ public interface WeaverTraderRepository extends JpaRepository<WeaverTrader, Long
 
     Optional<WeaverTrader> findByNameAndPhnoAndTypeAndUserId(String name, Long phno, String type, Long userId);
 
+    long countByUserIdAndType(Long userId, String type);
 }

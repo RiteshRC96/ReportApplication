@@ -297,6 +297,7 @@
                 </div>
 
                 <input type="hidden" name="userId" th:value="${job?.userId}">
+                <input type="hidden" id="editMode" th:value="${editMode}">
 
                 <!-- SECTION: 10 CONTRACT ITEMS -->
                 <table style="width: 100%; border: 2px solid #000; margin-bottom: 15px;">
@@ -306,12 +307,12 @@
                         </td>
                         <td style="padding: 12px; border-bottom: 1px solid #000; border-left: 1px solid #000;">
                             <div class="d-flex gap-2">
-                                <select class="form-control searchable" name="weaver_name" id="weaverSelect"
+                                <select class="form-control searchable" name="weaver_id" id="weaverSelect"
                                     style="flex:1; border: none; border-bottom: 1px solid #000; border-radius: 0;"
                                     required>
                                     <option value="">Select Weaver</option>
-                                    <option th:each="w : ${weavers}" th:value="${w.name}" th:text="${w.name}"
-                                        th:selected="${job?.weaverName == w.name}"></option>
+                                    <option th:each="w : ${weavers}" th:value="${w.id}" th:text="${w.name}"
+                                        th:selected="${job?.weaverId == w.id}"></option>
                                 </select>
                                 <button type="button" class="btn btn-sm btn-success" data-bs-toggle="modal"
                                     data-bs-target="#addWeaverModal" style="font-size: 12px;">+</button>
@@ -324,12 +325,12 @@
                         </td>
                         <td style="padding: 12px; border-bottom: 1px solid #000; border-left: 1px solid #000;">
                             <div class="d-flex gap-2">
-                                <select class="form-control searchable" name="trader_name" id="traderSelect"
+                                <select class="form-control searchable" name="trader_id" id="traderSelect"
                                     style="flex:1; border: none; border-bottom: 1px solid #000; border-radius: 0;"
                                     required>
                                     <option value="">Select Trader</option>
-                                    <option th:each="t : ${traders}" th:value="${t.name}" th:text="${t.name}"
-                                        th:selected="${job?.traderName == t.name}"></option>
+                                    <option th:each="t : ${traders}" th:value="${t.id}" th:text="${t.name}"
+                                        th:selected="${job?.traderId == t.id}"></option>
                                 </select>
                                 <button type="button" class="btn btn-sm btn-success" data-bs-toggle="modal"
                                     data-bs-target="#addTraderModal" style="font-size: 12px;">+</button>

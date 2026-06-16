@@ -19,4 +19,5 @@ public interface QualityMasterRepository extends JpaRepository<QualityMasterEnti
 	@Query("SELECT q FROM QualityMasterEntity q WHERE q.qualityName = :qualityName AND q.userId = :userId")
 	Optional<QualityMasterEntity> findByQualityNameAndUserId(@Param("qualityName") String qualityName, @Param("userId") Long userId);
 	
+	long countByUserId(Long userId);
 }
