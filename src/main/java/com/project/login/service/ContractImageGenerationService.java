@@ -38,9 +38,9 @@ public class ContractImageGenerationService {
         try (PDDocument document = createFilledDocument(contract)) {
             PDFRenderer renderer = new PDFRenderer(document);
 
-            // 🚀 Performance Tip: Use 150 DPI instead of 300 for 4x faster rendering
-            // 150 DPI is still very clear for a document
-            BufferedImage image = renderer.renderImageWithDPI(0, 150);
+            // 🚀 Performance Tip: Use 100 DPI instead of 150 to prevent OutOfMemoryError on heap
+            // Mobile sharing still looks clear enough at 100 DPI, and it reduces memory by 50%
+            BufferedImage image = renderer.renderImageWithDPI(0, 100);
 
             ImageIO.write(image, "jpeg", out);
         } catch (Exception e) {
@@ -54,7 +54,9 @@ public class ContractImageGenerationService {
      */
     private PDDocument createFilledDocument(gen_bill contract) throws Exception {
         InputStream templateStream = new ClassPathResource("static/job_Contract.pdf").getInputStream();
-        PDDocument document = PDDocument.load(templateStream);
+        // Use setupTempFileOnly to prevent Java Heap Space OutOfMemoryError
+        PDDocument document = PDDocument.load(templateStream, org.apache.pdfbox.io.MemoryUsageSetting.setupTempFileOnly());
+        templateStream.close(); // Prevent resource leak
         PDPage page = document.getPage(0);
 
         // Append to existing page content
