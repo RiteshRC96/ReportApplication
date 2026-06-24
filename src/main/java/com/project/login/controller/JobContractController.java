@@ -58,6 +58,7 @@ public class JobContractController {
             @RequestParam(required = false) Integer cloneFrom,
             Model model, 
             Authentication authentication) {
+        System.out.println("Visited page: /gen-bill");
 
         CustomUserDetails userDetails = (CustomUserDetails) authentication.getPrincipal();
 
@@ -103,6 +104,7 @@ public class JobContractController {
             @PathVariable Integer contractNo, // ✅ FIXED
             Model model,
             Authentication authentication) {
+        System.out.println("Visited page: /gen-bill/edit");
 
         CustomUserDetails userDetails = (CustomUserDetails) authentication.getPrincipal();
 
@@ -159,6 +161,7 @@ public class JobContractController {
             @RequestParam(required = false) Double brokerage_percent_amt,
             @RequestParam(required = false) Double brokerage_mtr_amt) {
 
+        System.out.println("Button clicked: Save Bill (/gen_bill POST)");
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 
         if (authentication == null ||
@@ -278,6 +281,7 @@ public class JobContractController {
     public ResponseEntity<Boolean> checkContractExists(
             @RequestParam Integer contractNo,
             Authentication authentication) {
+        System.out.println("Endpoint hit: /api/check-contract-exists");
         if (authentication == null || !(authentication.getPrincipal() instanceof CustomUserDetails)) {
             return ResponseEntity.status(401).body(false);
         }
@@ -296,6 +300,7 @@ public class JobContractController {
     public ResponseEntity<?> getWeaverDetails(
             @PathVariable Long weaverId,
             Authentication authentication) {
+        System.out.println("Endpoint hit: /api/weaver-details");
         CustomUserDetails userDetails = (CustomUserDetails) authentication.getPrincipal();
 
         Long userId = userDetails.getId();
@@ -373,6 +378,7 @@ public class JobContractController {
             @RequestParam(defaultValue = "0") Double brokeragePercent,
             @RequestParam(defaultValue = "0") Double brokeragePaisa,
             Authentication authentication) {
+        System.out.println("Button clicked: Add Weaver (/api/add-weaver POST)");
         try {
             CustomUserDetails userDetails = (CustomUserDetails) authentication.getPrincipal();
 
@@ -412,6 +418,7 @@ public class JobContractController {
             @RequestParam(defaultValue = "0") Double brokeragePercent,
             @RequestParam(defaultValue = "0") Double brokeragePaisa,
             Authentication authentication) {
+        System.out.println("Button clicked: Add Trader (/api/add-trader POST)");
         try {
             CustomUserDetails userDetails = (CustomUserDetails) authentication.getPrincipal();
 
@@ -492,10 +499,12 @@ public class JobContractController {
      * =====================
      */
     @GetMapping("/api/download-contract-pdf/{userId}/{contractNo}")
-    public ResponseEntity<?> downloadContractPdf(
+    public void downloadContractPdf(
             @PathVariable Long userId,
             @PathVariable Integer contractNo,
-            Authentication authentication) {
+            Authentication authentication,
+            jakarta.servlet.http.HttpServletResponse response) {
+        System.out.println("Button clicked: Download Contract PDF");
 
         try {
 
@@ -503,40 +512,33 @@ public class JobContractController {
 
             // Security check
             if (!userDetails.getId().equals(userId)) {
-                return ResponseEntity.status(403).body("Access Denied");
+                response.sendError(403, "Access Denied");
+                return;
             }
 
             // Fetch contract
             gen_bill contract = jobContractService.getByUserIdAndContractNo(userId, contractNo);
 
             if (contract == null) {
-                return ResponseEntity.status(404).body("Contract not found");
+                response.sendError(404, "Contract not found");
+                return;
             }
-
-            // Generate PDF
-            byte[] pdfBytes = contractImageGenerationService.generateContract(contract);
-
-            // Prepare download response
-            HttpHeaders headers = new HttpHeaders();
-            headers.setContentType(MediaType.APPLICATION_PDF);
 
             String filename = "Contract_" + contract.getContractNo() + "_" +
                     contract.getWeaverName() + ".pdf";
 
-            headers.setContentDispositionFormData("attachment", filename);
-            headers.setContentLength(pdfBytes.length);
+            response.setContentType("application/pdf");
+            response.setHeader("Content-Disposition", "attachment; filename=" + filename);
 
-            return ResponseEntity.ok()
-                    .headers(headers)
-                    .body(pdfBytes);
+            // Generate PDF and write directly to response
+            contractImageGenerationService.generateContract(contract, response.getOutputStream());
 
         } catch (Exception e) {
 
             System.err.println("Error downloading contract PDF: " + e.getMessage());
             e.printStackTrace();
 
-            return ResponseEntity.internalServerError()
-                    .body("Failed to download contract PDF");
+            try { response.sendError(500, "Failed to download contract PDF"); } catch(Exception ex) {}
         }
     }
 
@@ -546,48 +548,43 @@ public class JobContractController {
      * =====================
      */
     @GetMapping("/api/download-contract-image/{userId}/{contractNo}")
-    public ResponseEntity<?> downloadContractImage(
+    public void downloadContractImage(
             @PathVariable Long userId,
             @PathVariable Integer contractNo,
-            Authentication authentication) {
+            Authentication authentication,
+            jakarta.servlet.http.HttpServletResponse response) {
+        System.out.println("Button clicked: Download Contract Image");
 
         try {
             CustomUserDetails userDetails = (CustomUserDetails) authentication.getPrincipal();
 
             // Security check
             if (!userDetails.getId().equals(userId)) {
-                return ResponseEntity.status(403).body("Access Denied");
+                response.sendError(403, "Access Denied");
+                return;
             }
 
             // Fetch contract
             gen_bill contract = jobContractService.getByUserIdAndContractNo(userId, contractNo);
 
             if (contract == null) {
-                return ResponseEntity.status(404).body("Contract not found");
+                response.sendError(404, "Contract not found");
+                return;
             }
-
-            // Generate Image
-            byte[] imageBytes = contractImageGenerationService.generateContractImage(contract);
-
-            // Prepare download response
-            HttpHeaders headers = new HttpHeaders();
-            headers.setContentType(MediaType.IMAGE_JPEG);
 
             String filename = "Contract_" + contract.getContractNo() + "_" +
                     contract.getWeaverName() + ".jpg";
 
-            headers.setContentDispositionFormData("attachment", filename);
-            headers.setContentLength(imageBytes.length);
+            response.setContentType("image/jpeg");
+            response.setHeader("Content-Disposition", "attachment; filename=" + filename);
 
-            return ResponseEntity.ok()
-                    .headers(headers)
-                    .body(imageBytes);
+            // Generate Image and write directly to response
+            contractImageGenerationService.generateContractImage(contract, response.getOutputStream());
 
         } catch (Exception e) {
             System.err.println("Error downloading contract image: " + e.getMessage());
             e.printStackTrace();
-            return ResponseEntity.internalServerError()
-                    .body("Failed to download contract image");
+            try { response.sendError(500, "Failed to download contract image"); } catch(Exception ex) {}
         }
     }
 
@@ -603,6 +600,7 @@ public class JobContractController {
             @PathVariable Long userId,
             @PathVariable Integer contractNo,
             Authentication authentication) {
+        System.out.println("Button clicked: Share Contract");
         try {
             CustomUserDetails userDetails = (CustomUserDetails) authentication.getPrincipal();
 

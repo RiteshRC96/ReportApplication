@@ -35,6 +35,7 @@ public class AdminController {
     
     @GetMapping("/login")
     public String showAdminLogin() {
+        System.out.println("Visited page: /admin/login");
         System.out.println("Page Visited: Admin login");
         return "admin_login";
     }
@@ -46,7 +47,7 @@ public class AdminController {
             @RequestParam("password") String password,
             HttpSession session,
             RedirectAttributes redirectAttributes) {
-        
+        System.out.println("Button clicked: Admin Login (/admin/login POST)");
         try {
             if (adminService.validateAdminCredentials(username, password)) {
                 Admin admin = adminService.getAdminByUsername(username);
@@ -74,6 +75,7 @@ public class AdminController {
             @RequestParam(name = "userPage", defaultValue = "0") int userPage,
             HttpSession session, 
             Model model) {
+        System.out.println("Visited page: /admin/dashboard");
         // Check if admin is logged in
         if (session.getAttribute("adminId") == null) {
         	System.out.println("Secstion logout");
@@ -110,6 +112,7 @@ public class AdminController {
             @RequestParam(defaultValue = "0") int page,
             HttpSession session,
             Model model) {
+        System.out.println("Endpoint hit: /admin/dashboard/page (Payment Pagination)");
         if (session.getAttribute("adminId") == null) {
             return "redirect:/admin/login";
         }
@@ -135,6 +138,7 @@ public class AdminController {
             @RequestParam(defaultValue = "0") int page,
             HttpSession session,
             Model model) {
+        System.out.println("Endpoint hit: /admin/dashboard/users-page (User Pagination)");
         if (session.getAttribute("adminId") == null) {
             return "redirect:/admin/login";
         }
@@ -157,7 +161,7 @@ public class AdminController {
             @RequestParam("endDate") String endDate,
             HttpSession session,
             RedirectAttributes redirectAttributes) {
-        
+        System.out.println("Button clicked: Approve Payment (/admin/approve-payment)");
         try {
             // Check if admin is logged in
             if (session.getAttribute("adminId") == null) {
@@ -198,7 +202,7 @@ public class AdminController {
             @RequestParam("endDate") String endDate,
             HttpSession session,
             RedirectAttributes redirectAttributes) {
-        
+        System.out.println("Button clicked: Edit Subscription (/admin/edit-subscription)");
         try {
             if (session.getAttribute("adminId") == null) {
                 return "redirect:/admin/login";
@@ -237,7 +241,7 @@ public class AdminController {
             @RequestParam(value = "notes", required = false) String notes,
             HttpSession session,
             RedirectAttributes redirectAttributes) {
-        
+        System.out.println("Button clicked: Reject Payment (/admin/reject-payment)");
         try {
             // Check if admin is logged in
             if (session.getAttribute("adminId") == null) {
@@ -268,7 +272,7 @@ public class AdminController {
             @PathVariable("userId") Long userId,
             HttpSession session,
             RedirectAttributes redirectAttributes) {
-        
+        System.out.println("Button clicked: Toggle User Status (/admin/toggle-user-status)");
         try {
             if (session.getAttribute("adminId") == null) {
                 return "redirect:/admin/login";
@@ -313,6 +317,7 @@ public class AdminController {
      */
     @GetMapping("/logout")
     public String adminLogout(HttpSession session) {
+        System.out.println("Button clicked: Admin Logout (/admin/logout)");
         session.invalidate();
         return "redirect:/admin/login";
     }

@@ -21,6 +21,7 @@ public class ForgotPasswordController {
 
     @GetMapping("/forgot-password")
     public String showForgotPasswordForm() {
+        System.out.println("Visited page: /forgot-password");
         return "forgot_password";
     }
 
@@ -31,6 +32,7 @@ public class ForgotPasswordController {
             @RequestParam("confirmPassword") String confirmPassword,
             HttpSession session,
             RedirectAttributes redirectAttributes) {
+        System.out.println("Button clicked: Forgot Password Submit (/forgot-password POST)");
 
         if (!userService.findByEmail(email).isPresent()) {
             redirectAttributes.addFlashAttribute("error", "Email ID is not registered.");
@@ -60,6 +62,7 @@ public class ForgotPasswordController {
 
     @GetMapping("/verify-otp")
     public String showVerifyOtpForm(HttpSession session) {
+        System.out.println("Visited page: /verify-otp");
         if (session.getAttribute("resetEmail") == null) {
             return "redirect:/forgot-password";
         }
@@ -71,6 +74,7 @@ public class ForgotPasswordController {
             @RequestParam("otp") String otp,
             HttpSession session,
             RedirectAttributes redirectAttributes) {
+        System.out.println("Button clicked: Verify OTP (/verify-otp POST)");
 
         String email = (String) session.getAttribute("resetEmail");
         String newPassword = (String) session.getAttribute("resetPassword");

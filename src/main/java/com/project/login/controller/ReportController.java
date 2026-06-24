@@ -6,7 +6,7 @@ import com.project.login.service.JobContractService;
 import com.project.security.CustomUserDetails;
 import jakarta.servlet.http.HttpServletResponse;
 import org.apache.poi.ss.usermodel.*;
-import org.apache.poi.xssf.usermodel.XSSFWorkbook;
+import org.apache.poi.xssf.streaming.SXSSFWorkbook;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
@@ -56,6 +56,7 @@ public class ReportController {
                         @PathVariable int contractNo,
                         @RequestParam("confirmPassword") String confirmPassword,
                         RedirectAttributes redirectAttributes) {
+                System.out.println("Button clicked: Delete Job Contract");
                 Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
                 CustomUserDetails userDetails = (CustomUserDetails) authentication.getPrincipal();
 
@@ -75,6 +76,7 @@ public class ReportController {
                         @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate fromDate,
                         @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate toDate,
                         Model model) {
+                System.out.println("Visited page: /report");
 
                 Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 
@@ -111,6 +113,7 @@ public class ReportController {
                         @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate toDate,
                         @RequestParam(required = false) List<Integer> contractNos,
                         HttpServletResponse response) throws IOException {
+                System.out.println("Button clicked: Export Excel");
 
                 Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 
@@ -130,7 +133,7 @@ public class ReportController {
                                         toDate);
                 }
 
-                Workbook workbook = new XSSFWorkbook();
+                Workbook workbook = new SXSSFWorkbook(50);
                 Sheet sheet = workbook.createSheet("Job Contract Report");
 
                 Row header = sheet.createRow(0);
@@ -186,15 +189,18 @@ public class ReportController {
 
                 workbook.write(response.getOutputStream());
                 workbook.close();
+                ((SXSSFWorkbook) workbook).dispose();
         }
         
         @GetMapping("/pdf")
-        public ResponseEntity<InputStreamResource> exportPdf(
+        public void exportPdf(
                         @RequestParam(required = false) String weaverName,
                         @RequestParam(required = false) String traderName,
                         @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate fromDate,
                         @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate toDate,
-                        @RequestParam(required = false) List<Integer> contractNos) {
+                        @RequestParam(required = false) List<Integer> contractNos,
+                        HttpServletResponse response) throws IOException {
+                System.out.println("Button clicked: Export PDF");
 
                 Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 
@@ -214,22 +220,12 @@ public class ReportController {
                                         toDate);
                 }
 
-                ByteArrayInputStream pdf = jobContractPdfService.export(data);
-
-                HttpHeaders headers = new HttpHeaders();
                 String dateStr = LocalDate.now().format(DateTimeFormatter.ofPattern("dd.MM.yyyy"));
                 String fileName = "job_contract_report_" + dateStr + ".pdf";
 
-                headers.add(
-                                "Content-Disposition",
-                                "attachment; filename=" + fileName);
+                response.setContentType("application/pdf");
+                response.setHeader("Content-Disposition", "attachment; filename=" + fileName);
 
-                @SuppressWarnings("null")
-                ResponseEntity<InputStreamResource> response = ResponseEntity.ok()
-                                .headers(headers)
-                                .contentType(MediaType.APPLICATION_PDF)
-                                .body(new InputStreamResource(pdf));
-
-                return response;
+                jobContractPdfService.export(data, response.getOutputStream());
         }
 }

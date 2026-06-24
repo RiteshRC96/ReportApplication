@@ -109,6 +109,7 @@ public class WeaverTraderController {
                          @RequestParam("confirmPassword") String confirmPassword,
                          Authentication authentication,
                          org.springframework.web.servlet.mvc.support.RedirectAttributes redirectAttributes) {
+        System.out.println("Button clicked: Delete Weaver/Trader (/weaver-trader/delete POST)");
 
         CustomUserDetails userDetails =
                 (CustomUserDetails) authentication.getPrincipal();

@@ -2,6 +2,8 @@ package com.project.login.service;
 
 import com.project.login.entity.QualityMasterEntity;
 import com.project.login.repository.QualityMasterRepository;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
@@ -17,6 +19,7 @@ public class QualityMasterService {
 	}
 	
 	@SuppressWarnings("null")
+	@CacheEvict(value = "qualities", key = "#qtEntity.userId")
 	public QualityMasterEntity save(QualityMasterEntity qtEntity) {
 		// Duplicate Check
 		Optional<QualityMasterEntity> existing = repository.findByQualityNameAndUserId(qtEntity.getQualityName(), qtEntity.getUserId());
@@ -31,6 +34,7 @@ public class QualityMasterService {
 		return repository.save(qtEntity);		
 	}
 	
+	@Cacheable(value = "qualities", key = "#userId")
 	public List<QualityMasterEntity> findByUser(Long userId) {
         return repository.findByUserId(userId);
     }
@@ -40,6 +44,7 @@ public class QualityMasterService {
     }
 	
 	@Transactional
+	@CacheEvict(value = "qualities", key = "#userId")
 	public void delete(Long id, Long userId) {
 	     repository.deleteByIdAndUserId(id, userId);
 	}

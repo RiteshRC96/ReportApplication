@@ -5,6 +5,8 @@ import com.project.login.enums.PaymentStatus;
 import com.project.login.repository.UserRepository;
 import com.project.login.service.PaymentService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.security.core.userdetails.*;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -20,6 +22,7 @@ public class CustomUserDetailsService implements UserDetailsService {
 
     @Override
     @Transactional
+    @Cacheable(value = "userDetails", key = "#email.toLowerCase()")
     public UserDetails loadUserByUsername(String email)
             throws UsernameNotFoundException {
 

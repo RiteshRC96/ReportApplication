@@ -15,19 +15,23 @@ import com.itextpdf.kernel.font.PdfFont;
 import com.itextpdf.kernel.font.PdfFontFactory;
 import com.itextpdf.io.font.constants.StandardFonts;
 
+import com.project.login.service.WeaverTraderService;
+import com.project.login.entity.WeaverTrader;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
+import java.io.OutputStream;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
 
 @Service
 public class JobContractPdfService {
 
-        public ByteArrayInputStream export(List<gen_bill> list) {
+        @Autowired
+        private WeaverTraderService weaverTraderService;
 
-                ByteArrayOutputStream out = new ByteArrayOutputStream();
+
+        public void export(List<gen_bill> list, OutputStream out) {
 
                 try {
 
@@ -88,7 +92,21 @@ public class JobContractPdfService {
 
                                 // Combine Weaver and Trader
                                 String weaver = bill.getWeaverName() != null ? capitalizeInitialLetters(bill.getWeaverName()) : "-";
+                                if (bill.getWeaverId() != null && bill.getUserId() != null) {
+                                    WeaverTrader wt = weaverTraderService.findByIdAndUser(bill.getWeaverId(), bill.getUserId()).orElse(null);
+                                    if (wt != null && wt.getphno() != null) {
+                                        weaver = wt.getphno() + " - " + weaver;
+                                    }
+                                }
+
                                 String trader = bill.getTraderName() != null ? capitalizeInitialLetters(bill.getTraderName()) : "-";
+                                if (bill.getTraderId() != null && bill.getUserId() != null) {
+                                    WeaverTrader tt = weaverTraderService.findByIdAndUser(bill.getTraderId(), bill.getUserId()).orElse(null);
+                                    if (tt != null && tt.getphno() != null) {
+                                        trader = tt.getphno() + " - " + trader;
+                                    }
+                                }
+
                                 table.addCell(getCell(weaver + "\n" + trader, normalFont));
 
                                 table.addCell(getCell(bill.getQuality(), normalFont));
@@ -141,8 +159,6 @@ public class JobContractPdfService {
                 } catch (Exception e) {
                         e.printStackTrace();
                 }
-
-                return new ByteArrayInputStream(out.toByteArray());
         }
 
         private Cell getCell(String text, PdfFont font) {

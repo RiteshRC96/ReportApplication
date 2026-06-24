@@ -11,26 +11,30 @@ import org.springframework.stereotype.Service;
 
 import java.awt.image.BufferedImage;
 import javax.imageio.ImageIO;
-import java.io.ByteArrayOutputStream;
+import java.io.OutputStream;
 import java.io.InputStream;
 import java.time.format.DateTimeFormatter;
+import com.project.login.service.WeaverTraderService;
+import com.project.login.entity.WeaverTrader;
+import org.springframework.beans.factory.annotation.Autowired;
 
 @Service
 public class ContractImageGenerationService {
 
+    @Autowired
+    private WeaverTraderService weaverTraderService;
+
     // ---------------- MERGED SERVICE LOGIC (FAST & EFFICIENT) ----------------
 
-    public byte[] generateContract(gen_bill contract) {
+    public void generateContract(gen_bill contract, OutputStream out) {
         try (PDDocument document = createFilledDocument(contract)) {
-            ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
-            document.save(outputStream);
-            return outputStream.toByteArray();
+            document.save(out);
         } catch (Exception e) {
             throw new RuntimeException("Error generating contract PDF", e);
         }
     }
 
-    public byte[] generateContractImage(gen_bill contract) {
+    public void generateContractImage(gen_bill contract, OutputStream out) {
         try (PDDocument document = createFilledDocument(contract)) {
             PDFRenderer renderer = new PDFRenderer(document);
 
@@ -38,10 +42,7 @@ public class ContractImageGenerationService {
             // 150 DPI is still very clear for a document
             BufferedImage image = renderer.renderImageWithDPI(0, 150);
 
-            ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
-            ImageIO.write(image, "jpeg", outputStream);
-
-            return outputStream.toByteArray();
+            ImageIO.write(image, "jpeg", out);
         } catch (Exception e) {
             throw new RuntimeException("Error generating contract image", e);
         }
@@ -52,7 +53,7 @@ public class ContractImageGenerationService {
      * This avoids reloading the document and significantly speeds up processing.
      */
     private PDDocument createFilledDocument(gen_bill contract) throws Exception {
-        InputStream templateStream = new ClassPathResource("static/job_Contract1.pdf").getInputStream();
+        InputStream templateStream = new ClassPathResource("static/job_Contract.pdf").getInputStream();
         PDDocument document = PDDocument.load(templateStream);
         PDPage page = document.getPage(0);
 
@@ -66,25 +67,42 @@ public class ContractImageGenerationService {
             PDType1Font font = PDType1Font.HELVETICA;
             PDType1Font boldFont = PDType1Font.HELVETICA_BOLD;
 
+            String weaverStr = capitalizeWords(contract.getWeaverName());
+            if (contract.getWeaverId() != null && contract.getUserId() != null) {
+                WeaverTrader wt = weaverTraderService.findByIdAndUser(contract.getWeaverId(), contract.getUserId()).orElse(null);
+                if (wt != null && wt.getphno() != null) {
+                    weaverStr = weaverStr + " -   " + wt.getphno();
+                }
+            }
+
+            String traderStr = capitalizeWords(contract.getTraderName());
+            if (contract.getTraderId() != null && contract.getUserId() != null) {
+                WeaverTrader tt = weaverTraderService.findByIdAndUser(contract.getTraderId(), contract.getUserId()).orElse(null);
+                if (tt != null && tt.getphno() != null) {
+                    traderStr = traderStr + " -   " + tt.getphno();
+                }
+            }
+
             // Helper to draw text at coordinates
-            drawText(contentStream, font, 13, 160, 638, contract.getContractNo());
-            drawText(contentStream, font, 13, 480, 638,
+            drawText(contentStream, font, 12, 160, 638, contract.getContractNo());
+            drawText(contentStream, font, 12, 480, 638,
                     contract.getContractDate() != null ? contract.getContractDate().format(dtf) : null);
-            drawText(contentStream, font, 13, 140, 600, capitalizeWords(contract.getWeaverName()));
-            drawText(contentStream, font, 13, 140, 560, capitalizeWords(contract.getTraderName()));
-            drawText(contentStream, font, 13, 140, 520, capitalizeWords(contract.getBrokerName()));
-            drawText(contentStream, font, 13, 140, 483, contract.getQuality());
-            drawText(contentStream, font, 13, 135, 445, "Avg. "+contract.getQuantityMeters());
-            drawText(contentStream, font, 13, 230, 445, contract.getSizingfabric());
-            drawText(contentStream, font, 13, 470, 445, contract.getBeams());
-            drawText(contentStream, font, 13, 135, 407, contract.getJobRate());
-            drawText(contentStream, font, 13, 445, 407, contract.getPaymentDays());
-            drawText(contentStream, font, 13, 250, 370, contract.getProductionSchedule());
-            drawText(contentStream, font, 13, 550, 370, contract.getNoOfMachines());
-            drawText(contentStream, font, 13, 140, 333, contract.getRemark());
-            drawText(contentStream, font, 13, 140, 295, contract.getCutLength());
-            drawText(contentStream, font, 13, 365, 295, contract.getMinimumDelivery());
-            drawText(contentStream, font, 13, 395, 293, contract.getRollingFolding());
+            drawText(contentStream, font, 12, 140, 600, weaverStr);
+            drawText(contentStream, font, 12, 140, 560, traderStr);
+            drawText(contentStream, font, 12, 140, 520, capitalizeWords(contract.getBrokerName()));
+            drawText(contentStream, font, 12, 140, 483, contract.getQuality());
+            drawText(contentStream, font, 12, 140, 445, "Avg. "+contract.getQuantityMeters());
+            drawText(contentStream, font, 12, 230, 445, contract.getSizingfabric());
+            drawText(contentStream, font, 12, 470, 445, contract.getBeams());
+            drawText(contentStream, font, 12, 140, 407, contract.getJobRate());
+            drawText(contentStream, font, 12, 445, 407, contract.getPaymentDays());
+            drawText(contentStream, font, 12, 250, 370, contract.getProductionSchedule());
+            drawText(contentStream, font, 12, 550, 370, contract.getNoOfMachines());
+            drawText(contentStream, font, 12, 140, 333, contract.getRemark());
+            drawText(contentStream, font, 12, 140, 295, contract.getCutLength());
+            drawText(contentStream, font, 12, 365, 295, contract.getMinimumDelivery());
+            drawText(contentStream, font, 12, 495, 295, contract.getRollingFolding());
+            
         }
 
         return document;

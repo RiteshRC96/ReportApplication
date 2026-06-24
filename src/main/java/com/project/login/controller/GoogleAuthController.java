@@ -32,6 +32,7 @@ public class GoogleAuthController {
 			HttpSession session,
 			HttpServletResponse response
 			) {
+		System.out.println("Visited page/Button clicked: Google Login (/google-success)");
 		OAuth2User oauthUser = (OAuth2User) authentication.getPrincipal();
 		
 		String email = oauthUser.getAttribute("email");

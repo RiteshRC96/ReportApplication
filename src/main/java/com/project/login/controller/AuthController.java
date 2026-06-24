@@ -40,6 +40,7 @@ public class AuthController {
 
     @GetMapping("/")
     public String loginPage() {
+        System.out.println("Visited page: / (Login Page)");
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         if (authentication != null && authentication.isAuthenticated() &&
                 !(authentication instanceof AnonymousAuthenticationToken)) {
@@ -50,17 +51,20 @@ public class AuthController {
 
     @GetMapping("/login")
     public String loginRedirect() {
+        System.out.println("Visited page: /login");
         return "redirect:/";
     }
 
     @GetMapping("/register")
     public String registerPage(Model model) {
+        System.out.println("Visited page: /register");
         model.addAttribute("user", new User());
         return "register";
     }
 
     @PostMapping("/register")
     public String register(@ModelAttribute User user) {
+        System.out.println("Button clicked: Register (/register POST)");
         service.saveUser(user);
         return "redirect:/";
     }
@@ -70,6 +74,7 @@ public class AuthController {
      */
     @GetMapping("/account-inactive")
     public String accountInactive(@RequestParam(required = false) String email, Model model) {
+        System.out.println("Visited page: /account-inactive");
         if (email != null && !email.trim().isEmpty()) {
             PaymentStatus realStatus = paymentService.getPaymentStatus(email);
             if (realStatus != PaymentStatus.APPROVED) {
@@ -93,6 +98,7 @@ public class AuthController {
 
     @GetMapping("/dashboard")
     public String dashboard(Model model) {
+        System.out.println("Visited page: /dashboard");
 
         Authentication authentication =
                 SecurityContextHolder.getContext().getAuthentication();

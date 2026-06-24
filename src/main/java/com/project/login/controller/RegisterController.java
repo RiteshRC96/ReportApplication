@@ -60,6 +60,7 @@ public class RegisterController {
     =============================== */
     @PostMapping("/resend-register-otp")
     public String resendOtp(HttpSession session, Model model) {
+        System.out.println("Button clicked: Resend Register OTP (/resend-register-otp POST)");
         String email = (String) session.getAttribute("REG_EMAIL");
         if (email != null) {
             try {
@@ -79,6 +80,7 @@ public class RegisterController {
     public String verifyOtp(@RequestParam String otp,
                             HttpSession session,
                             Model model) {
+        System.out.println("Button clicked: Verify Register OTP (/verify-register-otp POST)");
 
         String email = (String) session.getAttribute("REG_EMAIL");
 

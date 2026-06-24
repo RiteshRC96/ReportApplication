@@ -34,6 +34,7 @@ public class PaymentController {
      */
     @GetMapping
     public String showPaymentPage(Model model, org.springframework.security.core.Authentication authentication) {
+        System.out.println("Visited page: /payment");
         if (authentication != null && authentication.getPrincipal() instanceof com.project.security.CustomUserDetails) {
             com.project.security.CustomUserDetails userDetails = (com.project.security.CustomUserDetails) authentication.getPrincipal();
             model.addAttribute("userName", userDetails.getName());
@@ -62,6 +63,7 @@ public class PaymentController {
             @RequestParam Double amount,
             org.springframework.security.core.Authentication authentication,
             RedirectAttributes redirectAttributes) {
+        System.out.println("Button clicked: Process Payment (/payment POST)");
 
         try {
             // If user is logged in, force use their session details
@@ -128,6 +130,7 @@ public class PaymentController {
      */
     @GetMapping("/status")
     public String checkSubscriptionStatus(@RequestParam String email, Model model) {
+        System.out.println("Endpoint hit: Check Subscription Status (/payment/status)");
 
         email = email != null ? email.trim().toLowerCase() : "";
 

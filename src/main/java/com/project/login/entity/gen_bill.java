@@ -7,7 +7,13 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 @Entity
-@Table(name = "job_contract")
+@Table(name = "job_contract", indexes = {
+    @Index(name = "idx_jc_user_id",       columnList = "user_id"),
+    @Index(name = "idx_jc_user_contract",  columnList = "user_id, contract_no"),
+    @Index(name = "idx_jc_user_deleted",   columnList = "user_id, is_deleted"),
+    @Index(name = "idx_jc_contract_date",  columnList = "contract_date"),
+    @Index(name = "idx_jc_created_at",     columnList = "created_at")
+})
 public class gen_bill {
 
     @Id

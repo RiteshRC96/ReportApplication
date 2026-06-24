@@ -21,8 +21,8 @@ public interface JobContractRepository extends JpaRepository<gen_bill, Long> {
         SELECT j FROM gen_bill j
         WHERE j.userId = :userId
           AND j.isDeleted = false
-          AND (:weaverName IS NULL OR j.weaverName ILIKE :weaverName)
-          AND (:traderName IS NULL OR j.traderName ILIKE :traderName)
+          AND (:weaverName IS NULL OR j.weaverName LIKE :weaverName)
+          AND (:traderName IS NULL OR j.traderName LIKE :traderName)
           AND (CAST(:fromDate AS date) IS NULL OR j.contractDate >= :fromDate)
           AND (CAST(:toDate AS date) IS NULL OR j.contractDate <= :toDate)
         ORDER BY j.contractNo  DESC
