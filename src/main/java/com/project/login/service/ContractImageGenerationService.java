@@ -37,12 +37,18 @@ public class ContractImageGenerationService {
     public void generateContractImage(gen_bill contract, OutputStream out) {
         try (PDDocument document = createFilledDocument(contract)) {
             PDFRenderer renderer = new PDFRenderer(document);
+            renderer.setSubsamplingAllowed(true); // Reduces memory consumption for images in PDF
 
-            // 🚀 Performance Tip: Use 100 DPI instead of 150 to prevent OutOfMemoryError on heap
-            // Mobile sharing still looks clear enough at 100 DPI, and it reduces memory by 50%
-            BufferedImage image = renderer.renderImageWithDPI(0, 100);
+            // 🚀 Performance Tip: Use 70 DPI instead of 150 to prevent OutOfMemoryError on heap
+            // Mobile sharing still looks clear enough, and it reduces memory
+            System.gc(); // Hint to JVM to free up memory before allocating large BufferedImage
+            BufferedImage image = renderer.renderImageWithDPI(0, 70);
 
+            ImageIO.setUseCache(true); // Use disk cache instead of heap memory to avoid OOM
             ImageIO.write(image, "jpeg", out);
+            
+            // Release memory immediately
+            image.flush();
         } catch (Exception e) {
             throw new RuntimeException("Error generating contract image", e);
         }

@@ -581,10 +581,12 @@ public class JobContractController {
             // Generate Image and write directly to response
             contractImageGenerationService.generateContractImage(contract, response.getOutputStream());
 
-        } catch (Exception e) {
+        } catch (Throwable e) {
             System.err.println("Error downloading contract image: " + e.getMessage());
             e.printStackTrace();
-            try { response.sendError(500, "Failed to download contract image"); } catch(Exception ex) {}
+            try { 
+                response.sendError(500, "Failed to generate image due to server memory constraints. Please try again or download PDF instead."); 
+            } catch(Exception ex) {}
         }
     }
 
