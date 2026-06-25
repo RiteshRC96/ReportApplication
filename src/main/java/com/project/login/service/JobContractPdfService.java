@@ -1,5 +1,4 @@
 package com.project.login.service;
-
 import com.project.login.entity.gen_bill;
 import com.itextpdf.kernel.pdf.PdfDocument;
 import com.itextpdf.kernel.pdf.PdfWriter;
@@ -14,12 +13,10 @@ import com.itextpdf.layout.property.VerticalAlignment;
 import com.itextpdf.kernel.font.PdfFont;
 import com.itextpdf.kernel.font.PdfFontFactory;
 import com.itextpdf.io.font.constants.StandardFonts;
-
 import com.project.login.service.WeaverTraderService;
 import com.project.login.entity.WeaverTrader;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-
 import java.io.OutputStream;
 import java.time.format.DateTimeFormatter;
 import java.util.List;

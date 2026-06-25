@@ -39,10 +39,10 @@ public class ContractImageGenerationService {
             PDFRenderer renderer = new PDFRenderer(document);
             renderer.setSubsamplingAllowed(true); // Reduces memory consumption for images in PDF
 
-            // 🚀 Performance Tip: Use 70 DPI instead of 150 to prevent OutOfMemoryError on heap
-            // Mobile sharing still looks clear enough, and it reduces memory
+            // 🚀 Performance Tip: Increased from 70 DPI to 120 DPI for better resolution while avoiding OOM.
+            // Mobile sharing will look clearer.
             System.gc(); // Hint to JVM to free up memory before allocating large BufferedImage
-            BufferedImage image = renderer.renderImageWithDPI(0, 70);
+            BufferedImage image = renderer.renderImageWithDPI(0, 120);
 
             ImageIO.setUseCache(true); // Use disk cache instead of heap memory to avoid OOM
             ImageIO.write(image, "jpeg", out);
