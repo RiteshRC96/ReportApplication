@@ -266,7 +266,7 @@
 
     <div class="button-group">
         <a href="/logout" class="btn-primary-custom">Logout</a>
-        <a href="/payment" class="btn-secondary-custom"
+        <a th:href="@{/payment(email=${userEmail})}" class="btn-secondary-custom"
            th:if="${status.name() == 'REJECTED' || status.name() == 'EXPIRED' || status.name() == 'NOT_FOUND'}">
             [[${status.name() == 'EXPIRED' ? 'Renew Subscription' : (status.name() == 'NOT_FOUND' ? 'Submit Payment' : 'Re-submit Payment')}]]
         </a>

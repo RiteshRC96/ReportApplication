@@ -33,12 +33,19 @@ public class PaymentController {
      * Display payment page
      */
     @GetMapping
-    public String showPaymentPage(Model model, org.springframework.security.core.Authentication authentication) {
+    public String showPaymentPage(
+            @RequestParam(required = false) String email,
+            Model model, 
+            org.springframework.security.core.Authentication authentication) {
         System.out.println("Visited page: /payment");
+
+        String displayEmail = email;
+        String displayName = null;
+
         if (authentication != null && authentication.getPrincipal() instanceof com.project.security.CustomUserDetails) {
             com.project.security.CustomUserDetails userDetails = (com.project.security.CustomUserDetails) authentication.getPrincipal();
-            model.addAttribute("userName", userDetails.getName());
-            model.addAttribute("email", userDetails.getUsername());
+            displayName = userDetails.getName();
+            displayEmail = userDetails.getUsername();
 
             // Check if user is inactive
             User user = userService.findByEmail(userDetails.getUsername()).orElse(null);
@@ -47,7 +54,16 @@ public class PaymentController {
                 model.addAttribute("userEmail", userDetails.getUsername());
                 return "subscription_invalid";
             }
+        } else if (displayEmail != null && !displayEmail.trim().isEmpty()) {
+            User user = userService.findByEmail(displayEmail.trim()).orElse(null);
+            if (user != null) {
+                displayName = user.getName();
+            }
         }
+
+        model.addAttribute("userName", displayName);
+        model.addAttribute("email", displayEmail);
+
         return "payment";
     }
 
