@@ -252,6 +252,94 @@
             box-shadow: 0 0 0 3px rgba(220, 53, 69, 0.1);
         }
 
+        /* ---------- PLAN RADIO CARDS ---------- */
+        .plan-options {
+            display: flex;
+            gap: 14px;
+        }
+
+        .plan-card {
+            flex: 1;
+            position: relative;
+            cursor: pointer;
+        }
+
+        .plan-card input[type="radio"] {
+            position: absolute;
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+
+        .plan-label {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 18px 12px;
+            border: 2px solid #cbd5e0;
+            border-radius: 12px;
+            background: #f8fafc;
+            transition: all 0.25s ease;
+            cursor: pointer;
+            user-select: none;
+        }
+
+        .plan-label:hover {
+            border-color: #667eea;
+            background: #f0f2ff;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.15);
+        }
+
+        .plan-card input[type="radio"]:checked + .plan-label {
+            border-color: #667eea;
+            background: linear-gradient(135deg, #667eea15, #764ba215);
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.2);
+        }
+
+        .plan-amount {
+            font-size: 26px;
+            font-weight: 800;
+            color: #1f2933;
+            line-height: 1;
+        }
+
+        .plan-currency {
+            font-size: 16px;
+            font-weight: 600;
+            vertical-align: top;
+            line-height: 1.4;
+        }
+
+        .plan-badge {
+            margin-top: 8px;
+            font-size: 11px;
+            font-weight: 700;
+            letter-spacing: 0.5px;
+            text-transform: uppercase;
+            color: #667eea;
+            background: #e8ecff;
+            padding: 3px 10px;
+            border-radius: 20px;
+        }
+
+        .plan-card input[type="radio"]:checked + .plan-label .plan-badge {
+            background: #667eea;
+            color: #ffffff;
+        }
+
+        .plan-check {
+            display: none;
+            font-size: 18px;
+            margin-top: 6px;
+            color: #667eea;
+        }
+
+        .plan-card input[type="radio"]:checked + .plan-label .plan-check {
+            display: block;
+        }
+
         /* ---------- BUTTON ---------- */
         .btn-submit {
             width: 100%;
@@ -459,14 +547,30 @@
                     <form method="post" th:action="@{/payment}" id="paymentForm">
                         
                         <div class="form-group">
-                            <label for="amount">Recharge Amount (₹) *</label>
-                            <input 
-                                type="number" 
-                                class="form-control" 
-                                id="amount"
-                                name="amount" 
-                                placeholder="Enter amount to add"
-                                required min="1">
+                            <label>Select Recharge Plan *</label>
+                            <div class="plan-options">
+
+                                <!-- Plan: ₹4800 -->
+                                <label class="plan-card">
+                                    <input type="radio" name="amount" value="4800" id="plan4800" required>
+                                    <span class="plan-label">
+                                        <span class="plan-amount"><span class="plan-currency">₹</span>4,800</span>
+                                        <span class="plan-badge">Standard</span>
+                                        <span class="plan-check">✔</span>
+                                    </span>
+                                </label>
+
+                                <!-- Plan: ₹9600 -->
+                                <label class="plan-card">
+                                    <input type="radio" name="amount" value="9600" id="plan9600" required>
+                                    <span class="plan-label">
+                                        <span class="plan-amount"><span class="plan-currency">₹</span>9,600</span>
+                                        <span class="plan-badge">Premium</span>
+                                        <span class="plan-check">✔</span>
+                                    </span>
+                                </label>
+
+                            </div>
                         </div>
 
                         <div class="form-group">
@@ -544,13 +648,13 @@
 
         // Form validation
         document.getElementById('paymentForm')?.addEventListener('submit', function(e) {
-            const amount = document.getElementById('amount').value;
+            const selectedPlan = document.querySelector('input[name="amount"]:checked');
             const mobile = document.getElementById('mobileNumber').value;
             const utr = document.getElementById('utrNumber').value;
 
-            if (amount <= 0) {
+            if (!selectedPlan) {
                 e.preventDefault();
-                alert('Please enter a valid amount');
+                alert('Please select a recharge plan');
                 return false;
             }
 
