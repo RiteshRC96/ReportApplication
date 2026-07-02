@@ -1,7 +1,27 @@
+# Java
 *.class
-.settings/
 target/
+
+# Eclipse
+.settings/
 .project
 .classpath
-.project
+.factorypath
+
+# VS Code
+.vscode/
+
+# Environment
 .env
+
+# Project-specific
+seed_data.sql
+Docx/
+Tasks/
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Private keys
+*.pem
