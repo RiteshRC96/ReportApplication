@@ -47,7 +47,7 @@ public class GoogleAuthController {
 			userRepository.save(user);
 		}
 		
-		CustomUserDetails customUserDetails = new CustomUserDetails(user);
+		CustomUserDetails customUserDetails = new CustomUserDetails(user, user.isActive());
 		UsernamePasswordAuthenticationToken auth = new UsernamePasswordAuthenticationToken(
 				customUserDetails, null, customUserDetails.getAuthorities());
 		SecurityContextHolder.getContext().setAuthentication(auth);

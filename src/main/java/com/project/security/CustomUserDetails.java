@@ -9,9 +9,11 @@ import java.util.Collection;
 public class CustomUserDetails implements UserDetails {
 
     private final User user;
+    private final boolean effectiveEnabled;
 
-    public CustomUserDetails(User user) {
+    public CustomUserDetails(User user, boolean effectiveEnabled) {
         this.user = user;
+        this.effectiveEnabled = effectiveEnabled;
     }
 
     public String getName() {
@@ -43,7 +45,7 @@ public class CustomUserDetails implements UserDetails {
 
     @Override
     public boolean isEnabled() {
-        return user.isActive(); // 👈 Inactive users cannot login
+        return effectiveEnabled; // true only if admin-active AND has approved subscription
     }
 
 	@Override

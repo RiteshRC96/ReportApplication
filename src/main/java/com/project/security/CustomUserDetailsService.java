@@ -5,8 +5,6 @@ import com.project.login.enums.PaymentStatus;
 import com.project.login.repository.UserRepository;
 import com.project.login.service.PaymentService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.cache.annotation.CacheEvict;
-import org.springframework.cache.annotation.Cacheable;
 import org.springframework.security.core.userdetails.*;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -21,25 +19,24 @@ public class CustomUserDetailsService implements UserDetailsService {
     private PaymentService paymentService;
 
     @Override
-    @Transactional
-    @Cacheable(value = "userDetails", key = "#email.toLowerCase()")
+    @Transactional(readOnly = true)
     public UserDetails loadUserByUsername(String email)
             throws UsernameNotFoundException {
 
-    	User user = userRepository.findByEmail(email.trim().toLowerCase()).orElseThrow(() ->
-                        new UsernameNotFoundException("User not found with email: " + email)
-                );
+        User user = userRepository.findByEmail(email.trim().toLowerCase()).orElseThrow(() ->
+                new UsernameNotFoundException("User not found with email: " + email)
+        );
 
-        // CHECK SUBSCRIPTION STATUS ON LOGIN
+        // Compute effective enabled state in memory — NEVER write to DB here.
+        // A user can login only if:
+        //   1. Admin has set their account as active, AND
+        //   2. They have an APPROVED (non-expired) payment subscription.
+        boolean effectiveEnabled = false;
         if (user.isActive()) {
             PaymentStatus status = paymentService.getPaymentStatus(email);
-            if (status != PaymentStatus.APPROVED) {
-                user.setActive(false);
-                userRepository.save(user);
-            }
+            effectiveEnabled = (status == PaymentStatus.APPROVED);
         }
 
-    	return new CustomUserDetails(user);
-
+        return new CustomUserDetails(user, effectiveEnabled);
     }
 }
