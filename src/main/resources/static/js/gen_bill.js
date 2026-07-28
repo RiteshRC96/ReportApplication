@@ -2,13 +2,16 @@
 // JOB CONTRACT FORM - JavaScript Module
 // =====================================================
 
-// Set today's date
+// Set today's date if not already set
 document.addEventListener("DOMContentLoaded", function () {
-    const today = new Date();
-    const year = today.getFullYear();
-    const month = String(today.getMonth() + 1).padStart(2, '0');
-    const day = String(today.getDate()).padStart(2, '0');
-    document.getElementById("contractDate").value = `${year}-${month}-${day}`;
+    const contractDateInput = document.getElementById("contractDate");
+    if (contractDateInput && !contractDateInput.value) {
+        const today = new Date();
+        const year = today.getFullYear();
+        const month = String(today.getMonth() + 1).padStart(2, '0');
+        const day = String(today.getDate()).padStart(2, '0');
+        contractDateInput.value = `${year}-${month}-${day}`;
+    }
 });
 
 // DOM Elements
@@ -207,12 +210,15 @@ function calculateAll() {
 
 // Calculate on page load if editing
 document.addEventListener("DOMContentLoaded", function() {
-    // Set today's date
-    const today = new Date();
-    const year = today.getFullYear();
-    const month = String(today.getMonth() + 1).padStart(2, '0');
-    const day = String(today.getDate()).padStart(2, '0');
-    document.getElementById("contractDate").value = `${year}-${month}-${day}`;
+    // Set today's date if not already set
+    const contractDateInput = document.getElementById("contractDate");
+    if (contractDateInput && !contractDateInput.value) {
+        const today = new Date();
+        const year = today.getFullYear();
+        const month = String(today.getMonth() + 1).padStart(2, '0');
+        const day = String(today.getDate()).padStart(2, '0');
+        contractDateInput.value = `${year}-${month}-${day}`;
+    }
 
     // Initial calculation if editing
     calculateAll();

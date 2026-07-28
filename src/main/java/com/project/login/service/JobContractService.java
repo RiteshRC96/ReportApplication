@@ -71,6 +71,7 @@ public class JobContractService {
 
     public gen_bill cloneContract(gen_bill source) {
         gen_bill clone = new gen_bill();
+        clone.setContractDate(source.getContractDate());
         clone.setWeaverId(source.getWeaverId());
         clone.setWeaverName(source.getWeaverName());
         clone.setTraderId(source.getTraderId());
