@@ -555,6 +555,21 @@
                         th:value="${job?.brokerageMtrAmt}">
                 </div>
 
+                <!-- Debug script for hidden fields -->
+                <script>
+                    document.addEventListener("DOMContentLoaded", function() {
+                        console.group("Hidden Calculated Fields");
+                        console.log("pick:", document.getElementById('pick')?.value);
+                        console.log("weaverBrokeragePercent:", document.getElementById('weaverBrokeragePercent')?.value);
+                        console.log("weaverBrokeragePaisa:", document.getElementById('weaverBrokeragePaisa')?.value);
+                        console.log("rate:", document.getElementById('rate')?.value);
+                        console.log("amount:", document.getElementById('amount')?.value);
+                        console.log("brokeragePercentAmt:", document.getElementById('brokeragePercentAmt')?.value);
+                        console.log("brokerageMtrAmt:", document.getElementById('brokerageMtrAmt')?.value);
+                        console.groupEnd();
+                    });
+                </script>
+
                 <!-- ACTION BUTTONS -->
                 <div class="d-flex flex-wrap justify-content-center gap-2 mt-4 mb-3">
                     <!-- Single Generate Contract Button which saves and then asks to generate -->
