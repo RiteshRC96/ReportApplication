@@ -25,3 +25,6 @@ Thumbs.db
 
 # Private keys
 *.pem
+.ppk
+
+test.ppk

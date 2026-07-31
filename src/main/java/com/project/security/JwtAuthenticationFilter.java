@@ -38,16 +38,30 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
             try {
                 UserDetails userDetails = userDetailsService.loadUserByUsername(email);
-                if (userDetails != null && userDetails.isEnabled()) {
-                    Collection<? extends GrantedAuthority> authorities = userDetails.getAuthorities();
-                    if (authorities == null) {
-                        authorities = Collections.emptyList();
-                    }
-                    UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(
-                            userDetails, null, authorities);
-                    authentication.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
+                if (userDetails != null) {
+                    if (userDetails.isEnabled()) {
+                        Collection<? extends GrantedAuthority> authorities = userDetails.getAuthorities();
+                        if (authorities == null) {
+                            authorities = Collections.emptyList();
+                        }
+                        UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(
+                                userDetails, null, authorities);
+                        authentication.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
 
-                    SecurityContextHolder.getContext().setAuthentication(authentication);
+                        SecurityContextHolder.getContext().setAuthentication(authentication);
+                    } else {
+                        // User exists but is disabled (e.g., inactive or unpaid subscription)
+                        String uri = request.getRequestURI();
+                        // Do not redirect on static assets, logout, admin paths, or the inactive/payment pages themselves
+                        if (!uri.startsWith("/admin") && !uri.equals("/account-inactive") 
+                            && !uri.equals("/logout") && !uri.equals("/payment")
+                            && !uri.startsWith("/css") && !uri.startsWith("/js") 
+                            && !uri.startsWith("/images") && !uri.startsWith("/webjars")) {
+                            
+                            response.sendRedirect("/account-inactive?email=" + java.net.URLEncoder.encode(email, "UTF-8"));
+                            return; // Stop filter chain
+                        }
+                    }
                 }
             } catch (Exception e) {
                 // If user is not found or other issues, clear authentication context

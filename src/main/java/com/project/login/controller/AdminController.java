@@ -14,8 +14,11 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import jakarta.servlet.http.HttpSession;
+import jakarta.servlet.http.Cookie;
+import jakarta.servlet.http.HttpServletResponse;
 
 import java.time.LocalDate;
+import com.project.security.JwtTokenProvider;
 
 @Controller
 @RequestMapping("/admin")
@@ -32,6 +35,9 @@ public class AdminController {
 
     @Autowired
     private EmailService emailService;
+    
+    @Autowired
+    private JwtTokenProvider jwtTokenProvider;
     
     @GetMapping("/login")
     public String showAdminLogin() {
@@ -320,5 +326,46 @@ public class AdminController {
         System.out.println("Button clicked: Admin Logout (/admin/logout)");
         session.invalidate();
         return "redirect:/admin/login";
+    }
+
+    /**
+     * Login as User directly from Admin Panel
+     */
+    @PostMapping("/login-as-user/{userId}")
+    public String loginAsUser(
+            @PathVariable("userId") Long userId,
+            HttpSession session,
+            HttpServletResponse response,
+            RedirectAttributes redirectAttributes) {
+        System.out.println("Button clicked: Login as User (/admin/login-as-user)");
+        try {
+            if (session.getAttribute("adminId") == null) {
+                return "redirect:/admin/login";
+            }
+
+            User user = userService.findById(userId);
+            if (user == null) {
+                redirectAttributes.addFlashAttribute("error", "User not found");
+                return "redirect:/admin/dashboard";
+            }
+
+            // Generate JWT token for the user
+            String token = jwtTokenProvider.generateToken(user.getEmail());
+
+            // Create and set the cookie
+            Cookie jwtCookie = new Cookie("jwt-token", token);
+            jwtCookie.setHttpOnly(true);
+            jwtCookie.setSecure(false); // set to true if HTTPS is used
+            jwtCookie.setPath("/");
+            jwtCookie.setMaxAge(30 * 24 * 60 * 60); // 30 days
+            response.addCookie(jwtCookie);
+
+            // Redirect to the dashboard
+            return "redirect:/dashboard";
+            
+        } catch (Exception e) {
+            redirectAttributes.addFlashAttribute("error", "Error logging in as user: " + e.getMessage());
+            return "redirect:/admin/dashboard";
+        }
     }
 }
