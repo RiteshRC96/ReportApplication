@@ -55,6 +55,33 @@ function select2NormalizeSpacingMatcher(params, data) {
     return null;
 }
 
+// Function to fetch and update Weaver Brokerage details freshly from master
+function updateWeaverBrokerage(weaverId) {
+    if (!weaverId) return Promise.resolve(null);
+    const url = `/api/weaver-details/${encodeURIComponent(weaverId)}?_t=${Date.now()}`;
+    console.log("Fetching fresh weaver brokerage details from:", url);
+    return fetch(url, { cache: "no-store" })
+        .then(res => {
+            if (!res.ok) {
+                throw new Error(`HTTP ${res.status}: Failed to fetch weaver details`);
+            }
+            return res.json();
+        })
+        .then(data => {
+            console.log("Weaver brokerage data received:", data);
+            const percentEl = document.getElementById("weaverBrokeragePercent");
+            const paisaEl = document.getElementById("weaverBrokeragePaisa");
+            if (percentEl) percentEl.value = (data && data.brokeragePercent != null) ? data.brokeragePercent : 0;
+            if (paisaEl) paisaEl.value = (data && data.brokeragePaisa != null) ? data.brokeragePaisa : 0;
+            calculateAll();
+            return data;
+        })
+        .catch(err => {
+            console.error("Error fetching weaver details:", err);
+            return null;
+        });
+}
+
 // Initialize Select2 and event listeners
 $(document).ready(function() {
     $('.searchable').select2({
@@ -63,27 +90,22 @@ $(document).ready(function() {
         matcher: select2NormalizeSpacingMatcher
     });
 
-    // Auto-fill Weaver Brokerage on weaver selection
-    $('#weaverSelect').on('select2:select', function(e) {
+    // Auto-fill Weaver Brokerage on weaver selection or change
+    $('#weaverSelect').on('select2:select change', function() {
         const weaverId = $(this).val();
         console.log("Weaver selected ID:", weaverId);
         if (weaverId) {
-            const url = `/api/weaver-details/${encodeURIComponent(weaverId)}`;
-            console.log("Fetching from:", url);
-            fetch(url)
-                .then(res => {
-                    console.log("Response status:", res.status);
-                    return res.json();
-                })
-                .then(data => {
-                    console.log("Weaver data:", data);
-                    document.getElementById("weaverBrokeragePercent").value = data.brokeragePercent || 0;
-                    document.getElementById("weaverBrokeragePaisa").value = data.brokeragePaisa || 0;
-                    calculateAll();
-                })
-                .catch(err => console.error("Error fetching weaver details:", err));
+            updateWeaverBrokerage(weaverId);
         }
     });
+
+    // If weaver is already selected on page load (e.g. in Edit mode),
+    // fetch the latest weaver brokerage details freshly so it does not use stale previous details!
+    const initialWeaverId = $('#weaverSelect').val();
+    if (initialWeaverId) {
+        console.log("Initial weaver ID on load (Edit mode / pre-selected):", initialWeaverId);
+        updateWeaverBrokerage(initialWeaverId);
+    }
 
     // Auto-fill Pick from Quality
     $('#qualitySelect').on('select2:select', function(e) {
@@ -228,8 +250,24 @@ document.addEventListener("DOMContentLoaded", function() {
 // FORM SUBMISSION
 // =====================================================
 
-form.addEventListener("submit", function (e) {
+form.addEventListener("submit", async function (e) {
+    if (e.defaultPrevented) return;
     e.preventDefault();
+
+    submitBtn.disabled = true;
+    loader.style.display = "flex";
+
+    // 1. Always fetch latest weaver details (Brokerage % and Brokerage Paisa) freshly when user clicks Generate Contract
+    const weaverId = document.getElementById("weaverSelect")?.value;
+    if (weaverId) {
+        try {
+            await updateWeaverBrokerage(weaverId);
+        } catch (err) {
+            console.error("Error updating weaver brokerage on submit:", err);
+        }
+    } else {
+        calculateAll();
+    }
 
     // Check if we are in Edit Mode
     const editModeVal = document.getElementById("editMode")?.value;
@@ -237,9 +275,6 @@ form.addEventListener("submit", function (e) {
     const contractNo = document.querySelector('input[name="contractNo"]')?.value;
 
     if (!isEditMode && contractNo) {
-        submitBtn.disabled = true;
-        loader.style.display = "flex";
-
         fetch(`/api/check-contract-exists?contractNo=${encodeURIComponent(contractNo)}`)
             .then(res => {
                 if (!res.ok) throw new Error("Could not verify contract number");
@@ -276,6 +311,8 @@ form.addEventListener("submit", function (e) {
                 executeFormSubmit();
             });
     } else {
+        loader.style.display = "none";
+        submitBtn.disabled = false;
         executeFormSubmit();
     }
 });
@@ -283,6 +320,9 @@ form.addEventListener("submit", function (e) {
 function executeFormSubmit() {
     submitBtn.disabled = true;
     loader.style.display = "flex";
+
+    // Ensure all calculations are up-to-date before FormData is constructed
+    calculateAll();
 
     fetch("/gen_bill", {
         method: "POST",

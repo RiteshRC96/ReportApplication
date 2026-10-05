@@ -75,6 +75,21 @@ public class JobContractController {
             try {
                 gen_bill source = jobContractService.getByUserIdAndContractNo(userId, cloneFrom);
                 job = jobContractService.cloneContract(source);
+                if (job != null && job.getWeaverId() != null) {
+                    com.project.login.entity.WeaverTrader weaver = weaverTraderService.findByIdAndUser(job.getWeaverId(), userId).orElse(null);
+                    if (weaver != null) {
+                        job.setWeaverBrokeragePercent(weaver.getWeaverBrokeragePercent() != null ? weaver.getWeaverBrokeragePercent() : 0.0);
+                        job.setWeaverBrokeragePaisa(weaver.getWeaverBrokeragePaisa() != null ? weaver.getWeaverBrokeragePaisa() : 0.0);
+
+                        double wPercent = job.getWeaverBrokeragePercent() != null ? job.getWeaverBrokeragePercent() : 0.0;
+                        double wPaisa = job.getWeaverBrokeragePaisa() != null ? job.getWeaverBrokeragePaisa() : 0.0;
+                        double amount = job.getAmount() != null ? job.getAmount() : 0.0;
+                        double qty = job.getQuantityMeters() != null ? job.getQuantityMeters() : 0.0;
+
+                        job.setBrokeragePercentAmt(Math.round(amount * (wPercent / 100.0) * 100.0) / 100.0);
+                        job.setBrokerageMtrAmt(Math.round(qty * (wPaisa / 100.0) * 100.0) / 100.0);
+                    }
+                }
             } catch (Exception e) {
                 job = new gen_bill();
                 job.setContractDate(java.time.LocalDate.now());
@@ -115,6 +130,24 @@ public class JobContractController {
 
         gen_bill job = jobContractService
                 .getByUserIdAndContractNo(userId, contractNo); // ✅ FIXED
+
+        // ✅ If editing, fetch latest weaver details (Brokerage % and Paisa) newly from master
+        if (job != null && job.getWeaverId() != null) {
+            com.project.login.entity.WeaverTrader weaver = weaverTraderService.findByIdAndUser(job.getWeaverId(), userId).orElse(null);
+            if (weaver != null) {
+                job.setWeaverBrokeragePercent(weaver.getWeaverBrokeragePercent() != null ? weaver.getWeaverBrokeragePercent() : 0.0);
+                job.setWeaverBrokeragePaisa(weaver.getWeaverBrokeragePaisa() != null ? weaver.getWeaverBrokeragePaisa() : 0.0);
+
+                // Recalculate brokerage amounts with latest weaver brokerage
+                double wPercent = job.getWeaverBrokeragePercent() != null ? job.getWeaverBrokeragePercent() : 0.0;
+                double wPaisa = job.getWeaverBrokeragePaisa() != null ? job.getWeaverBrokeragePaisa() : 0.0;
+                double amount = job.getAmount() != null ? job.getAmount() : 0.0;
+                double qty = job.getQuantityMeters() != null ? job.getQuantityMeters() : 0.0;
+
+                job.setBrokeragePercentAmt(Math.round(amount * (wPercent / 100.0) * 100.0) / 100.0);
+                job.setBrokerageMtrAmt(Math.round(qty * (wPaisa / 100.0) * 100.0) / 100.0);
+            }
+        }
 
         model.addAttribute("weavers", weaverTraderService.getWeavers(userId));
         model.addAttribute("traders", weaverTraderService.getTraders(userId));
@@ -201,6 +234,12 @@ public class JobContractController {
             bill.setWeaverId(weaver.getId());
             bill.setWeaverName(weaver.getName());
 
+            // Always take latest weaver brokerage directly from Weaver Master
+            Double wBrokeragePercent = weaver.getWeaverBrokeragePercent() != null ? weaver.getWeaverBrokeragePercent() : 0.0;
+            Double wBrokeragePaisa = weaver.getWeaverBrokeragePaisa() != null ? weaver.getWeaverBrokeragePaisa() : 0.0;
+            bill.setWeaverBrokeragePercent(wBrokeragePercent);
+            bill.setWeaverBrokeragePaisa(wBrokeragePaisa);
+
             com.project.login.entity.WeaverTrader trader = weaverTraderService.findByIdAndUser(trader_id, user.getId())
                     .orElseThrow(() -> new IllegalArgumentException("Trader not found"));
             bill.setTraderId(trader.getId());
@@ -245,12 +284,20 @@ public class JobContractController {
             bill.setRollingFolding(rolling_folding);
             bill.setSizingfabric(sizing_fabric != null ? sizing_fabric.toUpperCase() : null);
             bill.setPick(pick);
-            bill.setWeaverBrokeragePercent(weaver_brokerage_percent);
-            bill.setWeaverBrokeragePaisa(weaver_brokerage_paisa);
-            bill.setRate(rate);
-            bill.setAmount(amount);
-            bill.setBrokeragePercentAmt(brokerage_percent_amt);
-            bill.setBrokerageMtrAmt(brokerage_mtr_amt);
+
+            // Calculations: rate, amount, and brokerage amounts from weaver master
+            double calcPick = (pick != null) ? pick : 0.0;
+            double calcRate = (job_rate != null ? (job_rate / 100.0) : 0.0) * calcPick;
+            double calcAmount = calcRate * (qtyMeters != null ? qtyMeters : 0);
+            double finalRate = (rate != null) ? rate : (Math.round(calcRate * 100.0) / 100.0);
+            double finalAmount = (amount != null) ? amount : (Math.round(calcAmount * 100.0) / 100.0);
+            double finalBrokeragePercentAmt = Math.round(finalAmount * (wBrokeragePercent / 100.0) * 100.0) / 100.0;
+            double finalBrokerageMtrAmt = Math.round((qtyMeters != null ? qtyMeters : 0) * (wBrokeragePaisa / 100.0) * 100.0) / 100.0;
+
+            bill.setRate(finalRate);
+            bill.setAmount(finalAmount);
+            bill.setBrokeragePercentAmt(finalBrokeragePercentAmt);
+            bill.setBrokerageMtrAmt(finalBrokerageMtrAmt);
 
             // 🔄 Same service handles save or update
             gen_bill savedBill = jobContractService.saveOrUpdate(bill, user);
